@@ -1,19 +1,18 @@
 package fr.epita.assistants.myide.domain.node;
 
 import fr.epita.assistants.myide.domain.entity.Node;
-import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Folder implements Node {
+public class FolderNode implements Node {
 
     private final Path path;
     private final Type type;
     private final List<Node> children;
 
-    public Folder(Path path) {
+    public FolderNode(Path path) {
         this.path = path;
         this.type = Types.FOLDER;
         this.children = new ArrayList<>();

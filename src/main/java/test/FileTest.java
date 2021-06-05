@@ -1,5 +1,5 @@
 import fr.epita.assistants.myide.domain.entity.Node;
-import fr.epita.assistants.myide.domain.node.File;
+import fr.epita.assistants.myide.domain.node.FileNode;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -9,7 +9,7 @@ import java.util.List;
 class FileTest {
 
     private Path path = Path.of("test_path");
-    private File file = new File(path);
+    private FileNode file = new FileNode(path);
 
     @Test
     void getPathValid() {
