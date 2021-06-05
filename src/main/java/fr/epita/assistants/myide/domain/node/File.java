@@ -1,4 +1,4 @@
-package fr.epita.assistants.myide.domain;
+package fr.epita.assistants.myide.domain.node;
 
 import fr.epita.assistants.myide.domain.entity.Node;
 
