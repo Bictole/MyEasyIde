@@ -35,13 +35,12 @@ public class FolderNode implements Node {
     }
 
     public boolean search(String str) throws FileNotFoundException {
-        boolean ret = true;
         for (var child : children) {
-            if (child.isFolder())
-                ret &= ((FolderNode)child).search(str);
-            else
-                ret &= ((FileNode)child).search(str);
+            if (child.isFolder() && ((FolderNode)child).search(str))
+                return true;
+            else if (child.isFile() && ((FileNode)child).search(str))
+                return true;
         }
-        return ret;
+        return false;
     }
 }
