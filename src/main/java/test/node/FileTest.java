@@ -1,6 +1,8 @@
+package test.node;
+
 import fr.epita.assistants.myide.domain.entity.Node;
-import fr.epita.assistants.myide.domain.node.FileNode;
-import org.junit.jupiter.api.Test;
+import fr.epita.assistants.ping.node.FileNode;
+import org.junit.Test;
 
 import java.nio.file.Path;
 import java.util.Collections;
