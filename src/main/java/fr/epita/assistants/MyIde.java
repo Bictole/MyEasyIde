@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping;
+package fr.epita.assistants;
 
 import fr.epita.assistants.myide.domain.service.ProjectService;
 import fr.epita.assistants.ping.service.ProjectManager;

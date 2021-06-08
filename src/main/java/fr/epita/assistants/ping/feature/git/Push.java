@@ -4,6 +4,7 @@ import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,10 +46,10 @@ public class Push implements Feature {
         }
     }
 
-    private Push.ExecutionReportPush pull(Project project) throws IOException {
+    private Push.ExecutionReportPush pull(Project project) throws IOException, GitAPIException {
         Git git = Git.open(new File(String.valueOf(project.getRootNode().getPath())));
 
-        git.push();
+        git.push().call();
         return new Push.ExecutionReportPush();
     }
 
