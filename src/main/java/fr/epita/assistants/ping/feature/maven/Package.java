@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.feature.maven;
 
 import fr.epita.assistants.myide.domain.entity.Feature;
+import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
 
 public class Package implements Feature {
@@ -11,6 +12,6 @@ public class Package implements Feature {
 
     @Override
     public Type type() {
-        return null;
+        return Mandatory.Features.Maven.PACKAGE;
     }
 }

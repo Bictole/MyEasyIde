@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.feature.maven;
 
 import fr.epita.assistants.myide.domain.entity.Feature;
+import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
 import org.apache.maven.DefaultMaven;
 import org.apache.maven.Maven;
@@ -22,6 +23,6 @@ public class Clean implements Feature {
 
     @Override
     public Type type() {
-        return null;
+        return Mandatory.Features.Maven.CLEAN;
     }
 }
