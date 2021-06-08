@@ -1,4 +1,4 @@
-package fr.epita.assistants.myide.domain.node;
+package fr.epita.assistants.ping.node;
 
 import fr.epita.assistants.myide.domain.entity.Node;
 
@@ -32,6 +32,11 @@ public class FolderNode implements Node {
     @Override
     public List<Node> getChildren() {
         return children;
+    }
+
+    public void addChildren(Node child)
+    {
+        children.add(child);
     }
 
     public boolean search(String str) throws FileNotFoundException {

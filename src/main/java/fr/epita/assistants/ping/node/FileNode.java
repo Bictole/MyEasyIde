@@ -1,8 +1,7 @@
-package fr.epita.assistants.myide.domain.node;
+package fr.epita.assistants.ping.node;
 
 import fr.epita.assistants.myide.domain.entity.Node;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.Collections;
