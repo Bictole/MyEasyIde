@@ -6,7 +6,6 @@ import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
 
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -14,12 +13,12 @@ import java.util.Set;
 public class AnyProject implements Project {
 
     private final Node rootNode;
-    private final Set<Aspect> aspects = new HashSet<>();
+    private final Set<Aspect> aspects;
 
     public AnyProject(Node root, Set<Aspect> aspects)
     {
         rootNode = root;
-        aspects = aspects;
+        this.aspects = aspects;
     }
 
     @Override
