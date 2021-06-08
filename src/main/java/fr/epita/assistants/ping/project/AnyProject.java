@@ -4,20 +4,22 @@ import fr.epita.assistants.myide.domain.entity.Aspect;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
-import fr.epita.assistants.ping.aspect.AnyAspect;
 
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class AnyProject implements Project {
 
     private final Node rootNode;
     private final Set<Aspect> aspects = new HashSet<>();
 
-    public AnyProject(Node root)
+    public AnyProject(Node root, Set<Aspect> aspects)
     {
         rootNode = root;
-        aspects.add(new AnyAspect());
+        aspects = aspects;
     }
 
     @Override
@@ -35,8 +37,10 @@ public class AnyProject implements Project {
         List<Feature> features = this.getFeatures();
         for (Feature f : features)
         {
-            if (f.type() == featureType)
+            if (f.type().equals(featureType))
+            {
                 return Optional.of(f);
+            }
         }
         return Optional.empty();
     }

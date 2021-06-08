@@ -3,6 +3,8 @@ package fr.epita.assistants.ping.aspect;
 import fr.epita.assistants.myide.domain.entity.Aspect;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
+import fr.epita.assistants.ping.feature.any.CleanUp;
+import fr.epita.assistants.ping.feature.any.Dist;
 import fr.epita.assistants.ping.feature.any.Search;
 
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ public class AnyAspect implements Aspect {
 
     public AnyAspect() {
         featureList.add(new Search());
+        featureList.add(new Dist());
+        featureList.add(new CleanUp());
     }
 
     @Override

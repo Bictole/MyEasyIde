@@ -19,7 +19,8 @@ public class Search implements Feature {
 
         public ExecutionReportSearch(Optional<Path> path) {
             success = path.isPresent();
-            fileFound = path.get();
+            if (success)
+                fileFound = path.get();
             if (!success)
                 errorMessage = "No such expression found";
         }
@@ -47,9 +48,8 @@ public class Search implements Feature {
     public ExecutionReport execute(Project project, Object... param) {
         if (param.length > 1)
             return new ExecutionReportSearch("Too much string provided");
-
         try {
-            String research = String.valueOf(param);
+            String research = String.valueOf(param[0]);
             Optional<Path> found = search(project.getRootNode(), research);
             return new ExecutionReportSearch(found);
         } catch (FileNotFoundException f) {
@@ -67,7 +67,6 @@ public class Search implements Feature {
                 if (s.isPresent())
                     return s;
             }
-
             else if (child.isFile() && this.scan_file(child, research).isPresent())
                 return Optional.of(child.getPath());
         }

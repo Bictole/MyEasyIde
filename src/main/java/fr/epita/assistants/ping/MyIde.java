@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping;
 
 import fr.epita.assistants.myide.domain.service.ProjectService;
+import fr.epita.assistants.ping.service.ProjectManager;
 import fr.epita.assistants.utils.Given;
 
 import java.nio.file.Path;
@@ -18,7 +19,7 @@ public class MyIde {
      * @return An implementation of {@link ProjectService}.
      */
     public static ProjectService init(final Configuration configuration) {
-        throw new UnsupportedOperationException("FIXME");
+        return new ProjectManager();
     }
 
     /**
