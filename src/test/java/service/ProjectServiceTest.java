@@ -1,5 +1,6 @@
 package service;
 
+import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.ping.service.ProjectManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,4 +47,35 @@ public class ProjectServiceTest {
         assertEquals(false, project.getRootNode().getChildren().get(1).getChildren().get(0).isFolder());
         assertEquals(false, project.getRootNode().getChildren().get(0).isFolder());
     }
+
+    @Test
+    public void GitProjectTest()
+    {
+        Project project = projectManager.load(Path.of("ProjectTests/GitProject"));
+        assertEquals(1, project.getRootNode().getChildren().size());
+        assertEquals(Paths.get("ProjectTests/GitProject"), project.getRootNode().getPath());
+        assertEquals(true, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.ANY)));
+        assertEquals(true, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.GIT)));
+    }
+
+    @Test
+    public void MavenProjectTest()
+    {
+        Project project = projectManager.load(Path.of("ProjectTests/MavenProject"));
+        assertEquals(1, project.getRootNode().getChildren().size());
+        assertEquals(Paths.get("ProjectTests/MavenProject"), project.getRootNode().getPath());
+        assertEquals(true, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.ANY)));
+        assertEquals(true, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.MAVEN)));
+    }
+    @Test
+    public void GitMavenProjectTest()
+    {
+        Project project = projectManager.load(Path.of("ProjectTests/GitMavenProject"));
+        assertEquals(2, project.getRootNode().getChildren().size());
+        assertEquals(Paths.get("ProjectTests/GitMavenProject"), project.getRootNode().getPath());
+        assertEquals(true, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.ANY)));
+        assertEquals(true, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.MAVEN)));
+        assertEquals(true, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.GIT)));
+    }
+
 }

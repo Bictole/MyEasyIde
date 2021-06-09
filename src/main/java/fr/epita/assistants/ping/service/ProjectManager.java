@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -33,8 +34,7 @@ public class ProjectManager implements ProjectService {
         if (r.isDirectory()) {
             FolderNode folderNode = new FolderNode(root);
             try (Stream<Path> paths = Files.list(root)) {
-                for (var p : paths.toList())
-                {
+                for (var p : paths.toList()) {
                     folderNode.addChildren(createNodes(p));
                 }
                 return folderNode;
@@ -46,18 +46,41 @@ public class ProjectManager implements ProjectService {
         return new FileNode(root);
     }
 
+    private void findAspects(Node rootNode, Set<Aspect> aspects) {
+        if (aspects.contains(MavenAspect.class) && aspects.contains(GitAspect.class))
+            return;
+
+        if (!rootNode.getChildren().isEmpty()) {
+            for (var child : rootNode.getChildren()) {
+                findAspects(child, aspects);
+            }
+        }
+        System.out.println(rootNode.getPath());
+        if (rootNode.isFile() && rootNode.getPath().toString().endsWith("/pom.xml")) {
+            if (!aspects.contains(MavenAspect.class)) {
+                aspects.add(new MavenAspect());
+            }
+        }
+        if (rootNode.isFolder() && rootNode.getPath().toString().endsWith("/.git")) {
+            if (!aspects.contains(GitAspect.class)) {
+                aspects.add(new GitAspect());
+            }
+        }
+    }
+
     @Override
     public Project load(Path root) {
-        Node root_node = createNodes(root);
-        Set<Aspect> aspects = Set.of(new AnyAspect(), new GitAspect(), new MavenAspect());
-        return new AnyProject(root_node, aspects);
+        Node rootNode = createNodes(root);
+        Set<Aspect> aspects = new HashSet<>();
+        aspects.add(new AnyAspect());
+        findAspects(rootNode, aspects);
+        return new AnyProject(rootNode, aspects);
     }
 
     @Override
     public Feature.ExecutionReport execute(Project project, Feature.Type featureType, Object... params) {
         Optional<Feature> f = project.getFeature(featureType);
-        if (f.isPresent())
-        {
+        if (f.isPresent()) {
             return f.get().execute(project, params);
         }
         return null;

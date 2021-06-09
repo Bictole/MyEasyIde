@@ -3,3 +3,4 @@ target/
 ping-ref.iml
 pom.xml
 ProjectTests/GitProject
+ProjectTests/GitMavenProject

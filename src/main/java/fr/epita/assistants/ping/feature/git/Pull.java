@@ -50,8 +50,17 @@ public class Pull implements Feature {
     private Pull.ExecutionReportPull pull(Project project) throws IOException, GitAPIException {
         Git git = Git.open(new File(String.valueOf(project.getRootNode().getPath())));
 
-        git.pull().call();
-        return new Pull.ExecutionReportPull();
+        var result = git.pull()
+                .setRemote("origin")
+                .setRemoteBranchName("master")
+                .call();
+
+        if (result.isSuccessful()) {
+            return new Pull.ExecutionReportPull();
+        } else {
+            return new Pull.ExecutionReportPull("Pull failed : " + result.toString());
+        }
+
     }
 
     @Override

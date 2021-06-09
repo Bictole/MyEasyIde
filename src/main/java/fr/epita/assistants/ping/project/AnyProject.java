@@ -4,6 +4,7 @@ import fr.epita.assistants.myide.domain.entity.Aspect;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
+import org.eclipse.jgit.api.Git;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -14,6 +15,7 @@ public class AnyProject implements Project {
 
     private final Node rootNode;
     private final Set<Aspect> aspects;
+    public Git git = null;
 
     public AnyProject(Node root, Set<Aspect> aspects)
     {
