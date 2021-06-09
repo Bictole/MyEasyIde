@@ -12,10 +12,20 @@ public class FileNode implements Node {
 
     private final Path path;
     private final Type type;
+    private Node parent;
 
     public FileNode(Path path) {
         this.path = path;
         this.type = Types.FILE;
+        this.parent = null;
+    }
+
+    public Node getParent() {
+        return parent;
+    }
+
+    public void setParent(Node parent){
+        parent = parent;
     }
 
     @Override

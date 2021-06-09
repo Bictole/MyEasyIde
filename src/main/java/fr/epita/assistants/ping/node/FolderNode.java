@@ -12,13 +12,22 @@ public class FolderNode implements Node {
     private final Path path;
     private final Type type;
     private final List<Node> children;
+    private Node parent;
 
     public FolderNode(Path path) {
         this.path = path;
         this.type = Types.FOLDER;
         this.children = new ArrayList<>();
+        this.parent = null;
     }
 
+    public Node getParent() {
+        return parent;
+    }
+
+    public void setParent(Node parent){
+        parent = parent;
+    }
     @Override
     public Path getPath() {
         return path;
@@ -37,6 +46,14 @@ public class FolderNode implements Node {
     public void addChildren(Node child)
     {
         children.add(child);
+    }
+
+    public boolean removeChild(Node child) {
+        return children.remove(child);
+    }
+
+    public boolean isEmpty() {
+        return children.isEmpty();
     }
 
     public boolean search(String str) throws FileNotFoundException {
