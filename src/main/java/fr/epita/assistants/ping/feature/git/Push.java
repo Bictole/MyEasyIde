@@ -5,7 +5,11 @@ import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.ping.project.AnyProject;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.PushCommand;
+import org.eclipse.jgit.api.RemoteAddCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.transport.URIish;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +51,18 @@ public class Push implements Feature {
     private Push.ExecutionReportPush pull(AnyProject project) throws IOException, GitAPIException {
         Git git = project.getgit();
         try {
-            git.push().setRemote("origin").add("master").call();
+            RemoteAddCommand remoteAddCommand = git.remoteAdd();
+            remoteAddCommand.setName("origin");
+            Repository repository = git.getRepository();
+            String url = repository.getConfig().getString("remote", "origin", "url");
+            remoteAddCommand.setUri(new URIish(url));
+            remoteAddCommand.call();
+
+            // git push -u origin master
+            PushCommand pushCommand = git.push();
+            pushCommand.add("master");
+            pushCommand.setRemote("origin");
+            pushCommand.call();
             return new Push.ExecutionReportPush();
         }
         catch (Exception e)
