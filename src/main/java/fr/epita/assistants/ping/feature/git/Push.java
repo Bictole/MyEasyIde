@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.feature.git;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.project.AnyProject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
@@ -35,22 +36,24 @@ public class Push implements Feature {
 
     @Override
     public ExecutionReport execute(Project project, Object... params) {
-        if (params.length <= 0)
-            return new Push.ExecutionReportPush("Execution need arguments to add -> jgit add error");
-
         try {
-            return pull(project);
+            return pull((AnyProject) project);
         } catch (Exception e) {
             e.printStackTrace();
             return new Push.ExecutionReportPush("Error when execution -> jgit add error");
         }
     }
 
-    private Push.ExecutionReportPush pull(Project project) throws IOException, GitAPIException {
-        Git git = Git.open(new File(String.valueOf(project.getRootNode().getPath())));
-
-        git.push().call();
-        return new Push.ExecutionReportPush();
+    private Push.ExecutionReportPush pull(AnyProject project) throws IOException, GitAPIException {
+        Git git = project.getgit();
+        try {
+            git.push().setRemote("origin").add("master").call();
+            return new Push.ExecutionReportPush();
+        }
+        catch (Exception e)
+        {
+            return new Push.ExecutionReportPush("Push failed : "+ e.getMessage());
+        }
     }
 
 
