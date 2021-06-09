@@ -13,7 +13,6 @@ import fr.epita.assistants.ping.node.FileNode;
 import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.project.AnyProject;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,23 +26,26 @@ public class ProjectManager implements ProjectService {
     private NodeService nodeService;
 
     public ProjectManager() {
+        nodeService = new NodeManager();
     }
 
-    private Node createNodes(Path root) {
-        File r = root.toFile();
-        if (r.isDirectory()) {
-            FolderNode folderNode = new FolderNode(root);
-            try (Stream<Path> paths = Files.list(root)) {
+    private void initNodes(Node root) {
+        if (root.isFolder()) {
+            try (Stream<Path> paths = Files.list(root.getPath())) {
                 for (var p : paths.toList()) {
-                    folderNode.addChildren(createNodes(p));
+                    Node node = null;
+                    if (p.toFile().isDirectory())
+                    {
+                        node = new FolderNode(p, root);
+                        initNodes(node);
+                    }
+                    else
+                        node = new FileNode(p, root);
                 }
-                return folderNode;
             } catch (IOException e) {
                 e.printStackTrace();
-                return null;
             }
         }
-        return new FileNode(root);
     }
 
     private void findAspects(Node rootNode, Set<Aspect> aspects) {
@@ -55,7 +57,6 @@ public class ProjectManager implements ProjectService {
                 findAspects(child, aspects);
             }
         }
-        System.out.println(rootNode.getPath());
         if (rootNode.isFile() && rootNode.getPath().toString().endsWith("/pom.xml")) {
             if (!aspects.contains(MavenAspect.class)) {
                 aspects.add(new MavenAspect());
@@ -70,7 +71,13 @@ public class ProjectManager implements ProjectService {
 
     @Override
     public Project load(Path root) {
-        Node rootNode = createNodes(root);
+        if (!root.toFile().isDirectory())
+        {
+            System.err.println("Root is not a folder");
+            return null;
+        }
+        Node rootNode = new FolderNode(root, null);
+        initNodes(rootNode);
         Set<Aspect> aspects = new HashSet<>();
         aspects.add(new AnyAspect());
         findAspects(rootNode, aspects);
