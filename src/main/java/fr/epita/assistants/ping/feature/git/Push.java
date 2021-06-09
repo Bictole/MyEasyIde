@@ -53,6 +53,7 @@ public class Push implements Feature {
         return new Push.ExecutionReportPush();
     }
 
+
     @Override
     public Type type() {
         return Mandatory.Features.Git.PUSH;
