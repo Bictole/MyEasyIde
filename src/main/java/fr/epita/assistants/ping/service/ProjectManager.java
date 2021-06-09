@@ -36,12 +36,11 @@ public class ProjectManager implements ProjectService {
                     Node node = null;
                     if (p.toFile().isDirectory())
                     {
-                        node = new FolderNode(p);
+                        node = new FolderNode(p, root);
                         initNodes(node);
                     }
                     else
-                        node = new FileNode(p);
-                    ((FolderNode)root).addChildren(node);
+                        node = new FileNode(p, root);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -77,7 +76,7 @@ public class ProjectManager implements ProjectService {
             System.err.println("Root is not a folder");
             return null;
         }
-        Node rootNode = new FolderNode(root);
+        Node rootNode = new FolderNode(root, null);
         initNodes(rootNode);
         Set<Aspect> aspects = new HashSet<>();
         aspects.add(new AnyAspect());

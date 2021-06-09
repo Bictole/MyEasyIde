@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class FileTest {
 
     private Path path = Path.of("ProjectTests/EmptyFolder");
-    private FileNode file = new FileNode(path);
+    private FileNode file = new FileNode(path, null);
 
     @Test
     void getPathValid() {

@@ -14,11 +14,12 @@ public class FolderNode implements Node {
     private final List<Node> children;
     private Node parent;
 
-    public FolderNode(Path path) {
+    public FolderNode(Path path, Node parent) {
         this.path = path;
         this.type = Types.FOLDER;
         this.children = new ArrayList<>();
-        this.parent = null;
+        if (parent != null)
+            setParent(parent);
     }
 
     public Node getParent() {
@@ -26,7 +27,8 @@ public class FolderNode implements Node {
     }
 
     public void setParent(Node parent){
-        parent = parent;
+        ((FolderNode)parent).addChildren(this);
+        this.parent = parent;
     }
     @Override
     public Path getPath() {

@@ -12,12 +12,13 @@ public class FileNode implements Node {
 
     private final Path path;
     private final Type type;
-    private Node parent;
+    private Node parent = null;
 
-    public FileNode(Path path) {
+    public FileNode(Path path, Node parent) {
         this.path = path;
         this.type = Types.FILE;
-        this.parent = null;
+        if (parent != null)
+            setParent(parent);
     }
 
     public Node getParent() {
@@ -25,7 +26,8 @@ public class FileNode implements Node {
     }
 
     public void setParent(Node parent){
-        parent = parent;
+        ((FolderNode)parent).addChildren(this);
+        this.parent = parent;
     }
 
     @Override
