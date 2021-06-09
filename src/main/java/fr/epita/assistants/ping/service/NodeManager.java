@@ -17,7 +17,7 @@ public class NodeManager implements NodeService {
 
     @Override
     public Node update(Node node, int from, int to, byte[] insertedContent) {
-        if (node.isFolder()) {
+        if (node.isFolder() || from >= to) {
             System.out.println("Can't update a folder");
             return null;
         }

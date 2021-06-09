@@ -67,6 +67,17 @@ public class ProjectServiceTest {
         assertEquals(true, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.ANY)));
         assertEquals(true, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.MAVEN)));
     }
+
+    @Test
+    public void RawProjectWithPomTest()
+    {
+        Project project = projectManager.load(Path.of("ProjectTests/RawProjectWithPom"));
+        assertEquals(1, project.getRootNode().getChildren().size());
+        assertEquals(Paths.get("ProjectTests/RawProjectWithPom"), project.getRootNode().getPath());
+        assertEquals(true, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.ANY)));
+        assertEquals(false, project.getAspects().stream().anyMatch(aspect -> aspect.getType().equals(Mandatory.Aspects.MAVEN)));
+    }
+
     @Test
     public void GitMavenProjectTest()
     {

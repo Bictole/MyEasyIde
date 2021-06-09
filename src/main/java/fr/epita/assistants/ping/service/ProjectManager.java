@@ -34,12 +34,10 @@ public class ProjectManager implements ProjectService {
             try (Stream<Path> paths = Files.list(root.getPath())) {
                 for (var p : paths.toList()) {
                     Node node = null;
-                    if (p.toFile().isDirectory())
-                    {
+                    if (p.toFile().isDirectory()) {
                         node = new FolderNode(p, root);
                         initNodes(node);
-                    }
-                    else
+                    } else
                         node = new FileNode(p, root);
                 }
             } catch (IOException e) {
@@ -59,6 +57,17 @@ public class ProjectManager implements ProjectService {
         }
         if (rootNode.isFile() && rootNode.getPath().toString().endsWith("/pom.xml")) {
             if (!aspects.contains(MavenAspect.class)) {
+                try {
+                    var lines = Files.readAllLines(rootNode.getPath());
+                    for (var l : lines) {
+                        if (l.contains("maven")) {
+                            aspects.add(new MavenAspect());
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 aspects.add(new MavenAspect());
             }
         }
@@ -71,8 +80,7 @@ public class ProjectManager implements ProjectService {
 
     @Override
     public Project load(Path root) {
-        if (!root.toFile().isDirectory())
-        {
+        if (!root.toFile().isDirectory()) {
             System.err.println("Root is not a folder");
             return null;
         }

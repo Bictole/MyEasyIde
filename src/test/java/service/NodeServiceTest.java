@@ -109,6 +109,6 @@ public class NodeServiceTest {
     public void UpdateFileProject(){
         Project project = projectManager.load(Path.of("ProjectTests/UpdateProject"));
         Node foldernode = project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().get(0);
-        assertNotEquals(null, projectManager.getNodeService().update(foldernode, 0, 2, "Au secours".getBytes(StandardCharsets.UTF_8)));
+        assertNotEquals(null, projectManager.getNodeService().update(foldernode, 4, 6, "Au secours".getBytes(StandardCharsets.UTF_8)));
     }
 }
