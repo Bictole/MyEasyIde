@@ -9,11 +9,13 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class NodeServiceTest {
 
@@ -94,5 +96,19 @@ public class NodeServiceTest {
         assertEquals(1, project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().size());
         assertEquals(1, project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().size());
         assertEquals(true, destinationFolder.getChildren().get(0).isFolder());
+    }
+
+    @Test
+    public void UpdateFolderProject(){
+        Project project = projectManager.load(Path.of("ProjectTests/UpdateProject"));
+        Node foldernode = project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().get(0);
+        assertEquals(null, projectManager.getNodeService().update(foldernode, 0, 5, "aled".getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Test
+    public void UpdateFileProject(){
+        Project project = projectManager.load(Path.of("ProjectTests/UpdateProject"));
+        Node foldernode = project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().get(0);
+        assertNotEquals(null, projectManager.getNodeService().update(foldernode, 0, 2, "Au secours".getBytes(StandardCharsets.UTF_8)));
     }
 }

@@ -5,6 +5,7 @@ import fr.epita.assistants.myide.domain.service.NodeService;
 import fr.epita.assistants.ping.node.FileNode;
 import fr.epita.assistants.ping.node.FolderNode;
 
+import java.io.RandomAccessFile;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +17,21 @@ public class NodeManager implements NodeService {
 
     @Override
     public Node update(Node node, int from, int to, byte[] insertedContent) {
-        return null;
+        if (node.isFolder()) {
+            System.out.println("Can't update a folder");
+            return null;
+        }
+        try (RandomAccessFile accessFile = new RandomAccessFile(node.getPath().toFile(), "rw"))
+        {
+            accessFile.seek(from);
+            var len = to - from;
+            accessFile.write(insertedContent, 0, len);
+            accessFile.close();
+            return node;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public boolean deleteNode(Node node) {
@@ -24,14 +39,13 @@ public class NodeManager implements NodeService {
         if (node.isFile()) {
             // deletes from parent's children list
             FileNode file = (FileNode) node;
-            parent = ((FolderNode)file.getParent());
-        }
-        else {
+            parent = ((FolderNode) file.getParent());
+        } else {
             FolderNode folder = (FolderNode) node;
             if (!folder.isEmpty()) {
                 return false; // folder is not empty
             }
-            parent = (FolderNode)folder.getParent();
+            parent = (FolderNode) folder.getParent();
         }
         return parent.removeChild(node);
     }
@@ -43,26 +57,22 @@ public class NodeManager implements NodeService {
                 return false; // failed to remove node from parent
             // delete the actual file
             return node.getPath().toFile().delete();
-        }
-        else {
+        } else {
             FolderNode folder = (FolderNode) node;
             if (deleteNode(node)) {
                 return folder.getPath().toFile().delete();
-            }
-            else {
+            } else {
                 return false; // could not delete node
             }
         }
     }
 
     public Node createNode(Node folder, String name, Node.Type type) throws Exception {
-        if (type == Node.Types.FILE)
-        {
+        if (type == Node.Types.FILE) {
             FileNode file = new FileNode(Path.of(folder.getPath() + "/" + name), folder);
             return file;
         }
-        if (type == Node.Types.FOLDER)
-        {
+        if (type == Node.Types.FOLDER) {
             FolderNode new_folder = new FolderNode(Path.of(folder.getPath() + "/" + name), folder);
             return new_folder;
         }
@@ -71,8 +81,7 @@ public class NodeManager implements NodeService {
 
     @Override
     public Node create(Node folder, String name, Node.Type type) {
-        if (!folder.isFolder())
-        {
+        if (!folder.isFolder()) {
             System.err.println("Can't create a node from a file");
             return null;
         }
@@ -83,8 +92,7 @@ public class NodeManager implements NodeService {
             else
                 Files.createFile(Path.of(folder.getPath() + "/" + name));
             return n;
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -92,7 +100,7 @@ public class NodeManager implements NodeService {
 
     @Override
     public Node move(Node nodeToMove, Node destinationFolder) {
-        if (nodeToMove.isFile() || ((FolderNode)nodeToMove).isEmpty()) {
+        if (nodeToMove.isFile() || ((FolderNode) nodeToMove).isEmpty()) {
             String name = nodeToMove.getPath().toFile().getName();
             try {
                 Files.move(nodeToMove.getPath(), destinationFolder.getPath().resolve(name));
@@ -111,8 +119,7 @@ public class NodeManager implements NodeService {
             }
             deleteNode(nodeToMove);
             return ret;
-        }
-        else {
+        } else {
             return null; // cant move folder if not empty
         }
     }
