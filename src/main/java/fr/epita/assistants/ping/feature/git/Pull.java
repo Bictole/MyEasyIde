@@ -36,9 +36,6 @@ public class Pull implements Feature {
 
     @Override
     public ExecutionReport execute(Project project, Object... params) {
-        if (params.length <= 0)
-            return new Pull.ExecutionReportPull("Execution need arguments to add -> jgit add error");
-
         try {
             return pull(project);
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package fr.epita.assistants.ping.feature.git;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.project.AnyProject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
@@ -34,19 +35,19 @@ public class Commit implements Feature {
 
     @Override
     public ExecutionReport execute(Project project, Object... params) {
-        if (params.length <= 0)
-            return new Commit.ExecutionReportCommit("Execution need arguments to add -> jgit commit error");
-
         try {
-            return commit(project, params[0]);
+            var msg = "";
+            if (params.length > 0)
+                msg = (String) params[0];
+            return commit((AnyProject) project, msg);
         } catch (Exception e) {
             e.printStackTrace();
             return new Commit.ExecutionReportCommit("Error when execution -> jgit commit error");
         }
     }
 
-    private Commit.ExecutionReportCommit commit(Project project, Object msg) throws IOException, GitAPIException {
-        Git git = Git.open(new File(String.valueOf(project.getRootNode().getPath())));
+    private Commit.ExecutionReportCommit commit(AnyProject project, Object msg) throws IOException, GitAPIException {
+        Git git = project.getgit();
 
         git.commit().setMessage((String) msg).call();
 
