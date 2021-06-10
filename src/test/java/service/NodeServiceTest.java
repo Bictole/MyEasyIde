@@ -6,6 +6,7 @@ import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.node.FileNode;
 import fr.epita.assistants.ping.service.ProjectManager;
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -73,17 +74,20 @@ public class NodeServiceTest {
 
     @Test
     public void CreateFileTest() {
+        String name = "CreateFileTest.txt";
         Project project = projectManager.load(createPath);
-        projectManager.getNodeService().create(project.getRootNode(), "CreateFileTest.txt", Node.Types.FILE);
+        projectManager.getNodeService().create(project.getRootNode(), name, Node.Types.FILE);
         assertEquals(1, project.getRootNode().getChildren().size());
+        assertTrue(Files.exists(createPath.resolve(name)));
     }
 
     @Test
     public void CreateFolderTest() {
+        String name = "CreateFolder";
         Project project = projectManager.load(createPath);
-        projectManager.getNodeService().create(project.getRootNode(), "CreateFolder", Node.Types.FOLDER);
+        projectManager.getNodeService().create(project.getRootNode(), name, Node.Types.FOLDER);
         assertEquals(1, project.getRootNode().getChildren().size());
-        assertTrue(Files.exists(Path.of("ProjectTests/NodeManager/CreateProject/CreateFolder")));
+        assertTrue(Files.exists(createPath.resolve(name)));
     }
 
     @Test
