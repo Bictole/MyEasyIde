@@ -42,6 +42,7 @@ public class Test implements Feature {
         try {
             pb.directory(project.getRootNode().getPath().toFile());
             Process p = pb.start();
+
             return new Test.ExecutionReportTest();
         } catch (Exception e) {
             return new Test.ExecutionReportTest("Maven Test failed :" + e.getMessage());

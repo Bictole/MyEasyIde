@@ -42,6 +42,7 @@ public class Compile implements Feature {
         try {
             pb.directory(project.getRootNode().getPath().toFile());
             Process p = pb.start();
+
             return new Compile.ExecutionReportCompile();
         }
         catch (Exception e)

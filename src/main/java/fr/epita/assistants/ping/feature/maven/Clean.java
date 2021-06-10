@@ -39,6 +39,7 @@ public class Clean implements Feature {
             return new ExecutionReportClean();
 
         } catch (Exception e) {
+
             return new ExecutionReportClean("Maven Clean failed :" + e.getMessage());
         }
     }
