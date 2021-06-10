@@ -36,13 +36,11 @@ public class Tree implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
+        ProcessBuilder pb = new ProcessBuilder("mvn", "tree");
 
         try {
-            DefaultMaven mvn = new DefaultMaven();
-            DefaultMavenExecutionRequest request = new DefaultMavenExecutionRequest();
-            request.setBaseDirectory(project.getRootNode().getPath().toFile());
-            request.setGoals(Arrays.asList("tree"));
-            mvn.execute(request);
+            pb.directory(project.getRootNode().getPath().toFile());
+            Process p = pb.start();
             return new Tree.ExecutionReportTree();
         }
         catch (Exception e)

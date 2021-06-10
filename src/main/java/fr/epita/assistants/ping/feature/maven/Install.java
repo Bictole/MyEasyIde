@@ -36,13 +36,11 @@ public class Install implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
+        ProcessBuilder pb = new ProcessBuilder("mvn", "install");
 
         try {
-            DefaultMaven mvn = new DefaultMaven();
-            DefaultMavenExecutionRequest request = new DefaultMavenExecutionRequest();
-            request.setBaseDirectory(project.getRootNode().getPath().toFile());
-            request.setGoals(Arrays.asList("install"));
-            mvn.execute(request);
+            pb.directory(project.getRootNode().getPath().toFile());
+            Process p = pb.start();
             return new Install.ExecutionReportInstall();
         }
         catch (Exception e)
