@@ -4,6 +4,7 @@ import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.node.FileNode;
+import fr.epita.assistants.ping.service.NodeManager;
 import fr.epita.assistants.ping.service.ProjectManager;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
@@ -89,6 +90,23 @@ public class NodeServiceTest {
     }
 
     @Test
+    public void GetFolderTest() {
+        String name = "CreateFolder";
+        Project project = projectManager.load(createPath);
+        Node created = projectManager.getNodeService().create(project.getRootNode(), name, Node.Types.FOLDER);
+        Node get = ((NodeManager) projectManager.getNodeService()).getFromSource(project.getRootNode(), createPath.resolve(name));
+        assertEquals(created, get);
+    }
+
+    @Test
+    public void GetNotExistingFolderTest() {
+        String name = "CreateFolder";
+        Project project = projectManager.load(createPath);
+        Node get = ((NodeManager) projectManager.getNodeService()).getFromSource(project.getRootNode(), Path.of("/Wrong/path"));
+        assertEquals(null, get);
+    }
+
+    @Test
     public void DeleteFileProject() throws IOException {
         String name = "ToDeleteFile.txt";
         makeFile(deletePath.resolve(name));
@@ -121,7 +139,7 @@ public class NodeServiceTest {
                 .filter(node -> node.isFolder() && node.getPath().toFile().getName().equals("DestinationFolder")).toList().get(0);
         projectManager.getNodeService().move(file, destinationFolder);
         assertEquals(2, project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().size());
-        assertEquals(true, destinationFolder.getChildren().get(0).isFile());
+        assertTrue(destinationFolder.getChildren().get(0).isFile());
     }
 
     @Test

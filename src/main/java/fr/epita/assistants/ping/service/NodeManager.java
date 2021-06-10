@@ -123,4 +123,15 @@ public class NodeManager implements NodeService {
             return null; // cant move folder if not empty
         }
     }
+
+    public Node getFromSource(Node source, Path path) {
+        for (Node child : source.getChildren()) {
+            if (path.equals(child.getPath()))
+                return child;
+            if (path.startsWith(child.getPath())) {
+                return this.getFromSource(child, path);
+            }
+        }
+        return null;
+    }
 }
