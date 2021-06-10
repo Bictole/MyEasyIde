@@ -36,7 +36,7 @@ public class Tree implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "tree");
+        ProcessBuilder pb = new ProcessBuilder("mvn", "dependency:tree", "-Doutput=" + params[0]);
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());

@@ -30,7 +30,7 @@ public class CompileTest {
 
     @Test
     public void BaseTest() {
-        Feature.ExecutionReport report = project.getFeature(Mandatory.Features.Maven.COMPILE).get().execute(project);
+        Feature.ExecutionReport report = project.getFeature(Mandatory.Features.Maven.COMPILE).get().execute(project, "aled");
         assertEquals(true, report.isSuccess());
     }
 }
