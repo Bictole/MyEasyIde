@@ -41,6 +41,7 @@ public class Tree implements Feature {
         try {
             pb.directory(project.getRootNode().getPath().toFile());
             Process p = pb.start();
+
             return new Tree.ExecutionReportTree();
         }
         catch (Exception e)
