@@ -38,8 +38,8 @@ public class Install implements Feature {
     public Feature.ExecutionReport execute(Project project, Object... params) {
 
         try {
-            Maven mvn = new DefaultMaven();
-            MavenExecutionRequest request = new DefaultMavenExecutionRequest();
+            DefaultMaven mvn = new DefaultMaven();
+            DefaultMavenExecutionRequest request = new DefaultMavenExecutionRequest();
             request.setBaseDirectory(project.getRootNode().getPath().toFile());
             request.setGoals(Arrays.asList("install"));
             mvn.execute(request);
