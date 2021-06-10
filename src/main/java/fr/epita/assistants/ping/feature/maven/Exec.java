@@ -38,8 +38,8 @@ public class Exec implements Feature {
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
         try {
-            Maven mvn = new DefaultMaven();
-            MavenExecutionRequest request = new DefaultMavenExecutionRequest();
+            DefaultMaven mvn = new DefaultMaven();
+            DefaultMavenExecutionRequest request = new DefaultMavenExecutionRequest();
             request.setBaseDirectory(project.getRootNode().getPath().toFile());
             request.setGoals(Arrays.asList("exec"));
             mvn.execute(request);
