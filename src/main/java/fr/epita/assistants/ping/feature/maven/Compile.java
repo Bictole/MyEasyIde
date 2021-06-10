@@ -37,7 +37,7 @@ public class Compile implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "-DbuildDirectory=" + params[0]);
+        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "-DbuildDirectory=target");
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
