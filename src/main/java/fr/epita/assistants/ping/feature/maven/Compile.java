@@ -37,12 +37,11 @@ public class Compile implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
+        ProcessBuilder pb = new ProcessBuilder("mvn", "compile");
+
         try {
-            DefaultMaven mvn = new DefaultMaven();
-            DefaultMavenExecutionRequest request = new DefaultMavenExecutionRequest();
-            request.setBaseDirectory(project.getRootNode().getPath().toFile());
-            request.setGoals(Arrays.asList("compile"));
-            mvn.execute(request);
+            pb.directory(project.getRootNode().getPath().toFile());
+            Process p = pb.start();
             return new Compile.ExecutionReportCompile();
         }
         catch (Exception e)

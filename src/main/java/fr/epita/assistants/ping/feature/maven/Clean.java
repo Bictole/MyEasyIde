@@ -3,13 +3,6 @@ package fr.epita.assistants.ping.feature.maven;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
-import org.apache.maven.DefaultMaven;
-import org.apache.maven.Maven;
-import org.apache.maven.execution.DefaultMavenExecutionRequest;
-import org.apache.maven.execution.MavenExecutionRequest;
-
-import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
 
 public class Clean implements Feature {
 
@@ -38,15 +31,14 @@ public class Clean implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
+        ProcessBuilder pb = new ProcessBuilder("mvn", "clean");
+
         try {
-            DefaultMaven mvn = new DefaultMaven();
-            DefaultMavenExecutionRequest request = new DefaultMavenExecutionRequest();
-            request.setGoals(Arrays.asList("clean"));
-            mvn.execute(request);
+            pb.directory(project.getRootNode().getPath().toFile());
+            Process p = pb.start();
             return new ExecutionReportClean();
-        }
-        catch (Exception e)
-        {
+
+        } catch (Exception e) {
             return new ExecutionReportClean("Maven Clean failed :" + e.getMessage());
         }
     }
