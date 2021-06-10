@@ -41,7 +41,6 @@ public class Clean implements Feature {
         try {
             DefaultMaven mvn = new DefaultMaven();
             DefaultMavenExecutionRequest request = new DefaultMavenExecutionRequest();
-            request.setBaseDirectory(project.getRootNode().getPath().toFile());
             request.setGoals(Arrays.asList("clean"));
             mvn.execute(request);
             return new ExecutionReportClean();
