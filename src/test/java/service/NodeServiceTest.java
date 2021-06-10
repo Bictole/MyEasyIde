@@ -49,8 +49,6 @@ public class NodeServiceTest {
 
             deletePath = Path.of("ProjectTests/NodeManager/DeleteProject");
             makeDirectory(deletePath);
-            makeDirectory(deletePath.resolve("ToDeleteFolder"));
-            makeFile(deletePath.resolve("ToDeleteFile.txt"));
 
 
             movePath = Path.of("ProjectTests/NodeManager/MoveProject");
@@ -91,20 +89,26 @@ public class NodeServiceTest {
     }
 
     @Test
-    public void DeleteFileProject() {
+    public void DeleteFileProject() throws IOException {
+        String name = "ToDeleteFile.txt";
+        makeFile(deletePath.resolve(name));
         Project project = projectManager.load(deletePath);
         assertEquals(1, project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().size());
         projectManager.getNodeService().delete(project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().get(0));
         assertEquals(0, project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().size());
+        assertTrue(Files.notExists(deletePath.resolve(name)));
     }
 
     @Test
-    public void DeleteFolderProject() {
+    public void DeleteFolderProject() throws IOException {
+        String name = "ToDeleteFolder";
+        makeDirectory(deletePath.resolve(name));
         Project project = projectManager.load(deletePath);
 
         assertEquals(1, project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().size());
         projectManager.getNodeService().delete(project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().get(0));
         assertEquals(0, project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().size());
+        assertTrue(Files.notExists(deletePath.resolve(name)));
     }
 
     @Test
