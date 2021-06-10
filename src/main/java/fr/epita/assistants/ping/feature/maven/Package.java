@@ -41,6 +41,7 @@ public class Package implements Feature {
         try {
             pb.directory(project.getRootNode().getPath().toFile());
             Process p = pb.start();
+
             return new Package.ExecutionReportPackage();
         } catch (Exception e) {
             return new Package.ExecutionReportPackage("Maven Package failed :" + e.getMessage());
