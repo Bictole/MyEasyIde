@@ -36,12 +36,11 @@ public class Package implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
+        ProcessBuilder pb = new ProcessBuilder("mvn", "package");
+
         try {
-            DefaultMaven mvn = new DefaultMaven();
-            DefaultMavenExecutionRequest request = new DefaultMavenExecutionRequest();
-            request.setBaseDirectory(project.getRootNode().getPath().toFile());
-            request.setGoals(Arrays.asList("package"));
-            mvn.execute(request);
+            pb.directory(project.getRootNode().getPath().toFile());
+            Process p = pb.start();
             return new Package.ExecutionReportPackage();
         } catch (Exception e) {
             return new Package.ExecutionReportPackage("Maven Package failed :" + e.getMessage());

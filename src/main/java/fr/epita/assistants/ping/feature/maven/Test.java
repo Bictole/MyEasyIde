@@ -37,12 +37,11 @@ public class Test implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
+        ProcessBuilder pb = new ProcessBuilder("mvn", "test");
+
         try {
-            DefaultMaven mvn = new DefaultMaven();
-            DefaultMavenExecutionRequest request = new DefaultMavenExecutionRequest();
-            request.setBaseDirectory(project.getRootNode().getPath().toFile());
-            request.setGoals(Arrays.asList("test"));
-            mvn.execute(request);
+            pb.directory(project.getRootNode().getPath().toFile());
+            Process p = pb.start();
             return new Test.ExecutionReportTest();
         } catch (Exception e) {
             return new Test.ExecutionReportTest("Maven Test failed :" + e.getMessage());
