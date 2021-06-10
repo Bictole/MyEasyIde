@@ -15,7 +15,6 @@ public class AnyAspect implements Aspect {
     private List<Feature> featureList = new ArrayList<>();
 
     public AnyAspect() {
-
         featureList.add(new Search());
         featureList.add(new Dist());
         featureList.add(new CleanUp());
