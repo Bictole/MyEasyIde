@@ -47,33 +47,22 @@ public class ProjectManager implements ProjectService {
     }
 
     private void findAspects(Node rootNode, Set<Aspect> aspects) {
-        if (aspects.contains(MavenAspect.class) && aspects.contains(GitAspect.class))
-            return;
-
         if (!rootNode.getChildren().isEmpty()) {
             for (var child : rootNode.getChildren()) {
-                findAspects(child, aspects);
-            }
-        }
-        if (rootNode.isFile() && rootNode.getPath().toString().endsWith("/pom.xml")) {
-            if (!aspects.contains(MavenAspect.class)) {
-                try {
-                    var lines = Files.readAllLines(rootNode.getPath());
-                    for (var l : lines) {
-                        if (l.contains("maven")) {
-                            aspects.add(new MavenAspect());
-                            break;
-                        }
+                if (aspects.contains(MavenAspect.class) && aspects.contains(GitAspect.class))
+                    return;
+
+                if (child.isFile() && child.getPath().toString().endsWith("/pom.xml")) {
+                    if (!aspects.contains(MavenAspect.class)) {
+                        aspects.add(new MavenAspect());
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-                aspects.add(new MavenAspect());
-            }
-        }
-        if (rootNode.isFolder() && rootNode.getPath().toString().endsWith("/.git")) {
-            if (!aspects.contains(GitAspect.class)) {
-                aspects.add(new GitAspect());
+
+                if (child.isFolder() && child.getPath().toString().endsWith("/.git")) {
+                    if (!aspects.contains(GitAspect.class)) {
+                        aspects.add(new GitAspect());
+                    }
+                }
             }
         }
     }
