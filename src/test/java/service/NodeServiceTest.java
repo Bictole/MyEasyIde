@@ -15,23 +15,24 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NodeServiceTest {
 
     private ProjectManager projectManager;
+    private Path createPath;
+    private Path deletePath;
+    private Path movePath;
+    private Path updatePath;
 
-    private void makeDirectory(String str) throws IOException {
-        Path path = Path.of(str);
+    private void makeDirectory(Path path) throws IOException {
         if (Files.notExists(path))
             Files.createDirectory(path);
         else
             FileUtils.cleanDirectory(path.toFile());
     }
 
-    private void makeFile(String str) throws IOException {
-        Path path = Path.of(str);
+    private void makeFile(Path path) throws IOException {
         if (Files.notExists(path))
             Files.createFile(path);
     }
@@ -40,22 +41,28 @@ public class NodeServiceTest {
     public void setUp() {
         projectManager = new ProjectManager();
         try {
-            makeDirectory("ProjectTests/NodeManager");
+            makeDirectory(Path.of("ProjectTests/NodeManager"));
 
-            makeDirectory("ProjectTests/NodeManager/CreateProject");
+            createPath = Path.of("ProjectTests/NodeManager/CreateProject");
+            makeDirectory(createPath);
 
-            makeDirectory("ProjectTests/NodeManager/DeleteProject");
-            makeDirectory("ProjectTests/NodeManager/DeleteProject/ToDeleteFolder");
-            makeFile("ProjectTests/NodeManager/DeleteProject/ToDeleteFile.txt");
+            deletePath = Path.of("ProjectTests/NodeManager/DeleteProject");
+            makeDirectory(deletePath);
+            makeDirectory(deletePath.resolve("ToDeleteFolder"));
+            makeFile(deletePath.resolve("ToDeleteFile.txt"));
 
-            makeDirectory("ProjectTests/NodeManager/MoveProject");
-            makeDirectory("ProjectTests/NodeManager/MoveProject/DestinationFolder");
-            makeDirectory("ProjectTests/NodeManager/MoveProject/ToMoveFolder");
-            makeFile("ProjectTests/NodeManager/MoveProject/ToMoveFile.txt");
 
-            makeDirectory("ProjectTests/NodeManager/UpdateProject");
-            makeDirectory("ProjectTests/NodeManager/UpdateProject/Folder");
-            makeFile("ProjectTests/NodeManager/UpdateProject/File.txt");
+            movePath = Path.of("ProjectTests/NodeManager/MoveProject");
+            makeDirectory(movePath);
+            makeDirectory(movePath.resolve("DestinationFolder"));
+            makeDirectory(movePath.resolve("ToMoveFolder"));
+            makeFile(movePath.resolve("ToMoveFile.txt"));
+
+
+            updatePath = Path.of("ProjectTests/NodeManager/UpdateProject");
+            makeDirectory(updatePath);
+            makeDirectory(updatePath.resolve("Folder"));
+            makeFile(updatePath.resolve("File.txt"));
 
         } catch (FileAlreadyExistsException fe) {
 
@@ -66,21 +73,22 @@ public class NodeServiceTest {
 
     @Test
     public void CreateFileTest() {
-        Project project = projectManager.load(Path.of("ProjectTests/NodeManager/CreateProject"));
+        Project project = projectManager.load(createPath);
         projectManager.getNodeService().create(project.getRootNode(), "CreateFileTest.txt", Node.Types.FILE);
         assertEquals(1, project.getRootNode().getChildren().size());
     }
 
     @Test
     public void CreateFolderTest() {
-        Project project = projectManager.load(Path.of("ProjectTests/NodeManager/CreateProject"));
+        Project project = projectManager.load(createPath);
         projectManager.getNodeService().create(project.getRootNode(), "CreateFolder", Node.Types.FOLDER);
         assertEquals(1, project.getRootNode().getChildren().size());
+        assertTrue(Files.exists(Path.of("ProjectTests/NodeManager/CreateProject/CreateFolder")));
     }
 
     @Test
     public void DeleteFileProject() {
-        Project project = projectManager.load(Path.of("ProjectTests/NodeManager/DeleteProject"));
+        Project project = projectManager.load(deletePath);
         assertEquals(1, project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().size());
         projectManager.getNodeService().delete(project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().get(0));
         assertEquals(0, project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().size());
@@ -88,7 +96,7 @@ public class NodeServiceTest {
 
     @Test
     public void DeleteFolderProject() {
-        Project project = projectManager.load(Path.of("ProjectTests/NodeManager/DeleteProject"));
+        Project project = projectManager.load(deletePath);
 
         assertEquals(1, project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().size());
         projectManager.getNodeService().delete(project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().get(0));
@@ -97,7 +105,7 @@ public class NodeServiceTest {
 
     @Test
     public void MoveFileProject() {
-        Project project = projectManager.load(Path.of("ProjectTests/NodeManager/MoveProject"));
+        Project project = projectManager.load(movePath);
 
         assertEquals(3, project.getRootNode().getChildren().size());
         FileNode file = (FileNode)project.getRootNode().getChildren().stream().filter(node -> node.isFile() && node.getPath().toFile().getName().equals("ToMoveFile.txt")).toList().get(0);
@@ -110,7 +118,7 @@ public class NodeServiceTest {
 
     @Test
     public void MoveFolderProject() {
-        Project project = projectManager.load(Path.of("ProjectTests/NodeManager/MoveProject"));
+        Project project = projectManager.load(movePath);
         assertEquals(3, project.getRootNode().getChildren().size());
         FolderNode folderToMove = (FolderNode) project.getRootNode().getChildren().stream().filter(node -> node.isFolder() && node.getPath().toFile().getName().equals("ToMoveFolder")).toList().get(0);
         FolderNode destinationFolder = (FolderNode) project.getRootNode().getChildren().stream().filter(node -> node.isFolder() && node.getPath().toFile().getName().equals("DestinationFolder")).toList().get(0);
@@ -122,14 +130,14 @@ public class NodeServiceTest {
 
     @Test
     public void UpdateFolderProject(){
-        Project project = projectManager.load(Path.of("ProjectTests/NodeManager/UpdateProject"));
+        Project project = projectManager.load(updatePath);
         Node foldernode = project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().get(0);
         assertEquals(null, projectManager.getNodeService().update(foldernode, 0, 5, "aled".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
     public void UpdateFileProject(){
-        Project project = projectManager.load(Path.of("ProjectTests/NodeManager/UpdateProject"));
+        Project project = projectManager.load(updatePath);
         Node foldernode = project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().get(0);
         assertNotEquals(null, projectManager.getNodeService().update(foldernode, 4, 6, "Au secours".getBytes(StandardCharsets.UTF_8)));
     }
