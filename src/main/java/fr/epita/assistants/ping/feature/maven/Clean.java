@@ -9,16 +9,48 @@ import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
 
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 public class Clean implements Feature {
+
+    static class ExecutionReportClean implements Feature.ExecutionReport {
+        public final boolean success;
+        public String errorMessage = "";
+
+        public ExecutionReportClean() {
+            this.success = true;
+        }
+
+        public ExecutionReportClean(String errorMessage) {
+            this.success = false;
+            this.errorMessage = errorMessage;
+        }
+
+        @Override
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+    }
+
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        Maven mvn = new DefaultMaven();
-        MavenExecutionRequest request = new DefaultMavenExecutionRequest();
-        request.setBaseDirectory(project.getRootNode().getPath().toFile());
-        request.setGoals(Arrays.asList("clean"));
-        mvn.execute(request);
-        return null;
+        
+        try {
+            Maven mvn = new DefaultMaven();
+            MavenExecutionRequest request = new DefaultMavenExecutionRequest();
+            request.setBaseDirectory(project.getRootNode().getPath().toFile());
+            request.setGoals(Arrays.asList("clean"));
+            mvn.execute(request);
+            return new ExecutionReportClean();
+        }
+        catch (Exception e)
+        {
+            return new ExecutionReportClean("Maven Clean failed :" + e.getMessage());
+        }
     }
 
     @Override
