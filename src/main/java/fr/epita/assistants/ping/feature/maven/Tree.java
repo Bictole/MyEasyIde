@@ -39,12 +39,12 @@ public class Tree implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        /*try {
+        try {
             Files.createFile(Path.of(project.getRootNode().getPath() + "/" + params[0]));
         }
         catch (Exception e) {
             return new Tree.ExecutionReportTree("Maven Tree failed :" + e.getMessage());
-        }*/
+        }
 
         ProcessBuilder pb = new ProcessBuilder("mvn", "dependency:tree", "-Doutput=" + params[0]);
 
