@@ -39,12 +39,12 @@ public class Compile implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        try {
+        /*try {
             Files.createDirectory(Path.of(project.getRootNode().getPath() + "/target"));
         }
         catch (Exception e) {
             return new Compile.ExecutionReportCompile("Maven Compile failed :" + e.getMessage());
-        }
+        }*/
 
         ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "-DbuildDirectory=" + project.getRootNode().getPath() + "/" + "target/");
 
