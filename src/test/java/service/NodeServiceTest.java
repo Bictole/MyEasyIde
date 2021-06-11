@@ -207,6 +207,6 @@ public class NodeServiceTest {
         {
             e.printStackTrace();
         }
-        assertNotNull(projectManager.getNodeService().update(folderNode, 0, 10, "bruh".getBytes(StandardCharsets.UTF_8)));
+        assertNotNull(projectManager.getNodeService().update(folderNode, 2, 4, "bruh".getBytes(StandardCharsets.UTF_8)));
     }
 }

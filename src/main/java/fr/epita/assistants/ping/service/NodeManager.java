@@ -10,6 +10,7 @@ import org.assertj.core.internal.ByteArrays;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.RandomAccessFile;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -28,18 +29,23 @@ public class NodeManager implements NodeService {
 
     @Override
     public Node update(Node node, int from, int to, byte[] insertedContent) {
-        if (node.isFolder() || from >= to) {
+        if (node.isFolder()) {
             System.out.println("Can't update a folder");
             return null;
         }
-        try (RandomAccessFile accessFile = new RandomAccessFile(node.getPath().toFile(), "rw"))
+        try
         {
-            int len = (int) accessFile.length();
-            byte[] FileContent = FileUtils.readFileToByteArray(node.getPath().toFile());
-            accessFile.seek(from);
-            accessFile.write(insertedContent, 0, insertedContent.length);
-            accessFile.write(FileContent, to, len - to);
-            accessFile.close();
+            String FileContent = new String(FileUtils.readFileToByteArray(node.getPath().toFile()));
+            String insertContent = new String(insertedContent);
+            int len = FileContent.length();
+            String begin = FileContent.substring(0, from);
+            String end = "";
+            if (to < len)
+                end = FileContent.substring(to, len);
+            String new_content = begin + insertContent + end;
+            FileWriter writer = new FileWriter(node.getPath().toFile());
+            writer.write(new_content, 0, new_content.length());
+            writer.close();
             return node;
         } catch (Exception e) {
             e.printStackTrace();
