@@ -134,9 +134,13 @@ public class NodeServiceTest {
     public void DeleteFolderProject() {
         String name = "ToDeleteFolder";
         makeDirectory(deletePath.resolve(name));
+        makeFile(deletePath.resolve(name).resolve("ToDeleteFile"));
+        makeDirectory(deletePath.resolve(name).resolve("ToDeleteFolder2"));
+        makeFile(deletePath.resolve(name).resolve("ToDeleteFolder2").resolve("ToDeleteFile2"));
         Project project = projectManager.load(deletePath);
 
         assertEquals(1, project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().size());
+        assertEquals(2, project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().get(0).getChildren().size());
         projectManager.getNodeService().delete(project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().get(0));
         assertEquals(0, project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().size());
         assertTrue(Files.notExists(deletePath.resolve(name)));

@@ -56,8 +56,7 @@ public class NodeManager implements NodeService {
         return parent.removeChild(node);
     }
 
-    @Override
-    public boolean delete(Node node) {
+    public boolean olddelete(Node node) {
         if (node.isFile()) {
             if (!deleteNode(node))
                 return false; // failed to remove node from parent
@@ -73,13 +72,31 @@ public class NodeManager implements NodeService {
         }
     }
 
+    @Override
+    public boolean delete(Node node) {
+        if (node.isFile()) {
+            if (!deleteNode(node))
+                return false; // failed to remove node from parent
+            // delete the actual file
+            return node.getPath().toFile().delete();
+        } else {
+            for (int i = 0; i < node.getChildren().size();)
+                delete(node.getChildren().get(i));
+            if (deleteNode(node)) {
+                return node.getPath().toFile().delete();
+            } else {
+                return false; // could not delete node
+            }
+        }
+    }
+
     public Node createNode(Node folder, String name, Node.Type type) throws Exception {
         if (type == Node.Types.FILE) {
-            FileNode file = new FileNode(Path.of(folder.getPath() + "/" + name), folder);
+            FileNode file = new FileNode(folder.getPath().resolve(name), folder);
             return file;
         }
         if (type == Node.Types.FOLDER) {
-            FolderNode new_folder = new FolderNode(Path.of(folder.getPath() + "/" + name), folder);
+            FolderNode new_folder = new FolderNode(folder.getPath().resolve(name), folder);
             return new_folder;
         }
         throw new Exception("Unknown Type");
