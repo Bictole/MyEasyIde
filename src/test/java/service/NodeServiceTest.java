@@ -178,14 +178,14 @@ public class NodeServiceTest {
     @Test
     public void UpdateFolderProject() {
         Project project = projectManager.load(updatePath);
-        Node foldernode = project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().get(0);
-        assertNull(projectManager.getNodeService().update(foldernode, 0, 5, "aled".getBytes(StandardCharsets.UTF_8)));
+        Node folderNode = project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().get(0);
+        assertNull(projectManager.getNodeService().update(folderNode, 0, 5, "aled".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
     public void UpdateFileProject() {
         Project project = projectManager.load(updatePath);
-        Node foldernode = project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().get(0);
-        assertNotEquals(null, projectManager.getNodeService().update(foldernode, 4, 6, "Au secours".getBytes(StandardCharsets.UTF_8)));
+        Node folderNode = project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().get(0);
+        assertNotNull(projectManager.getNodeService().update(folderNode, 4, 6, "Au secours".getBytes(StandardCharsets.UTF_8)));
     }
 }
