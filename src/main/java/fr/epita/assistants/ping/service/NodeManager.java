@@ -1,10 +1,15 @@
 package fr.epita.assistants.ping.service;
 
+import com.fasterxml.jackson.core.util.ByteArrayBuilder;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.service.NodeService;
 import fr.epita.assistants.ping.node.FileNode;
 import fr.epita.assistants.ping.node.FolderNode;
+import org.apache.commons.io.FileUtils;
+import org.assertj.core.internal.ByteArrays;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -29,9 +34,11 @@ public class NodeManager implements NodeService {
         }
         try (RandomAccessFile accessFile = new RandomAccessFile(node.getPath().toFile(), "rw"))
         {
+            int len = (int) accessFile.length();
+            byte[] FileContent = FileUtils.readFileToByteArray(node.getPath().toFile());
             accessFile.seek(from);
-            var len = to - from;
-            accessFile.write(insertedContent, 0, len - 1);
+            accessFile.write(insertedContent, 0, insertedContent.length);
+            accessFile.write(FileContent, to, len - to);
             accessFile.close();
             return node;
         } catch (Exception e) {

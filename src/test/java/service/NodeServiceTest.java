@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -196,7 +197,16 @@ public class NodeServiceTest {
         makeFile(updatePath.resolve(name));
 
         Project project = projectManager.load(updatePath);
+
         Node folderNode = project.getRootNode().getChildren().stream().filter(node -> node.getPath().toFile().getName().equals(name)).toList().get(0);
-        assertNotNull(projectManager.getNodeService().update(folderNode, 4, 6, "Au secours".getBytes(StandardCharsets.UTF_8)));
+        try {
+            FileWriter writer = new FileWriter(folderNode.getPath().toFile());
+            writer.write("coucou");
+            writer.close();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        assertNotNull(projectManager.getNodeService().update(folderNode, 0, 10, "bruh".getBytes(StandardCharsets.UTF_8)));
     }
 }
