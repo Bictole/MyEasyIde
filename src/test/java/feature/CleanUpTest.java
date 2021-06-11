@@ -15,7 +15,6 @@ public class CleanUpTest {
     private ProjectManager projectManager;
     private Project project;
 
-
     @BeforeEach
     public void setUp(){
         projectManager = new ProjectManager();
