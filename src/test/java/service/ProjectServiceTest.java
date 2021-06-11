@@ -41,7 +41,7 @@ public class ProjectServiceTest {
     public void SimpleProjectTest()
     {
         Project project = projectManager.load(Path.of("ProjectTests/SimpleProject"));
-        assertEquals(2, project.getRootNode().getChildren().size());
+        assertEquals(3, project.getRootNode().getChildren().size());
         assertEquals(Paths.get("ProjectTests/SimpleProject"), project.getRootNode().getPath());
         assertEquals(true, project.getRootNode().getChildren().get(1).isFolder());
         assertEquals(false, project.getRootNode().getChildren().get(1).getChildren().get(0).isFolder());
