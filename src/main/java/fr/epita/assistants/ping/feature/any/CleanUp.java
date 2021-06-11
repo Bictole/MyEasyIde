@@ -78,17 +78,6 @@ public class CleanUp implements Feature{
 
         return new ExecutionReportCleanUp();
     }
-    
-    private void delete(Path file) throws IOException
-    {
-        if (file.toFile().isDirectory())
-        {
-            for (var sub : file.toFile().listFiles()) {
-                delete(sub.toPath());
-            }
-        }
-        Files.deleteIfExists(file);
-    }
 
     @Override
     public Feature.Type type() {
