@@ -40,8 +40,8 @@ public class Dist implements Feature {
 
     @Override
     public ExecutionReport execute(Project project, Object... param) {
-        if (param.length > 0)
-            return new Dist.ExecutionReportDist("Too much argument provided");
+        /*if (param.length > 0)
+            return new Dist.ExecutionReportDist("Too much argument provided");*/
 
         ProjectManager projectManager = new ProjectManager();
         projectManager.execute(project, Mandatory.Features.Any.CLEANUP);

@@ -39,8 +39,8 @@ public class CleanUp implements Feature{
 
     @Override
     public ExecutionReport execute(Project project, Object... param) {
-        if (param.length > 0)
-            return new CleanUp.ExecutionReportCleanUp("Too much argument provided");
+        /*if (param.length > 0)
+            return new CleanUp.ExecutionReportCleanUp("Too much argument provided");*/
 
         NodeManager nodeManager = new NodeManager();
 
