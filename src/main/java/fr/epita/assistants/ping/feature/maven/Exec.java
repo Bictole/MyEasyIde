@@ -41,7 +41,7 @@ public class Exec implements Feature {
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            Process p = pb.start();
+            pb.start().waitFor();
 
             return new Exec.ExecutionReportExecute();
 

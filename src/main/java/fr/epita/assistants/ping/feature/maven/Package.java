@@ -40,7 +40,7 @@ public class Package implements Feature {
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            Process p = pb.start();
+            pb.start().waitFor();
 
             return new Package.ExecutionReportPackage();
         } catch (Exception e) {
