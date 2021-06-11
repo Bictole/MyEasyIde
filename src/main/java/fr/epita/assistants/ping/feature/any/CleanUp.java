@@ -6,6 +6,7 @@ import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.service.NodeManager;
+import fr.epita.java.util.Regexes;
 import org.apache.lucene.store.Directory;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class CleanUp implements Feature{
     private class ExecutionReportCleanUp implements Feature.ExecutionReport {
@@ -47,33 +49,37 @@ public class CleanUp implements Feature{
         return cleanUp(project.getRootNode(), nodeManager);
     }
 
-    private boolean cleanUpRec(Node current, NodeManager nodeManager, Path ignoreFile) {
+    private boolean cleanUpRec(Node current, NodeManager nodeManager, Path ignoreFile, Path actualPath) {
         for (int i = 0; i < current.getChildren().size(); i++) {
             boolean res = false;
-            if (!String.valueOf(current.getChildren().get(i).getPath()).endsWith(".myideignore"))
-                res = cleanUpRec(current.getChildren().get(i), nodeManager, ignoreFile);
+            if (!current.getChildren().get(i).getPath().toFile().getName().equals(".myideignore"))
+                res = cleanUpRec(current.getChildren().get(i), nodeManager, ignoreFile, actualPath.resolve(current.getChildren().get(i).getPath().toFile().getName()));
 
             if (res)
                 i -= 1;
         }
+        if (actualPath.equals(Path.of("")))
+            return true;
 
         boolean delete = false;
 
         try {
             Scanner scan = new Scanner(ignoreFile);
-            while (scan.hasNext()) {
-                String line = scan.nextLine().toString();
-                if (String.valueOf(current.getPath()).endsWith(line)) {
+            while (scan.hasNext() && !delete) {
+                String line = scan.nextLine();
+                Pattern pattern = Pattern.compile(Pattern.quote(line));
+                if (pattern.matcher(actualPath.toString()).find())
+                {
+                    nodeManager.delete(current);
                     // delete(Path.of(line));
-                    Files.deleteIfExists(current.getPath());
-
-                    nodeManager.deleteNode(current);
-
+                    //Files.deleteIfExists(current.getPath());
+                    //nodeManager.deleteNode(current);
                     delete = true;
                 }
             }
         }
         catch (Exception e) {
+            e.printStackTrace();
             System.out.println(e.getMessage());
         }
 
@@ -82,7 +88,7 @@ public class CleanUp implements Feature{
 
     private ExecutionReportCleanUp cleanUp(Node root, NodeManager nodeManager) {
         try {
-            cleanUpRec(root, nodeManager, Path.of(root.getPath() + "/" + ".myideignore"));
+            cleanUpRec(root, nodeManager, root.getPath().resolve(".myideignore"), Path.of(""));
         }
         catch (Exception e)
         {
