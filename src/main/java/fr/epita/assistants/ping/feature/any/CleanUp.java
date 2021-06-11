@@ -52,7 +52,7 @@ public class CleanUp implements Feature{
     private boolean cleanUpRec(Node current, NodeManager nodeManager, Path ignoreFile, Path actualPath) {
         for (int i = 0; i < current.getChildren().size(); i++) {
             boolean res = false;
-            if (!current.getChildren().get(i).getPath().toFile().getName().equals(".myideignore"))
+            if (!actualPath.equals(Path.of("")) || !current.getChildren().get(i).getPath().toFile().getName().equals(".myideignore"))
                 res = cleanUpRec(current.getChildren().get(i), nodeManager, ignoreFile, actualPath.resolve(current.getChildren().get(i).getPath().toFile().getName()));
 
             if (res)
