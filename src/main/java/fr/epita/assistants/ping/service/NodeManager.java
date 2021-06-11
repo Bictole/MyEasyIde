@@ -31,7 +31,7 @@ public class NodeManager implements NodeService {
         {
             accessFile.seek(from);
             var len = to - from;
-            accessFile.write(insertedContent, 0, len);
+            accessFile.write(insertedContent, 0, len - 1);
             accessFile.close();
             return node;
         } catch (Exception e) {
