@@ -5,6 +5,7 @@ import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.ping.node.FolderNode;
+import fr.epita.assistants.ping.service.NodeManager;
 import org.apache.lucene.store.Directory;
 
 import java.io.IOException;
@@ -40,13 +41,23 @@ public class CleanUp implements Feature{
     public ExecutionReport execute(Project project, Object... param) {
         if (param.length > 0)
             return new CleanUp.ExecutionReportCleanUp("Too much argument provided");
-        return cleanUp(project.getRootNode());
+
+        NodeManager nodeManager = new NodeManager();
+
+        return cleanUp(project.getRootNode(), nodeManager);
     }
 
-    private void cleanUpRec(Node current, Node parent, Path ignoreFile) {
-        for (var child : current.getChildren()) {
-            cleanUpRec(child, current, ignoreFile);
+    private boolean cleanUpRec(Node current, NodeManager nodeManager, Path ignoreFile) {
+        for (int i = 0; i < current.getChildren().size(); i++) {
+            boolean res = false;
+            if (!String.valueOf(current.getChildren().get(i).getPath()).endsWith(".myideignore"))
+                res = cleanUpRec(current.getChildren().get(i), nodeManager, ignoreFile);
+
+            if (res)
+                i -= 1;
         }
+
+        boolean delete = false;
 
         try {
             Scanner scan = new Scanner(ignoreFile);
@@ -56,20 +67,22 @@ public class CleanUp implements Feature{
                     // delete(Path.of(line));
                     Files.deleteIfExists(current.getPath());
 
-                    if (parent != null) {
-                        ((FolderNode) parent).deleteChildren(current);
-                    }
+                    nodeManager.deleteNode(current);
+
+                    delete = true;
                 }
             }
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
+
+        return delete;
     }
 
-    private ExecutionReportCleanUp cleanUp(Node root) {
+    private ExecutionReportCleanUp cleanUp(Node root, NodeManager nodeManager) {
         try {
-            cleanUpRec(root, null, Path.of(root.getPath() + "/" + ".myideignore"));
+            cleanUpRec(root, nodeManager, Path.of(root.getPath() + "/" + ".myideignore"));
         }
         catch (Exception e)
         {
