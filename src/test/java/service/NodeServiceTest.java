@@ -2,19 +2,20 @@ package service;
 
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
-import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.node.FileNode;
+import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.service.NodeManager;
 import fr.epita.assistants.ping.service.ProjectManager;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -147,7 +148,6 @@ public class NodeServiceTest {
         makeFile(movePath.resolve(name));
         Project project = projectManager.load(movePath);
 
-        ;
         assertEquals((int) Files.list(movePath).count(),project.getRootNode().getChildren().size());
         FileNode file = (FileNode)project.getRootNode().getChildren().stream().filter(node -> node.isFile() && node.getPath().toFile().getName().equals("ToMoveFile.txt")).toList().get(0);
         FolderNode destinationFolder = (FolderNode) project.getRootNode().getChildren().stream()
