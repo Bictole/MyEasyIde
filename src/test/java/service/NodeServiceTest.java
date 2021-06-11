@@ -71,8 +71,6 @@ public class NodeServiceTest {
 
             updatePath = Path.of("ProjectTests/NodeManager/UpdateProject");
             makeDirectory(updatePath);
-            makeDirectory(updatePath.resolve("Folder"));
-            makeFile(updatePath.resolve("File.txt"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -177,15 +175,21 @@ public class NodeServiceTest {
 
     @Test
     public void UpdateFolderProject() {
+        String name = "Folder";
+        makeDirectory(updatePath.resolve(name));
+
         Project project = projectManager.load(updatePath);
-        Node folderNode = project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().get(0);
+        Node folderNode = project.getRootNode().getChildren().stream().filter(node -> node.getPath().toFile().getName().equals(name)).toList().get(0);
         assertNull(projectManager.getNodeService().update(folderNode, 0, 5, "aled".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
     public void UpdateFileProject() {
+        String name = "File.txt";
+        makeFile(updatePath.resolve(name));
+
         Project project = projectManager.load(updatePath);
-        Node folderNode = project.getRootNode().getChildren().stream().filter(Node::isFile).toList().get(0);
+        Node folderNode = project.getRootNode().getChildren().stream().filter(node -> node.getPath().toFile().getName().equals(name)).toList().get(0);
         assertNotNull(projectManager.getNodeService().update(folderNode, 4, 6, "Au secours".getBytes(StandardCharsets.UTF_8)));
     }
 }
