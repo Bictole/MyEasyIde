@@ -125,9 +125,9 @@ public class NodeServiceTest {
         String name = "ToDeleteFile.txt";
         makeFile(deletePath.resolve(name));
         Project project = projectManager.load(deletePath);
-        assertEquals(1, project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().size());
-        projectManager.getNodeService().delete(project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().get(0));
-        assertEquals(0, project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().size());
+        assertEquals(1, project.getRootNode().getChildren().stream().filter(Node::isFile).toList().size());
+        projectManager.getNodeService().delete(project.getRootNode().getChildren().stream().filter(Node::isFile).toList().get(0));
+        assertEquals(0, project.getRootNode().getChildren().stream().filter(Node::isFile).toList().size());
         assertTrue(Files.notExists(deletePath.resolve(name)));
     }
 
@@ -137,9 +137,9 @@ public class NodeServiceTest {
         makeDirectory(deletePath.resolve(name));
         Project project = projectManager.load(deletePath);
 
-        assertEquals(1, project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().size());
-        projectManager.getNodeService().delete(project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().get(0));
-        assertEquals(0, project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().size());
+        assertEquals(1, project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().size());
+        projectManager.getNodeService().delete(project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().get(0));
+        assertEquals(0, project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().size());
         assertTrue(Files.notExists(deletePath.resolve(name)));
     }
 
@@ -150,13 +150,13 @@ public class NodeServiceTest {
         Project project = projectManager.load(movePath);
 
         ;
-        assertEquals(Files.list(movePath).collect(Collectors.toList()).size(),project.getRootNode().getChildren().size());
+        assertEquals((int) Files.list(movePath).count(),project.getRootNode().getChildren().size());
         FileNode file = (FileNode)project.getRootNode().getChildren().stream().filter(node -> node.isFile() && node.getPath().toFile().getName().equals("ToMoveFile.txt")).toList().get(0);
         FolderNode destinationFolder = (FolderNode) project.getRootNode().getChildren().stream()
                 .filter(node -> node.isFolder() && node.getPath().toFile().getName().equals("DestinationFolder")).toList().get(0);
         projectManager.getNodeService().move(file, destinationFolder);
         assertEquals(Files.list(movePath).filter(path -> !path.toFile().isFile()).toList().size(),
-                project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().size());
+                project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().size());
         assertTrue(destinationFolder.getChildren().get(0).isFile());
     }
 
@@ -170,22 +170,22 @@ public class NodeServiceTest {
         FolderNode folderToMove = (FolderNode) project.getRootNode().getChildren().stream().filter(node -> node.isFolder() && node.getPath().toFile().getName().equals("ToMoveFolder")).toList().get(0);
         FolderNode destinationFolder = (FolderNode) project.getRootNode().getChildren().stream().filter(node -> node.isFolder() && node.getPath().toFile().getName().equals("DestinationFolder")).toList().get(0);
         projectManager.getNodeService().move(folderToMove, destinationFolder);
-        assertEquals(1, project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().size());
-        assertEquals(0, project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().size());
-        assertEquals(1, destinationFolder.getChildren().stream().filter(node -> node.isFolder()).toList().size());
+        assertEquals(1, project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().size());
+        assertEquals(0, project.getRootNode().getChildren().stream().filter(Node::isFile).toList().size());
+        assertEquals(1, destinationFolder.getChildren().stream().filter(Node::isFolder).toList().size());
     }
 
     @Test
     public void UpdateFolderProject() {
         Project project = projectManager.load(updatePath);
-        Node folderNode = project.getRootNode().getChildren().stream().filter(node -> node.isFolder()).toList().get(0);
+        Node folderNode = project.getRootNode().getChildren().stream().filter(Node::isFolder).toList().get(0);
         assertNull(projectManager.getNodeService().update(folderNode, 0, 5, "aled".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
     public void UpdateFileProject() {
         Project project = projectManager.load(updatePath);
-        Node folderNode = project.getRootNode().getChildren().stream().filter(node -> node.isFile()).toList().get(0);
+        Node folderNode = project.getRootNode().getChildren().stream().filter(Node::isFile).toList().get(0);
         assertNotNull(projectManager.getNodeService().update(folderNode, 4, 6, "Au secours".getBytes(StandardCharsets.UTF_8)));
     }
 }
