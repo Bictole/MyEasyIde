@@ -104,8 +104,7 @@ public class NodeManager implements NodeService {
         return null;
     }
 
-    @Override
-    public Node move(Node nodeToMove, Node destinationFolder) {
+    public Node oldmove(Node nodeToMove, Node destinationFolder) {
         if (nodeToMove.isFile() || ((FolderNode) nodeToMove).isEmpty()) {
             String name = nodeToMove.getPath().toFile().getName();
             try {
@@ -118,6 +117,37 @@ public class NodeManager implements NodeService {
             return updateNodePath(nodeToMove, destinationFolder, name);
         } else {
             return null; // cant move folder if not empty
+        }
+    }
+
+    @Override
+    public Node move(Node nodeToMove, Node destinationFolder) {
+        if (nodeToMove.isFile() || ((FolderNode) nodeToMove).isEmpty()) { // File or Empty Folder
+            String name = nodeToMove.getPath().toFile().getName();
+            try {
+                Files.move(nodeToMove.getPath(), destinationFolder.getPath().resolve(name));
+            } catch (FileAlreadyExistsException e) {
+                e.printStackTrace(); // file already exists must be sent to user
+            } catch (Exception e) {
+                e.printStackTrace(); // any other exception
+            }
+            return updateNodePath(nodeToMove, destinationFolder, name);
+        } else { //Move all the content of the folder and the folder
+            String name = nodeToMove.getPath().toFile().getName();
+            try {
+                Node folder = create(destinationFolder, name, Node.Types.FOLDER);
+                for (int i = 0; i < nodeToMove.getChildren().size();)
+                {
+                    move(nodeToMove.getChildren().get(i), folder);
+                }
+                if (delete(nodeToMove))
+                    return folder;
+
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return null; // cant move folder
         }
     }
 

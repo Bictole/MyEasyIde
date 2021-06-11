@@ -82,7 +82,7 @@ public class NodeServiceTest {
     // comment to avoid deleting (for manual debug)
     @AfterAll
     public void cleanUp() throws IOException {
-        FileUtils.deleteDirectory(createPath.getParent().toFile());
+        //FileUtils.deleteDirectory(createPath.getParent().toFile());
     }
 
     @Test
@@ -162,6 +162,9 @@ public class NodeServiceTest {
     public void MoveFolderProject() {
         String name = "ToMoveFolder";
         makeDirectory(movePath.resolve(name));
+        makeFile(movePath.resolve(name).resolve("ToMoveFile"));
+        makeDirectory(movePath.resolve(name).resolve("ToMoveFolder2"));
+        makeFile(movePath.resolve(name).resolve("ToMoveFolder2").resolve("ToMoveFile2"));
 
         Project project = projectManager.load(movePath);
         assertEquals(2, project.getRootNode().getChildren().size());
