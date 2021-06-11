@@ -12,6 +12,12 @@ import java.nio.file.Path;
 
 public class NodeManager implements NodeService {
 
+    private Node rootNode = null;
+
+    public void setRootNode(Node rootNode) {
+        this.rootNode = rootNode;
+    }
+
     public NodeManager() {
     }
 
@@ -109,16 +115,7 @@ public class NodeManager implements NodeService {
             } catch (Exception e) {
                 e.printStackTrace(); // any other exception
             }
-
-            //create new node for the moved file
-            Node ret = null;
-            try {
-                ret = createNode(destinationFolder, name, nodeToMove.getType());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            deleteNode(nodeToMove);
-            return ret;
+            return updateNodePath(nodeToMove, destinationFolder, name);
         } else {
             return null; // cant move folder if not empty
         }
@@ -134,4 +131,21 @@ public class NodeManager implements NodeService {
         }
         return null;
     }
+
+    public Node getFromRoot(Path path) {
+        return getFromSource(rootNode, path);
+    }
+
+    public Node updateNodePath(Node nodeToUpdate, Node destinationFolder, String name) {
+        //create new node for the moved file
+        Node ret = null;
+        try {
+            ret = createNode(destinationFolder, name, nodeToUpdate.getType());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        deleteNode(nodeToUpdate);
+        return ret;
+    }
+
 }

@@ -52,4 +52,5 @@ public interface NodeService {
      */
     Node move(final Node nodeToMove,
               final Node destinationFolder);
+
 }
