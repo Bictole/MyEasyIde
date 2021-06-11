@@ -25,7 +25,8 @@ public interface Node {
      *
      * @return List of node
      */
-    @NotNull List<@NotNull Node> getChildren();
+    @NotNull
+    List<@NotNull Node> getChildren();
 
     default boolean isFile() {
         return getType().equals(Types.FILE);
