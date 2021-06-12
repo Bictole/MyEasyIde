@@ -30,7 +30,7 @@ public class TreeTest {
 
     @Test
     public void BaseTest() {
-        Feature.ExecutionReport report = project.getFeature(Mandatory.Features.Maven.TREE).get().execute(project, "tree_output.txt");
+        Feature.ExecutionReport report = project.getFeature(Mandatory.Features.Maven.TREE).get().execute(project, "-Doutput=tree_output.txt");
         assertEquals(true, report.isSuccess());
     }
 }
