@@ -8,6 +8,9 @@ import org.apache.maven.Maven;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class Tree implements Feature {
@@ -36,11 +39,18 @@ public class Tree implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "dependency:tree", "-Doutput=" + params[0]);
+        /*try {
+            Files.createFile(Path.of(project.getRootNode().getPath() + "/" + params[0]));
+        }
+        catch (Exception e) {
+            return new Tree.ExecutionReportTree("Maven Tree failed :" + e.getMessage());
+        }*/
+
+        ProcessBuilder pb = new ProcessBuilder("mvn", "dependency:tree", (String) params[0]);
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            Process p = pb.start();
+            pb.start().waitFor();
 
             return new Tree.ExecutionReportTree();
         }

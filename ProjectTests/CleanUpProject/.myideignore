@@ -1,0 +1,5 @@
+test.txt
+test2.txt
+*.o
+testFolder/*.c
+testFolder/test.txt

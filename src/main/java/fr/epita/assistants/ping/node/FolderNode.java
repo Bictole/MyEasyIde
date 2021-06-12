@@ -67,4 +67,8 @@ public class FolderNode implements Node {
         }
         return false;
     }
+
+    public void deleteChildren(Node children) {
+        this.children.remove(children);
+    }
 }

@@ -5,7 +5,6 @@ import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.ping.aspect.MavenAspect;
-import fr.epita.assistants.ping.feature.maven.Clean;
 import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.project.AnyProject;
 import fr.epita.assistants.ping.service.ProjectManager;

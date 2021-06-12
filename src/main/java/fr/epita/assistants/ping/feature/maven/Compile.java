@@ -8,6 +8,8 @@ import org.apache.maven.Maven;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class Compile implements Feature {
@@ -37,12 +39,11 @@ public class Compile implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "-DbuildDirectory=target");
+        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "-DbuildDirectory=" + project.getRootNode().getPath() + "/" + "target/");
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            Process p = pb.start();
-
+            pb.start().waitFor();
 
             return new Compile.ExecutionReportCompile();
         }

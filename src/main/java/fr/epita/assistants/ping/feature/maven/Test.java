@@ -41,7 +41,7 @@ public class Test implements Feature {
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            Process p = pb.start();
+            pb.start().waitFor();
 
             return new Test.ExecutionReportTest();
         } catch (Exception e) {

@@ -30,6 +30,7 @@ public class ProjectManager implements ProjectService {
     }
 
     private void initNodes(Node root) {
+        ((NodeManager) nodeService).setRootNode(root);
         if (root.isFolder()) {
             try (Stream<Path> paths = Files.list(root.getPath())) {
                 for (var p : paths.toList()) {
