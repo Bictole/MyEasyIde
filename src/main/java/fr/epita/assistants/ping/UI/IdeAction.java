@@ -36,7 +36,7 @@ public class IdeAction {
 
             JLabel locationLabel = new JLabel("Location:");
             JTextField locationTextField = new JTextField();
-            JButton locationButton = new JButton(mainFrame.resizeIcon(new ImageIcon("src/main/resources/icons/open.png"), mainFrame.iconWidth, mainFrame.iconWidth));
+            JButton locationButton = new JButton(mainFrame.resizeIcon(new ImageIcon("src/main/resources/icons/open.png"), 16, 16));
             locationButton.addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -71,56 +71,44 @@ public class IdeAction {
             layout.setHorizontalGroup(layout.createSequentialGroup()
 
                     .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    // Ajouter l'étiquette
-                    .addComponent(nameLabel)
-                    .addComponent(locationLabel))
+                            .addComponent(nameLabel)
+                            .addComponent(locationLabel))
 
-                    // Ajouter le groupe parallèle
                     .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-
-                            // Ajouter le champ de texte
                             .addComponent(nameTextField)
                             .addComponent(locationTextField)
-                            .addGroup(layout.createSequentialGroup())
-                                .addComponent(btnOK)
-                                .addComponent(btnCancel))
+                            .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                            .addComponent(btnOK))
+                                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                            .addComponent(btnCancel))))
 
-                    // Ajouter le groupe parallèle
                     .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup())
                             .addComponent(locationButton))
             );
 
             //lier la taille des composants quel que soit leur emplacement
             layout.linkSize(SwingConstants.HORIZONTAL, btnOK, btnCancel);
 
-            //Créer le groupe vertical
             layout.setVerticalGroup(layout.createSequentialGroup()
 
-                    // Ajouter le groupe parallèle
                     .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-
                             .addComponent(nameLabel)
-
-                            .addComponent(nameTextField)
-
-                    // Ajouter le groupe parallèle
-                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-
+                            .addComponent(nameTextField))
+                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                             .addComponent(locationLabel)
                             .addComponent(locationTextField)
-                            .addComponent(locationButton)))
-                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                            .addComponent(locationButton))
+                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                             .addComponent(btnOK)
                             .addComponent(btnCancel))
             );
 
             f.pack();
             Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-            f.setLocation(dim.width/2 - f.getSize().width/2, dim.height/2 - f.getSize().height/2);
-            f.setSize(dim.width/4, dim.height/8);
+            f.setLocation(dim.width / 2 - f.getSize().width / 2, dim.height / 2 - f.getSize().height / 2);
+            f.setSize(dim.width / 4, dim.height / 8);
             f.setVisible(true);
-            f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         }
 /*
         JFrame f = new JFrame();
