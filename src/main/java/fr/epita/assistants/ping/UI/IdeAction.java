@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -79,7 +80,57 @@ public class IdeAction {
             });
 
             JButton btnOK = new JButton("OK");
+            btnOK.addActionListener(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (nameTextField.getText().isEmpty())
+                    {
+                        JOptionPane.showMessageDialog(f, "Enter a project name", "Error name", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    else if (locationTextField.getText().isEmpty())
+                    {
+                        JOptionPane.showMessageDialog(f, "Enter a project location", "Error location", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    try {
+                        File tmp = Path.of(locationTextField.getText()).resolve(nameTextField.getText()).toFile();
+                        if (tmp.exists())
+                        {
+                            if (JOptionPane.showConfirmDialog(f,
+                                "Project already exists at this location.\nDo you want to open it ?",
+                                "Already exist project", JOptionPane.YES_NO_OPTION)  == JOptionPane.YES_OPTION)
+                            {
+                                mainFrame.loadProjectFrame(tmp.toPath().toString());
+                                f.dispose();
+                            }
+                            return;
+                        }
+                        if (JOptionPane.showConfirmDialog(f,
+                                "No project exists at this location.\nDo you want to create it ?",
+                                "Confirm project creation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                        {
+                            Files.createDirectories(tmp.toPath());
+                            mainFrame.loadProjectFrame(tmp.toPath().toString());
+                            f.dispose();
+                        }
+                        return;
+
+                    } catch (Exception exp) {
+                        exp.printStackTrace();
+                    }
+                }
+            });
             JButton btnCancel = new JButton("Cancel");
+            btnCancel.addActionListener(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    f.dispose();
+                    return;
+                }
+            });
 
             GroupLayout layout = new GroupLayout(f.getContentPane());
 
@@ -130,58 +181,8 @@ public class IdeAction {
             f.setLocation(dim.width / 2 - f.getSize().width / 2, dim.height / 2 - f.getSize().height / 2);
             f.setSize(dim.width / 4, dim.height / 8);
             f.setVisible(true);
+            f.setDefaultCloseOperation(f.HIDE_ON_CLOSE);
         }
-/*
-        JFrame f = new JFrame();
-            JPanel panel = new JPanel(new BorderLayout());
-
-            JPanel nameP = new JPanel(new BorderLayout());
-
-            JLabel nameL = new JLabel("Project Name");
-            JTextField nameTF = new JTextField("undefined");
-
-            nameP.add(nameL, BorderLayout.WEST);
-            nameP.add(nameTF, BorderLayout.CENTER);
-
-            JPanel locationP = new JPanel(new BorderLayout());
-            JLabel locationL = new JLabel("Project Location");
-            JTextField locationTF = new JTextField();
-            JButton locationB = new JButton(mainFrame.resizeIcon(new ImageIcon("src/main/resources/icons/open.png"), mainFrame.iconWidth, mainFrame.iconWidth));
-            locationB.addActionListener(new AbstractAction() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Create an object of JFileChooser class
-                    JFileChooser j = new JFileChooser(mainFrame.project.getRootNode().getPath().toFile());
-                    j.setDialogTitle("Choose project location");
-                    j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                    j.setAcceptAllFileFilterUsed(false);
-                    // Invoke the showsOpenDialog function to show the save dialog
-                    int r = j.showOpenDialog(null);
-
-                    // If the user selects a file
-                    if (r == JFileChooser.APPROVE_OPTION) {
-
-                        File fi = new File(j.getSelectedFile().getAbsolutePath());
-                        locationTF.setText(fi.getAbsolutePath());
-                    }
-                }
-            });
-
-            locationP.add(locationL, BorderLayout.WEST);
-            locationP.add(locationTF, BorderLayout.CENTER);
-            locationP.add(locationB, BorderLayout.EAST);
-
-            panel.add(nameP, BorderLayout.CENTER);
-            panel.add(locationP, BorderLayout.CENTER);
-            f.add(panel);
-            f.setSize(300, 300);
-            f.setVisible(true);
-            /*JOptionPane optionPane = new JOptionPane();
-            if (optionPane.showConfirmDialog(mainFrame, box, "Project information", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
-            {
-                Path p = Path.of(locationTF.getText());
-
-            }*/
     }
 
     public static class actNewFolder extends AbstractAction {

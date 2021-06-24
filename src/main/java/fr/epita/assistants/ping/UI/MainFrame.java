@@ -257,8 +257,9 @@ public class MainFrame extends JFrame {
 
     public static void main(String[] args) {
         ProjectService projectService = MyIde.init(null);
+
         String path = ".";
-        JFrame frame = new MainFrame("MyIDE", projectService, path);
+        JFrame frame = new MainFrame("PingIDE", projectService, path);
         frame.setVisible(true);
     }
 
