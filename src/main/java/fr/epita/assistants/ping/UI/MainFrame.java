@@ -6,72 +6,102 @@ import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.myide.domain.service.ProjectService;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.AbstractAction;
 import javax.swing.plaf.metal.OceanTheme;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class MainFrame extends JFrame implements ActionListener {
+public class MainFrame extends JFrame {
 
-    private JPanel mainPanel;
+    private JFrame jFrame;
 
     private JTree jTree;
     private JTextArea jTextArea;
     private JToolBar jToolBar;
     private JMenuBar jMenuBar;
 
+    private Integer iconWidth = 24;
+    private Integer iconHeight = 24;
+
+    private Project project;
+
+    // Frame constructor
+    public MainFrame(String title, ProjectService projectService, String path) {
+        super(title);
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+            MetalLookAndFeel.setCurrentTheme(new OceanTheme());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        jFrame = this;
+
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        JPanel contentPane = (JPanel) getContentPane();
+
+        // Text component
+        jTextArea = new JTextArea();
+
+        createMenuBar();
+        createToolBar();
+
+        project = projectService.load(Path.of(path));
+        JScrollPane treeView = initTree(project.getRootNode());
+
+        //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
+        //jToolBar.setBorder(new EtchedBorder());
+
+        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, jTextArea);
+        mainSplitPane.setResizeWeight(0.10);
+        this.setJMenuBar(jMenuBar);
+        contentPane.add(jToolBar, BorderLayout.NORTH);
+        contentPane.add(mainSplitPane, BorderLayout.CENTER);
+        this.pack();
+    }
+
+
     private void createMenuBar() {
         // Create a menubar
         jMenuBar = new JMenuBar();
 
-        // Create amenu for menu
+        // Create a menu
         JMenu m1 = new JMenu("File");
+        m1.setMnemonic('F');
 
-        // Create menu items
-        JMenuItem mi1 = new JMenuItem("New");
-        JMenuItem mi2 = new JMenuItem("Open");
-        JMenuItem mi3 = new JMenuItem("Save");
+        m1.add(actNew);
+        m1.add(actOpenProject);
+        m1.add(actSave);
+        m1.add(actExit);
 
-        // Add action listener
-        mi1.addActionListener(this);
-        mi2.addActionListener(this);
-        mi3.addActionListener(this);
-
-        m1.add(mi1);
-        m1.add(mi2);
-        m1.add(mi3);
-
-        // Create amenu for menu
+        // Create a menu
         JMenu m2 = new JMenu("Edit");
+        m2.setMnemonic('E');
 
-        // Create menu items
-        JMenuItem mi4 = new JMenuItem("Cut");
-        JMenuItem mi5 = new JMenuItem("Copy");
-        JMenuItem mi6 = new JMenuItem("Paste");
-
-        // Add action listener
-        mi4.addActionListener(this);
-        mi5.addActionListener(this);
-        mi6.addActionListener(this);
-
-        m2.add(mi4);
-        m2.add(mi5);
-        m2.add(mi6);
+        m2.add(actCut);
+        m2.add(actCopy);
+        m2.add(actPaste);
 
         jMenuBar.add(m1);
         jMenuBar.add(m2);
-
     }
 
     private static Icon resizeIcon(ImageIcon icon, int resizedWidth, int resizedHeight) {
@@ -84,45 +114,57 @@ public class MainFrame extends JFrame implements ActionListener {
         // Create a toolbar
         jToolBar = new JToolBar();
 
-        JButton btnNew = new JButton(resizeIcon(new ImageIcon("src/main/resources/icons/newFile.png"), 24, 24));
-        btnNew.setToolTipText("New File (CTRL+N)");
-        btnNew.addActionListener(this);
-        jToolBar.add(btnNew);
-
-        JButton btnOpen = new JButton(resizeIcon(new ImageIcon("src/main/resources/icons/folder.png"), 24, 24));
-        btnOpen.setToolTipText("Open (CTRL+O)");
-        btnOpen.addActionListener(this);
-        jToolBar.add(btnOpen);
-
-        JButton btnSave = new JButton(resizeIcon(new ImageIcon("src/main/resources/icons/save.png"), 24, 24));
-        btnSave.setToolTipText("Save (CTRL+S)");
-        btnSave.addActionListener(this);
-        jToolBar.add(btnSave);
-
+        jToolBar.add(actNew).setHideActionText(true);
+        jToolBar.add(actOpenProject).setHideActionText(true);
+        jToolBar.add(actSave).setHideActionText(true);
         jToolBar.addSeparator();
-
-        JButton btnCopy = new JButton(resizeIcon(new ImageIcon("src/main/resources/icons/copy.png"), 24,24));
-        btnCopy.setToolTipText("Copy (CTRL+C)");
-        btnCopy.addActionListener(this);
-        jToolBar.add(btnCopy);
-
-        JButton btnCut = new JButton(resizeIcon(new ImageIcon("src/main/resources/icons/cut.png"), 24, 24));
-        btnCut.setToolTipText("Cut (CTRL+X)");
-        btnCut.addActionListener(this);
-        jToolBar.add(btnCut);
-
-        JButton btnPaste = new JButton(resizeIcon(new ImageIcon("src/main/resources/icons/paste.png"), 24, 24));
-        btnPaste.setToolTipText("Paste (CTRL+V)");
-        btnPaste.addActionListener(this);
-        jToolBar.add(btnPaste);
+        jToolBar.add(actCopy).setHideActionText(true);
+        jToolBar.add(actCut).setHideActionText(true);
+        jToolBar.add(actPaste).setHideActionText(true);
 
         jToolBar.setFloatable(false);
+    }
+
+    private static String createFilePath(TreePath treePath) {
+        StringBuilder sb = new StringBuilder();
+        Object[] nodes = treePath.getPath();
+        if (nodes.length == 0)
+            return sb.toString();
+        sb.append(nodes[0].toString());
+        for (int i = 1; i < nodes.length; i++) {
+            sb.append(File.separatorChar).append(nodes[i].toString());
+        }
+        return sb.toString();
+    }
+
+    private void mouseOpenFile(MouseEvent e) {
+        TreePath tp = jTree.getPathForLocation(e.getX(), e.getY());
+        File file = new File(createFilePath(tp));
+        if (file.isDirectory())
+            return;
+        // Set the label to the path of the selected directory
+        try {
+            String text = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).stream()
+                    .collect(Collectors.joining(System.lineSeparator()));
+            // Set the text
+            jTextArea.setText(text);
+        } catch (Exception evt) {
+            JOptionPane.showMessageDialog(jFrame, evt.getMessage());
+        }
 
     }
 
     private JScrollPane initTree(Node root) {
         DefaultMutableTreeNode top = createTree(root);
         jTree = new JTree(top);
+        jTree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    mouseOpenFile(e);
+                }
+            }
+        });
         JScrollPane treeView = new JScrollPane(jTree);
         return treeView;
     }
@@ -146,11 +188,11 @@ public class MainFrame extends JFrame implements ActionListener {
         Collections.sort(ol, new Comparator<File>() {
             @Override
             public int compare(File o1, File o2) {
-                if(o1.isDirectory() && o2.isDirectory()){
+                if (o1.isDirectory() && o2.isDirectory()) {
                     return o1.compareTo(o2);
-                } else if(o1.isDirectory()){
+                } else if (o1.isDirectory()) {
                     return -1;
-                } else if(o2.isDirectory()){
+                } else if (o2.isDirectory()) {
                     return 1;
                 }
                 return o1.compareTo(o2);
@@ -168,86 +210,40 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
 
+    ////////////////////////////////////////////
+    //ACTIONS
+    ////////////////////////////////////////////
 
-    MainFrame(String title, ProjectService projectService, String path) {
-        super(title);
-        try {
-            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-            MetalLookAndFeel.setCurrentTheme(new OceanTheme());
-        } catch (Exception e) {
-            e.printStackTrace();
+    private AbstractAction actNew = new AbstractAction() {
+        {
+            putValue(Action.NAME, "New...");
+            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/newFile.png"), iconWidth, iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
+            putValue(Action.SHORT_DESCRIPTION, "New (CTRL+N)");
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         }
 
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("New");
+        }
+    };
 
-        JPanel contentPane = (JPanel) getContentPane();
+    private AbstractAction actOpenFile = new AbstractAction() {
+        {
+            putValue(Action.NAME, "Open File...");
+            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/open.png"), iconWidth, iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
+            putValue(Action.SHORT_DESCRIPTION, "Open file (CTRL+O)");
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
+        }
 
-        // Text component
-        jTextArea = new JTextArea();
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("OpenFile");
 
-        createMenuBar();
-        createToolBar();
-
-        Project project = projectService.load(Path.of(path));
-        JScrollPane treeView = initTree(project.getRootNode());
-
-        //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
-        //jToolBar.setBorder(new EtchedBorder());
-
-        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, jTextArea);
-        mainSplitPane.setResizeWeight(0.10);
-        this.setJMenuBar(jMenuBar);
-        contentPane.add(jToolBar, BorderLayout.NORTH);
-        contentPane.add(mainSplitPane, BorderLayout.CENTER);
-        this.pack();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        String s = e.getActionCommand();
-
-        System.out.println(s);
-        if (s.equals("cut")) {
-            jTextArea.cut();
-        } else if (s.equals("copy")) {
-            jTextArea.copy();
-        } else if (s.equals("paste")) {
-            jTextArea.paste();
-        } else if (s.equals("Save")) {
             // Create an object of JFileChooser class
-            JFileChooser j = new JFileChooser("f:");
-
-            // Invoke the showsSaveDialog function to show the save dialog
-            int r = j.showSaveDialog(null);
-
-            if (r == JFileChooser.APPROVE_OPTION) {
-
-                // Set the label to the path of the selected directory
-                File fi = new File(j.getSelectedFile().getAbsolutePath());
-
-                try {
-                    // Create a file writer
-                    FileWriter wr = new FileWriter(fi, false);
-
-                    // Create buffered writer to write
-                    BufferedWriter w = new BufferedWriter(wr);
-
-                    // Write
-                    w.write(jTextArea.getText());
-
-                    w.flush();
-                    w.close();
-                } catch (Exception evt) {
-                    JOptionPane.showMessageDialog(this, evt.getMessage());
-                }
-            }
-            // If the user cancelled the operation
-            else
-                JOptionPane.showMessageDialog(this, "the user cancelled the operation");
-        } else if (s.equals("Open")) {
-            // Create an object of JFileChooser class
-            JFileChooser j = new JFileChooser("f:");
+            JFileChooser j = new JFileChooser(project.getRootNode().getPath().toFile());
 
             // Invoke the showsOpenDialog function to show the save dialog
             int r = j.showOpenDialog(null);
@@ -278,16 +274,186 @@ public class MainFrame extends JFrame implements ActionListener {
                     // Set the text
                     jTextArea.setText(sl);
                 } catch (Exception evt) {
-                    JOptionPane.showMessageDialog(this, evt.getMessage());
+                    JOptionPane.showMessageDialog(jFrame, evt.getMessage());
+                }
+            } else
+                JOptionPane.showMessageDialog(jFrame, "User cancelled operation");
+        }
+    };
+
+    private AbstractAction actOpenProject = new AbstractAction() {
+        {
+            putValue(Action.NAME, "Open File...");
+            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/open.png"), iconWidth, iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
+            putValue(Action.SHORT_DESCRIPTION, "Open file (CTRL+O)");
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("OpenProject");
+
+            // Create an object of JFileChooser class
+            JFileChooser j = new JFileChooser(project.getRootNode().getPath().toFile());
+
+            // Invoke the showsOpenDialog function to show the save dialog
+            int r = j.showOpenDialog(null);
+
+            // If the user selects a file
+            if (r == JFileChooser.APPROVE_OPTION) {
+                // Set the label to the path of the selected directory
+                File fi = new File(j.getSelectedFile().getAbsolutePath());
+
+                try {
+                    // String
+                    String s1 = "", sl = "";
+
+                    // File reader
+                    FileReader fr = new FileReader(fi);
+
+                    // Buffered reader
+                    BufferedReader br = new BufferedReader(fr);
+
+                    // Initialize sl
+                    sl = br.readLine();
+
+                    // Take the input from the file
+                    while ((s1 = br.readLine()) != null) {
+                        sl = sl + "\n" + s1;
+                    }
+
+                    // Set the text
+                    jTextArea.setText(sl);
+                } catch (Exception evt) {
+                    JOptionPane.showMessageDialog(jFrame, evt.getMessage());
+                }
+            } else
+                JOptionPane.showMessageDialog(jFrame, "User cancelled operation");
+        }
+    };
+
+    private AbstractAction actSave = new AbstractAction() {
+        {
+            putValue(Action.NAME, "Save File");
+            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/save.png"), iconWidth, iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
+            putValue(Action.SHORT_DESCRIPTION, "Save file (CTRL+S)");
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("Save");
+            // Create an object of JFileChooser class
+            JFileChooser j = new JFileChooser("f:");
+
+            // Invoke the showsSaveDialog function to show the save dialog
+            int r = j.showSaveDialog(null);
+
+            if (r == JFileChooser.APPROVE_OPTION) {
+
+                // Set the label to the path of the selected directory
+                File fi = new File(j.getSelectedFile().getAbsolutePath());
+
+                try {
+                    // Create a file writer
+                    FileWriter wr = new FileWriter(fi, false);
+
+                    // Create buffered writer to write
+                    BufferedWriter w = new BufferedWriter(wr);
+
+                    // Write
+                    w.write(jTextArea.getText());
+
+                    w.flush();
+                    w.close();
+                } catch (Exception evt) {
+                    JOptionPane.showMessageDialog(jFrame, evt.getMessage());
                 }
             }
             // If the user cancelled the operation
             else
-                JOptionPane.showMessageDialog(this, "User cancelled operation");
-        } else if (s.equals("New")) {
-            jTextArea.setText("");
+                JOptionPane.showMessageDialog(jFrame, "the user cancelled the operation");
         }
-    }
+    };
+
+    private AbstractAction actSaveAs = new AbstractAction() {
+        {
+            putValue(Action.NAME, "Save As...");
+            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/save_as.png"), iconWidth, iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
+            putValue(Action.SHORT_DESCRIPTION, "Save file as");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("Save as");
+        }
+    };
+
+    private AbstractAction actCopy = new AbstractAction() {
+        {
+            putValue(Action.NAME, "Copy");
+            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/copy.png"), iconWidth, iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
+            putValue(Action.SHORT_DESCRIPTION, "Copy (CTRL+C)");
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            jTextArea.copy();
+            System.out.println("Copy");
+        }
+    };
+
+    private AbstractAction actCut = new AbstractAction() {
+        {
+            putValue(Action.NAME, "Cut");
+            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/cut.png"), iconWidth, iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_T);
+            putValue(Action.SHORT_DESCRIPTION, "Cut (CTRL+X)");
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            jTextArea.cut();
+            System.out.println("Cut");
+        }
+    };
+
+    private AbstractAction actPaste = new AbstractAction() {
+        {
+            putValue(Action.NAME, "Paste");
+            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/paste.png"), iconWidth, iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_P);
+            putValue(Action.SHORT_DESCRIPTION, "Paste (CTRL+V)");
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            jTextArea.paste();
+            System.out.println("Paste");
+        }
+    };
+
+    private AbstractAction actExit = new AbstractAction() {
+        {
+            putValue(Action.NAME, "Exit");
+            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/exit.png"), iconWidth, iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
+            putValue(Action.SHORT_DESCRIPTION, "Exit (ALT+F4)");
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("Exit");
+        }
+    };
 
     public static void main(String[] args) {
 
