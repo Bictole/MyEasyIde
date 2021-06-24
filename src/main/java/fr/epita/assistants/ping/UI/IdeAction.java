@@ -1,5 +1,11 @@
 package fr.epita.assistants.ping.UI;
 
+import fr.epita.assistants.myide.domain.entity.Feature;
+import fr.epita.assistants.myide.domain.entity.Node;
+import fr.epita.assistants.myide.domain.service.NodeService;
+import fr.epita.assistants.myide.domain.service.ProjectService;
+import fr.epita.assistants.ping.service.NodeManager;
+import fr.epita.assistants.ping.service.ProjectManager;
 import org.eclipse.sisu.launch.Main;
 
 import javax.swing.*;
@@ -218,6 +224,19 @@ public class IdeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            File file = mainFrame.getSelectedFile();
+            Path path;
+            if (file == null)
+                path = mainFrame.project.getRootNode().getPath();
+            else if (file.isFile())
+                path = file.toPath().getParent();
+            else
+                path = file.toPath();
+
+            ProjectService projectService = mainFrame.getProjectService();
+            NodeManager nodeService = (NodeManager)projectService.getNodeService();
+            Node root = mainFrame.project.getRootNode();
+            nodeService.create(nodeService.getFromSource(root, path), "New file", Node.Types.FILE);
 
             System.out.println("New");
         }
@@ -310,12 +329,24 @@ public class IdeAction {
             if (r == JFileChooser.APPROVE_OPTION) {
 
                 File fi = new File(j.getSelectedFile().getAbsolutePath());
-                mainFrame.loadProjectFrame(fi.toPath().toString());
+                mainFrame.loadProjectFrame(fi.toPath());
             }
         }
     }
 
-    ;
+    /*
+    public static abstract class FileAction extends AbstractAction {
+        private JTextArea jTextArea;
+
+        public FileAction(String name, Icon icon, KeyEvent mnemonic, String description, KeyStroke keyStroke) {
+            putValue(Action.NAME, name);
+            putValue(Action.SMALL_ICON, icon);
+            putValue(Action.MNEMONIC_KEY, mnemonic);
+            putValue(Action.SHORT_DESCRIPTION, description);
+            putValue(Action.ACCELERATOR_KEY, keyStroke);
+        }
+    }
+    */
 
     public static class actSave extends AbstractAction {
         private MainFrame mainFrame;

@@ -41,8 +41,10 @@ public class MainFrame extends JFrame {
     public Project project;
     private ProjectService projectService;
 
+    private File selectedFile = null;
+
     // Frame constructor
-    public MainFrame(String title, ProjectService projectService, String path) {
+    public MainFrame(String title, ProjectService projectService, Path path) {
         super(title);
 
         try {
@@ -61,14 +63,22 @@ public class MainFrame extends JFrame {
         loadProjectFrame(path);
     }
 
-    public void loadProjectFrame(String path) {
+    public File getSelectedFile() {
+        return selectedFile;
+    }
+
+    public ProjectService getProjectService() {
+        return projectService;
+    }
+
+    public void loadProjectFrame(Path path) {
         JPanel contentPane = (JPanel) getContentPane();
         contentPane.removeAll();
 
         // Text component
         jTextArea = new JTextArea();
         JScrollPane textView = new JScrollPane(jTextArea);
-        project = projectService.load(Path.of(path));
+        project = projectService.load(path);
 
         createMenuBar();
         createToolBar();
@@ -206,9 +216,16 @@ public class MainFrame extends JFrame {
         jTree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1) {
+                    TreePath tp = jTree.getPathForLocation(e.getX(), e.getY());
+                    if (tp == null)
+                        return;
+                    selectedFile = new File(createFilePath(tp));
+                }
                 if (e.getClickCount() == 2) {
                     mouseOpenFile(e);
                 }
+
             }
         });
         JScrollPane treeView = new JScrollPane(jTree);
@@ -257,7 +274,7 @@ public class MainFrame extends JFrame {
 
     public static void main(String[] args) {
         ProjectService projectService = MyIde.init(null);
-        String path = ".";
+        Path path = Path.of(new File("").getAbsolutePath());
         JFrame frame = new MainFrame("MyIDE", projectService, path);
         frame.setVisible(true);
     }
