@@ -109,7 +109,7 @@ public class IdeAction {
                                 "Project already exists at this location.\nDo you want to open it ?",
                                 "Already exist project", JOptionPane.YES_NO_OPTION)  == JOptionPane.YES_OPTION)
                             {
-                                mainFrame.loadProjectFrame(tmp.toPath().toString());
+                                mainFrame.loadProjectFrame(tmp.toPath());
                                 f.dispose();
                             }
                             return;
@@ -119,7 +119,7 @@ public class IdeAction {
                                 "Confirm project creation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
                         {
                             Files.createDirectories(tmp.toPath());
-                            mainFrame.loadProjectFrame(tmp.toPath().toString());
+                            mainFrame.loadProjectFrame(tmp.toPath());
                             f.dispose();
                         }
                         return;
