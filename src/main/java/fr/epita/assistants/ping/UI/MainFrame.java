@@ -1,9 +1,16 @@
 package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.MyIde;
-import fr.epita.assistants.myide.domain.entity.Node;
-import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.myide.domain.entity.*;
 import fr.epita.assistants.myide.domain.service.ProjectService;
+import fr.epita.assistants.ping.UI.examples.JCheckBoxes;
+import fr.epita.assistants.ping.aspect.GitAspect;
+import fr.epita.assistants.ping.aspect.MavenAspect;
+import fr.epita.assistants.ping.project.AnyProject;
+import org.eclipse.jgit.api.Status;
+
+import java.awt.event.*;
+import java.util.*;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -12,38 +19,32 @@ import javax.swing.plaf.metal.OceanTheme;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MainFrame extends JFrame {
 
-    private JFrame jFrame;
+    public JFrame jFrame;
 
     private JTree jTree;
     private JTextArea jTextArea;
     private JToolBar jToolBar;
     private JMenuBar jMenuBar;
 
-    private Integer iconWidth = 24;
-    private Integer iconHeight = 24;
+    public Integer iconWidth = 24;
+    public Integer iconHeight = 24;
 
-    private Project project;
+    public Project project;
+    private ProjectService projectService;
 
     // Frame constructor
     public MainFrame(String title, ProjectService projectService, String path) {
         super(title);
+
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
             MetalLookAndFeel.setCurrentTheme(new OceanTheme());
@@ -52,25 +53,30 @@ public class MainFrame extends JFrame {
         }
 
         jFrame = this;
+        this.projectService = projectService;
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
+        loadProjectFrame(path);
+    }
+
+    public void loadProjectFrame(String path) {
         JPanel contentPane = (JPanel) getContentPane();
+        contentPane.removeAll();
 
         // Text component
         jTextArea = new JTextArea();
+        JScrollPane textView = new JScrollPane(jTextArea);
+        project = projectService.load(Path.of(path));
 
         createMenuBar();
         createToolBar();
-
-        project = projectService.load(Path.of(path));
         JScrollPane treeView = initTree(project.getRootNode());
-
         //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
         //jToolBar.setBorder(new EtchedBorder());
 
-        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, jTextArea);
+        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, textView);
         mainSplitPane.setResizeWeight(0.10);
         this.setJMenuBar(jMenuBar);
         contentPane.add(jToolBar, BorderLayout.NORTH);
@@ -78,33 +84,61 @@ public class MainFrame extends JFrame {
         this.pack();
     }
 
-
     private void createMenuBar() {
         // Create a menubar
         jMenuBar = new JMenuBar();
 
         // Create a menu
-        JMenu m1 = new JMenu("File");
-        m1.setMnemonic('F');
+        JMenu mFile = new JMenu("File");
+        mFile.setMnemonic('F');
+        JMenu mNew = new JMenu("New");
+        mNew.add(new IdeAction.actNewProject(this));
+        mNew.addSeparator();
+        mNew.add(new IdeAction.actNewFile(this));
+        mNew.add(new IdeAction.actNewFolder(this));
 
-        m1.add(actNew);
-        m1.add(actOpenProject);
-        m1.add(actSave);
-        m1.add(actExit);
+        mFile.add(mNew);
+        mFile.add(new IdeAction.actOpenProject(this));
+        mFile.add(new IdeAction.actSave(this));
+        mFile.add(new IdeAction.actExit(this));
 
-        // Create a menu
-        JMenu m2 = new JMenu("Edit");
-        m2.setMnemonic('E');
+        jMenuBar.add(mFile);
 
-        m2.add(actCut);
-        m2.add(actCopy);
-        m2.add(actPaste);
+        JMenu mEdit = new JMenu("Edit");
+        mEdit.setMnemonic('E');
 
-        jMenuBar.add(m1);
-        jMenuBar.add(m2);
+        mEdit.add(new IdeAction.actCut(this, jTextArea));
+        mEdit.add(new IdeAction.actCopy(this, jTextArea));
+        mEdit.add(new IdeAction.actPaste(this, jTextArea));
+        jMenuBar.add(mEdit);
+
+        if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
+            JMenu mGit = new JMenu("Git");
+            mGit.setMnemonic('G');
+            mGit.add(new GitAction.actGitPull(this));
+            mGit.add(new GitAction.actGitAdd(this));
+            mGit.add(new GitAction.actGitCommit(this));
+            mGit.add(new GitAction.actGitPush(this));
+
+            jMenuBar.add(mGit);
+        }
+
+        if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.MAVEN)) {
+            JMenu mMaven = new JMenu("Maven");
+            mMaven.setMnemonic('M');
+            mMaven.add(new MavenAction.actMvnClean(this));
+            mMaven.add(new MavenAction.actMvnCompile(this));
+            mMaven.add(new MavenAction.actMvnExec(this));
+            mMaven.add(new MavenAction.actMvnInstall(this));
+            mMaven.add(new MavenAction.actMvnPackage(this));
+            mMaven.add(new MavenAction.actMvnTest(this));
+            mMaven.add(new MavenAction.actMvnTree(this));
+            jMenuBar.add(mMaven);
+        }
+
     }
 
-    private static Icon resizeIcon(ImageIcon icon, int resizedWidth, int resizedHeight) {
+    public static Icon resizeIcon(ImageIcon icon, int resizedWidth, int resizedHeight) {
         Image img = icon.getImage();
         Image resizedImage = img.getScaledInstance(resizedWidth, resizedHeight, Image.SCALE_SMOOTH);
         return new ImageIcon(resizedImage);
@@ -114,16 +148,27 @@ public class MainFrame extends JFrame {
         // Create a toolbar
         jToolBar = new JToolBar();
 
-        jToolBar.add(actNew).setHideActionText(true);
-        jToolBar.add(actOpenProject).setHideActionText(true);
-        jToolBar.add(actSave).setHideActionText(true);
+        //jToolBar.add(actNew).setHideActionText(true);
+        jToolBar.add(new IdeAction.actNewProject(this)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actNewFile(this)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actOpenProject(this)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actSave(this)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actOpenProject(this)).setHideActionText(true);
         jToolBar.addSeparator();
-        jToolBar.add(actCopy).setHideActionText(true);
-        jToolBar.add(actCut).setHideActionText(true);
-        jToolBar.add(actPaste).setHideActionText(true);
+        jToolBar.add(new IdeAction.actCopy(this, jTextArea)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actCut(this, jTextArea)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actPaste(this, jTextArea)).setHideActionText(true);
+        jToolBar.add(new GitAction.actGitCommit(this)).setHideActionText(true);
+        jToolBar.add(new GitAction.actGitAdd(this)).setHideActionText(true);
+        jToolBar.add(new GitAction.actGitPull(this)).setHideActionText(true);
+        jToolBar.add(new GitAction.actGitPush(this)).setHideActionText(true);
 
         jToolBar.setFloatable(false);
     }
+
+    ////////////////////////////////////////////
+    //EXPLORER
+    ////////////////////////////////////////////
 
     private static String createFilePath(TreePath treePath) {
         StringBuilder sb = new StringBuilder();
@@ -139,6 +184,8 @@ public class MainFrame extends JFrame {
 
     private void mouseOpenFile(MouseEvent e) {
         TreePath tp = jTree.getPathForLocation(e.getX(), e.getY());
+        if (tp == null)
+            return;
         File file = new File(createFilePath(tp));
         if (file.isDirectory())
             return;
@@ -151,7 +198,6 @@ public class MainFrame extends JFrame {
         } catch (Exception evt) {
             JOptionPane.showMessageDialog(jFrame, evt.getMessage());
         }
-
     }
 
     private JScrollPane initTree(Node root) {
@@ -180,7 +226,6 @@ public class MainFrame extends JFrame {
         return top;
     }
 
-    //////////////////////////////
     void fillTree(DefaultMutableTreeNode root, File dir) {
 
         File[] tmp = dir.listFiles();
@@ -210,253 +255,7 @@ public class MainFrame extends JFrame {
         }
     }
 
-    ////////////////////////////////////////////
-    //ACTIONS
-    ////////////////////////////////////////////
-
-    private AbstractAction actNew = new AbstractAction() {
-        {
-            putValue(Action.NAME, "New...");
-            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/newFile.png"), iconWidth, iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(Action.SHORT_DESCRIPTION, "New (CTRL+N)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            System.out.println("New");
-        }
-    };
-
-    private AbstractAction actOpenFile = new AbstractAction() {
-        {
-            putValue(Action.NAME, "Open File...");
-            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/open.png"), iconWidth, iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
-            putValue(Action.SHORT_DESCRIPTION, "Open file (CTRL+O)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            System.out.println("OpenFile");
-
-            // Create an object of JFileChooser class
-            JFileChooser j = new JFileChooser(project.getRootNode().getPath().toFile());
-
-            // Invoke the showsOpenDialog function to show the save dialog
-            int r = j.showOpenDialog(null);
-
-            // If the user selects a file
-            if (r == JFileChooser.APPROVE_OPTION) {
-                // Set the label to the path of the selected directory
-                File fi = new File(j.getSelectedFile().getAbsolutePath());
-
-                try {
-                    // String
-                    String s1 = "", sl = "";
-
-                    // File reader
-                    FileReader fr = new FileReader(fi);
-
-                    // Buffered reader
-                    BufferedReader br = new BufferedReader(fr);
-
-                    // Initialize sl
-                    sl = br.readLine();
-
-                    // Take the input from the file
-                    while ((s1 = br.readLine()) != null) {
-                        sl = sl + "\n" + s1;
-                    }
-
-                    // Set the text
-                    jTextArea.setText(sl);
-                } catch (Exception evt) {
-                    JOptionPane.showMessageDialog(jFrame, evt.getMessage());
-                }
-            } else
-                JOptionPane.showMessageDialog(jFrame, "User cancelled operation");
-        }
-    };
-
-    private AbstractAction actOpenProject = new AbstractAction() {
-        {
-            putValue(Action.NAME, "Open File...");
-            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/open.png"), iconWidth, iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
-            putValue(Action.SHORT_DESCRIPTION, "Open file (CTRL+O)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            System.out.println("OpenProject");
-
-            // Create an object of JFileChooser class
-            JFileChooser j = new JFileChooser(project.getRootNode().getPath().toFile());
-
-            // Invoke the showsOpenDialog function to show the save dialog
-            int r = j.showOpenDialog(null);
-
-            // If the user selects a file
-            if (r == JFileChooser.APPROVE_OPTION) {
-                // Set the label to the path of the selected directory
-                File fi = new File(j.getSelectedFile().getAbsolutePath());
-
-                try {
-                    // String
-                    String s1 = "", sl = "";
-
-                    // File reader
-                    FileReader fr = new FileReader(fi);
-
-                    // Buffered reader
-                    BufferedReader br = new BufferedReader(fr);
-
-                    // Initialize sl
-                    sl = br.readLine();
-
-                    // Take the input from the file
-                    while ((s1 = br.readLine()) != null) {
-                        sl = sl + "\n" + s1;
-                    }
-
-                    // Set the text
-                    jTextArea.setText(sl);
-                } catch (Exception evt) {
-                    JOptionPane.showMessageDialog(jFrame, evt.getMessage());
-                }
-            } else
-                JOptionPane.showMessageDialog(jFrame, "User cancelled operation");
-        }
-    };
-
-    private AbstractAction actSave = new AbstractAction() {
-        {
-            putValue(Action.NAME, "Save File");
-            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/save.png"), iconWidth, iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
-            putValue(Action.SHORT_DESCRIPTION, "Save file (CTRL+S)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            System.out.println("Save");
-            // Create an object of JFileChooser class
-            JFileChooser j = new JFileChooser("f:");
-
-            // Invoke the showsSaveDialog function to show the save dialog
-            int r = j.showSaveDialog(null);
-
-            if (r == JFileChooser.APPROVE_OPTION) {
-
-                // Set the label to the path of the selected directory
-                File fi = new File(j.getSelectedFile().getAbsolutePath());
-
-                try {
-                    // Create a file writer
-                    FileWriter wr = new FileWriter(fi, false);
-
-                    // Create buffered writer to write
-                    BufferedWriter w = new BufferedWriter(wr);
-
-                    // Write
-                    w.write(jTextArea.getText());
-
-                    w.flush();
-                    w.close();
-                } catch (Exception evt) {
-                    JOptionPane.showMessageDialog(jFrame, evt.getMessage());
-                }
-            }
-            // If the user cancelled the operation
-            else
-                JOptionPane.showMessageDialog(jFrame, "the user cancelled the operation");
-        }
-    };
-
-    private AbstractAction actSaveAs = new AbstractAction() {
-        {
-            putValue(Action.NAME, "Save As...");
-            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/save_as.png"), iconWidth, iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
-            putValue(Action.SHORT_DESCRIPTION, "Save file as");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            System.out.println("Save as");
-        }
-    };
-
-    private AbstractAction actCopy = new AbstractAction() {
-        {
-            putValue(Action.NAME, "Copy");
-            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/copy.png"), iconWidth, iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
-            putValue(Action.SHORT_DESCRIPTION, "Copy (CTRL+C)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            jTextArea.copy();
-            System.out.println("Copy");
-        }
-    };
-
-    private AbstractAction actCut = new AbstractAction() {
-        {
-            putValue(Action.NAME, "Cut");
-            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/cut.png"), iconWidth, iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_T);
-            putValue(Action.SHORT_DESCRIPTION, "Cut (CTRL+X)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            jTextArea.cut();
-            System.out.println("Cut");
-        }
-    };
-
-    private AbstractAction actPaste = new AbstractAction() {
-        {
-            putValue(Action.NAME, "Paste");
-            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/paste.png"), iconWidth, iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_P);
-            putValue(Action.SHORT_DESCRIPTION, "Paste (CTRL+V)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            jTextArea.paste();
-            System.out.println("Paste");
-        }
-    };
-
-    private AbstractAction actExit = new AbstractAction() {
-        {
-            putValue(Action.NAME, "Exit");
-            putValue(Action.SMALL_ICON, resizeIcon(new ImageIcon("src/main/resources/icons/exit.png"), iconWidth, iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
-            putValue(Action.SHORT_DESCRIPTION, "Exit (ALT+F4)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            System.out.println("Exit");
-        }
-    };
-
     public static void main(String[] args) {
-
         ProjectService projectService = MyIde.init(null);
         String path = ".";
         JFrame frame = new MainFrame("MyIDE", projectService, path);
