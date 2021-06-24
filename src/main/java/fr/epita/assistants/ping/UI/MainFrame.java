@@ -3,7 +3,7 @@ package fr.epita.assistants.ping.UI;
 import fr.epita.assistants.MyIde;
 import fr.epita.assistants.myide.domain.entity.*;
 import fr.epita.assistants.myide.domain.service.ProjectService;
-import fr.epita.assistants.ping.UI.examples.JCheckBoxes;
+//import fr.epita.assistants.ping.UI.examples.JCheckBoxes;
 import fr.epita.assistants.ping.aspect.GitAspect;
 import fr.epita.assistants.ping.aspect.MavenAspect;
 import fr.epita.assistants.ping.project.AnyProject;
