@@ -3,22 +3,16 @@ package fr.epita.assistants.ping.UI;
 import fr.epita.assistants.MyIde;
 import fr.epita.assistants.myide.domain.entity.*;
 import fr.epita.assistants.myide.domain.service.ProjectService;
+import fr.epita.assistants.ping.UI.Panel.*;
 //import fr.epita.assistants.ping.UI.examples.JCheckBoxes;
-import fr.epita.assistants.ping.aspect.GitAspect;
-import fr.epita.assistants.ping.aspect.MavenAspect;
-import fr.epita.assistants.ping.project.AnyProject;
-import fr.epita.assistants.ping.service.ProjectManager;
-import org.eclipse.jgit.api.Status;
 
 import java.awt.event.*;
 import java.util.*;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.swing.AbstractAction;
 import javax.swing.plaf.metal.OceanTheme;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -48,7 +42,7 @@ public class MainFrame extends JFrame {
     private ProjectService projectService;
 
     private File selectedFile = null;
-    public Console console;
+    public fr.epita.assistants.ping.UI.Panel.Console console;
 
     private UndoManager undoManager;
 
@@ -120,19 +114,15 @@ public class MainFrame extends JFrame {
 
         //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
         //jToolBar.setBorder(new EtchedBorder());
-        jMenuBar.setBackground(Color.GRAY);
 
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,treeView, textView);
         mainSplitPane.setResizeWeight(0.10);
-        //JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, consoleView);
-
-
+        JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, consoleView);
 
 
         this.setJMenuBar(jMenuBar);
         contentPane.add(jToolBar, BorderLayout.NORTH);
-        contentPane.add(mainSplitPane, BorderLayout.CENTER);
-        //contentPane.add(bottomSplitPane, BorderLayout.CENTER);
+        contentPane.add(bottomSplitPane, BorderLayout.CENTER);
         this.pack();
         if (!this.isVisible())
             this.setVisible(true);
@@ -155,9 +145,7 @@ public class MainFrame extends JFrame {
 
     private void createConsole()
     {
-        console = new Console(jFrame);
-        console.init();
-        jFrame.setVisible(true);
+        console = new fr.epita.assistants.ping.UI.Panel.Console(jFrame);
         return;
     }
 

@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping.UI;
+package fr.epita.assistants.ping.UI.Panel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-class Console extends Panel {
+public class Console extends Panel
+{
+
     final JFrame frame;
     private JTextArea textArea;
     public JScrollPane scrollPane;
@@ -26,20 +28,5 @@ class Console extends Panel {
                 textArea.append(String.valueOf((char) b));
             }
         }));
-        frame.add(textArea, BorderLayout.PAGE_END);
-    }
-
-    public void init() {
-        frame.pack();
-        frame.setVisible(true);
-    }
-    public JFrame getFrame() {
-        return frame;
-    }
-
-    public void writeInConsole(String msg)
-    {
-        textArea.append(msg);
-        return;
     }
 }

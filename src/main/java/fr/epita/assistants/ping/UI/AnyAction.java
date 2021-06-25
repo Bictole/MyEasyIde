@@ -39,7 +39,6 @@ public class AnyAction {
 
             if (!report.isSuccess()) {
                 System.out.println("Cleanup Failed");
-                frame.console.writeInConsole("CleanUp Failed");
             }
             else
                 System.out.println("Cleanup Done");
