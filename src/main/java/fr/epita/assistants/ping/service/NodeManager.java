@@ -124,9 +124,9 @@ public class NodeManager implements NodeService {
         try {
             Node n = createNode(folder, name, type);
             if (n.isFolder())
-                Files.createDirectory(Path.of(folder.getPath() + "/" + name));
+                Files.createDirectory(folder.getPath().resolve(name));
             else
-                Files.createFile(Path.of(folder.getPath() + "/" + name));
+                Files.createFile(folder.getPath().resolve(name));
             return n;
         } catch (Exception e) {
             e.printStackTrace();
@@ -182,6 +182,8 @@ public class NodeManager implements NodeService {
     }
 
     public Node getFromSource(Node source, Path path) {
+        if (source.getPath() == path)
+            return source;
         for (Node child : source.getChildren()) {
             if (path.equals(child.getPath()))
                 return child;
