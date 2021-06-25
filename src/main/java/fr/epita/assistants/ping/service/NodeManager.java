@@ -124,9 +124,9 @@ public class NodeManager implements NodeService {
         try {
             Node n = createNode(folder, name, type);
             if (n.isFolder())
-                Files.createDirectory(Path.of(folder.getPath() + "/" + name));
+                Files.createDirectory(folder.getPath().resolve(name));
             else
-                Files.createFile(Path.of(folder.getPath() + "/" + name));
+                Files.createFile(folder.getPath().resolve(name));
             return n;
         } catch (Exception e) {
             e.printStackTrace();

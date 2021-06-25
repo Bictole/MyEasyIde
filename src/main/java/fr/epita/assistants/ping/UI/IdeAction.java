@@ -9,10 +9,12 @@ import fr.epita.assistants.ping.service.ProjectManager;
 import org.eclipse.sisu.launch.Main;
 
 import javax.swing.*;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +33,8 @@ public class IdeAction {
         COPY("copy.png"),
         CUT("cut.png"),
         PASTE("paste.png"),
+        UNDO("undo.png"),
+        REDO("redo.png"),
         EXIT("exit.png");
 
         String path;
@@ -182,10 +186,10 @@ public class IdeAction {
                             .addComponent(btnCancel))
             );
 
-            f.pack();
             Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-            f.setLocation(dim.width / 2 - f.getSize().width / 2, dim.height / 2 - f.getSize().height / 2);
             f.setSize(dim.width / 4, dim.height / 8);
+            f.pack();
+            f.setLocation(dim.width / 2 - f.getSize().width / 2, dim.height / 2 - f.getSize().height / 2);
             f.setVisible(true);
             f.setDefaultCloseOperation(f.HIDE_ON_CLOSE);
         }
@@ -220,7 +224,7 @@ public class IdeAction {
             Node root = mainFrame.project.getRootNode();
             // dialog to get the name
             nodeService.create(nodeService.getFromSource(root, path), "New Folder", Node.Types.FOLDER);
-
+            mainFrame.updateTree(root);
             System.out.println("New folder");
         }
     }
@@ -253,7 +257,7 @@ public class IdeAction {
             Node root = mainFrame.project.getRootNode();
             // dialog to get the name
             nodeService.create(nodeService.getFromSource(root, path), "New file", Node.Types.FILE);
-
+            mainFrame.updateTree(root);
             System.out.println("New file");
         }
     }
@@ -333,8 +337,10 @@ public class IdeAction {
         @Override
         public void actionPerformed(ActionEvent e) {
 
+            String home = System.getProperty("user.home");
+
             // Create an object of JFileChooser class
-            JFileChooser j = new JFileChooser(mainFrame.project.getRootNode().getPath().toFile());
+            JFileChooser j = new JFileChooser(Path.of(home).toFile());
 
             j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
@@ -491,6 +497,43 @@ public class IdeAction {
         }
     }
 
+    public static class actUndo extends AbstractAction {
+        private MainFrame mainFrame;
+
+
+        public actUndo(MainFrame frame ) {
+            this.mainFrame = frame;
+            putValue(Action.NAME, "Undo");
+            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.UNDO.path), mainFrame.iconWidth, mainFrame.iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_U);
+            putValue(Action.SHORT_DESCRIPTION, "Undo (CTRL+Z)");
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            mainFrame.getUndoManager().undo();
+        }
+    }
+
+    public static class actRedo extends AbstractAction {
+        private MainFrame mainFrame;
+
+        public actRedo(MainFrame frame) {
+            this.mainFrame = frame;
+            putValue(Action.NAME, "Redo");
+            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.REDO.path), mainFrame.iconWidth, mainFrame.iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
+            putValue(Action.SHORT_DESCRIPTION, "Redo (CTRL+Y)");
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            mainFrame.getUndoManager().redo();
+        }
+    }
+
     public static class actExit extends AbstractAction {
         private MainFrame mainFrame;
 
@@ -505,6 +548,7 @@ public class IdeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
         }
     }
 
