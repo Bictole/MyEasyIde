@@ -37,8 +37,10 @@ public class AnyAction {
             var AnyCleanUp = f.get();
             Feature.ExecutionReport report = AnyCleanUp.execute(frame.project);
 
-            if (!report.isSuccess())
+            if (!report.isSuccess()) {
                 System.out.println("Cleanup Failed");
+                frame.console.writeInConsole("CleanUp Failed");
+            }
             else
                 System.out.println("Cleanup Done");
         }

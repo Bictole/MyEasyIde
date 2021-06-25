@@ -2,6 +2,7 @@ package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
+import fr.epita.assistants.ping.feature.maven.Clean;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -35,10 +36,11 @@ public class MavenAction {
             }
 
             var MavenClean = f.get();
-            Feature.ExecutionReport report = MavenClean.execute(mainFrame.project);
+            Clean.ExecutionReportClean report = (Clean.ExecutionReportClean) MavenClean.execute(mainFrame.project);
 
-            if (!report.isSuccess())
-                System.out.println("Maven Clean Failed");
+            if (!report.isSuccess()) {
+                System.out.println("Maven Clean Failed : " + report.errorMessage);
+            }
             else
                 System.out.println("Maven Clean Done");
         }

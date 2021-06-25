@@ -14,6 +14,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -47,6 +48,7 @@ public class MainFrame extends JFrame {
     private ProjectService projectService;
 
     private File selectedFile = null;
+    public Console console;
 
     private UndoManager undoManager;
 
@@ -113,25 +115,34 @@ public class MainFrame extends JFrame {
         JScrollPane textView = new JScrollPane(jTextArea);
         JScrollPane treeView = initTree(project.getRootNode());
         createPopupMenu();
+        createConsole();
+        JScrollPane consoleView = console.scrollPane;
 
         //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
         //jToolBar.setBorder(new EtchedBorder());
+        jMenuBar.setBackground(Color.GRAY);
 
-        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, textView);
+        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,treeView, textView);
         mainSplitPane.setResizeWeight(0.10);
+        //JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, consoleView);
+
 
 
 
         this.setJMenuBar(jMenuBar);
         contentPane.add(jToolBar, BorderLayout.NORTH);
         contentPane.add(mainSplitPane, BorderLayout.CENTER);
+        //contentPane.add(bottomSplitPane, BorderLayout.CENTER);
         this.pack();
         if (!this.isVisible())
             this.setVisible(true);
     }
 
+
     private void createTextArea() {
         jTextArea = new JTextArea();
+        jTextArea.setBackground(Color.DARK_GRAY);
+        jTextArea.setForeground(Color.WHITE);
         undoManager = new UndoManager();
         jTextArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
             @Override
@@ -140,6 +151,14 @@ public class MainFrame extends JFrame {
             }
         });
 
+    }
+
+    private void createConsole()
+    {
+        console = new Console(jFrame);
+        console.init();
+        jFrame.setVisible(true);
+        return;
     }
 
     private void createMenuBar() {
@@ -208,6 +227,7 @@ public class MainFrame extends JFrame {
     private void createToolBar() {
         // Create a toolbar
         jToolBar = new JToolBar();
+        jToolBar.setBackground(Color.GRAY);
 
         jToolBar.add(new IdeAction.actOpenProject(this)).setHideActionText(true);
         jToolBar.add(new IdeAction.actSave(this)).setHideActionText(true);
@@ -296,6 +316,7 @@ public class MainFrame extends JFrame {
     private JScrollPane initTree(Node root) {
         DefaultMutableTreeNode top = createTree(root);
         jTree = new JTree(top);
+
         jTree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
