@@ -206,8 +206,22 @@ public class IdeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            File file = mainFrame.getSelectedFile();
+            Path path;
+            if (file == null)
+                path = mainFrame.project.getRootNode().getPath();
+            else if (file.isFile())
+                path = file.toPath().getParent();
+            else
+                path = file.toPath();
 
-            System.out.println("New");
+            ProjectService projectService = mainFrame.getProjectService();
+            NodeManager nodeService = (NodeManager)projectService.getNodeService();
+            Node root = mainFrame.project.getRootNode();
+            // dialog to get the name
+            nodeService.create(nodeService.getFromSource(root, path), "New Folder", Node.Types.FOLDER);
+
+            System.out.println("New folder");
         }
     }
 
@@ -237,9 +251,10 @@ public class IdeAction {
             ProjectService projectService = mainFrame.getProjectService();
             NodeManager nodeService = (NodeManager)projectService.getNodeService();
             Node root = mainFrame.project.getRootNode();
+            // dialog to get the name
             nodeService.create(nodeService.getFromSource(root, path), "New file", Node.Types.FILE);
 
-            System.out.println("New");
+            System.out.println("New file");
         }
     }
 
