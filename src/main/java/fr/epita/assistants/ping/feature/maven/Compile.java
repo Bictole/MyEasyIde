@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 public class Compile implements Feature {
-    private class ExecutionReportCompile implements Feature.ExecutionReport {
+    public class ExecutionReportCompile implements Feature.ExecutionReport {
         public final boolean success;
         public String errorMessage = "";
 

@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.UI.Panel;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
@@ -23,6 +24,13 @@ public class Console extends Panel
         scrollPane = new JScrollPane(textArea);
 
         System.setOut(new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                textArea.append(String.valueOf((char) b));
+            }
+        }));
+
+        System.setErr(new PrintStream(new OutputStream() {
             @Override
             public void write(int b) throws IOException {
                 textArea.append(String.valueOf((char) b));

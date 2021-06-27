@@ -11,7 +11,7 @@ import org.apache.maven.execution.MavenExecutionRequest;
 import java.util.Arrays;
 
 public class Package implements Feature {
-    private class ExecutionReportPackage implements Feature.ExecutionReport {
+    public class ExecutionReportPackage implements Feature.ExecutionReport {
         public final boolean success;
         public String errorMessage = "";
 

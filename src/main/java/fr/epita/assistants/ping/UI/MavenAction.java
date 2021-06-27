@@ -2,7 +2,8 @@ package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
-import fr.epita.assistants.ping.feature.maven.Clean;
+import fr.epita.assistants.ping.feature.maven.*;
+import fr.epita.assistants.ping.feature.maven.Package;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -70,10 +71,10 @@ public class MavenAction {
             }
 
             var MavenCompile = f.get();
-            Feature.ExecutionReport report = MavenCompile.execute(mainFrame.project);
+            Compile.ExecutionReportCompile report = (Compile.ExecutionReportCompile) MavenCompile.execute(mainFrame.project);
 
             if (!report.isSuccess())
-                System.out.println("Maven Compile Failed");
+                System.out.println("Maven Compile Failed" + report.getErrorMessage());
             else
                 System.out.println("Maven Compile Done");
         }
@@ -103,10 +104,10 @@ public class MavenAction {
             }
 
             var MavenExec = f.get();
-            Feature.ExecutionReport report = MavenExec.execute(mainFrame.project);
+            Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project);
 
             if (!report.isSuccess())
-                System.out.println("Maven Exec Failed");
+                System.out.println("Maven Exec Failed" + report.getErrorMessage());
             else
                 System.out.println("Maven Exec Done");
         }
@@ -136,10 +137,10 @@ public class MavenAction {
             }
 
             var MavenInstall = f.get();
-            Feature.ExecutionReport report = MavenInstall.execute(mainFrame.project);
+            Install.ExecutionReportInstall report = (Install.ExecutionReportInstall) MavenInstall.execute(mainFrame.project);
 
             if (!report.isSuccess())
-                System.out.println("Maven Install Failed");
+                System.out.println("Maven Install Failed" + report.getErrorMessage());
             else
                 System.out.println("Maven Install Done");
         }
@@ -169,10 +170,10 @@ public class MavenAction {
             }
 
             var MavenPackage = f.get();
-            Feature.ExecutionReport report = MavenPackage.execute(mainFrame.project);
+            Package.ExecutionReportPackage report = (Package.ExecutionReportPackage) MavenPackage.execute(mainFrame.project);
 
             if (!report.isSuccess())
-                System.out.println("Maven Package Failed");
+                System.out.println("Maven Package Failed" + report.getErrorMessage());
             else
                 System.out.println("Maven Package Done");
         }
@@ -202,10 +203,10 @@ public class MavenAction {
             }
 
             var MavenTest = f.get();
-            Feature.ExecutionReport report = MavenTest.execute(mainFrame.project);
+            Test.ExecutionReportTest report = (Test.ExecutionReportTest) MavenTest.execute(mainFrame.project);
 
             if (!report.isSuccess())
-                System.out.println("Maven Test Failed");
+                System.out.println("Maven Test Failed" + report.getErrorMessage());
             else
                 System.out.println("Maven Test Done");
         }
@@ -235,10 +236,10 @@ public class MavenAction {
             }
 
             var MavenClean = f.get();
-            Feature.ExecutionReport report = MavenClean.execute(mainFrame.project, "-Doutput=tree_output.txt");
+            Clean.ExecutionReportClean report = (Clean.ExecutionReportClean) MavenClean.execute(mainFrame.project, "-Doutput=tree_output.txt");
 
             if (!report.isSuccess())
-                System.out.println("Maven Tree Failed");
+                System.out.println("Maven Tree Failed" + report.getErrorMessage());
             else
                 System.out.println("Maven Tree Done");
         }
