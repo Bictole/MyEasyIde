@@ -41,14 +41,13 @@ public class Push implements Feature {
     @Override
     public ExecutionReport execute(Project project, Object... params) {
         try {
-            return pull((AnyProject) project);
+            return push((AnyProject) project);
         } catch (Exception e) {
-            e.printStackTrace();
             return new Push.ExecutionReportPush("Error when execution -> jgit add error");
         }
     }
 
-    private Push.ExecutionReportPush pull(AnyProject project) throws IOException, GitAPIException {
+    private Push.ExecutionReportPush push(AnyProject project) throws IOException, GitAPIException {
         Git git = project.getgit();
         try {
             RemoteAddCommand remoteAddCommand = git.remoteAdd();

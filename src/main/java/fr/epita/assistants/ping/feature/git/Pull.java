@@ -39,8 +39,7 @@ public class Pull implements Feature {
         try {
             return pull(project);
         } catch (Exception e) {
-            e.printStackTrace();
-            return new Pull.ExecutionReportPull("Error when execution -> jgit add error");
+            return new Pull.ExecutionReportPull(e.getMessage());
         }
     }
 

@@ -43,8 +43,7 @@ public class Add implements Feature {
         try {
             return add((AnyProject) project, params);
         } catch (Exception e) {
-            e.printStackTrace();
-            return new Add.ExecutionReportAdd("Error when execution -> jgit add error");
+            return new Add.ExecutionReportAdd(e.getMessage());
         }
     }
 

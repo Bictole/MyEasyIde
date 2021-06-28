@@ -41,8 +41,7 @@ public class Commit implements Feature {
                 msg = (String) params[0];
             return commit((AnyProject) project, msg);
         } catch (Exception e) {
-            e.printStackTrace();
-            return new Commit.ExecutionReportCommit("Error when execution -> jgit commit error");
+            return new Commit.ExecutionReportCommit(e.getMessage());
         }
     }
 

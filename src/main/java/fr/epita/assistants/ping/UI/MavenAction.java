@@ -105,11 +105,7 @@ public class MavenAction {
 
             var MavenExec = f.get();
             Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project);
-
-            if (!report.isSuccess())
-                System.out.println("Maven Exec Failed" + report.getErrorMessage());
-            else
-                System.out.println("Maven Exec Done");
+            System.out.println(report.getOutput());
         }
     }
 
