@@ -189,9 +189,8 @@ public class IdeAction {
         System.out.println("New " + type.toString() + ": " + name);
     }
 
-    private static String getNameDialog(MainFrame frame, String message)
-    {
-        String result = (String)JOptionPane.showInputDialog(
+    private static String getNameDialog(MainFrame frame, String message) {
+        String result = (String) JOptionPane.showInputDialog(
                 frame,
                 message,
                 "",
@@ -200,12 +199,15 @@ public class IdeAction {
                 null,
                 "Name"
         );
-        if(result != null && result.length() > 0){
-            return result;
-        } else {
-            errorDialog(frame, "Invalid name: " + result);
-            return null;
+        if (result != null) {
+            if (result.length() > 0) {
+                return result;
+            } else {
+                // test if valid filename
+                errorDialog(frame, "Invalid name: " + result);
+            }
         }
+        return null;
     }
 
     public static class actNewFolder extends ActionTemplate {
