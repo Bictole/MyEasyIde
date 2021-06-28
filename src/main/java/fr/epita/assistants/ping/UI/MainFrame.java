@@ -12,9 +12,11 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoManager;
@@ -26,6 +28,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fr.epita.assistants.ping.UI.Panel.Graphics;
 import org.fife.ui.rtextarea.*;
 import org.fife.ui.rsyntaxtextarea.*;
 
@@ -63,6 +66,16 @@ public class MainFrame extends JFrame {
         jFrame = this;
         this.projectService = projectService;
 
+        System.setProperty("GRIS_SOMBRE", "0X221F1F");
+        System.setProperty("GRIS_CLAIR", "0X737373");
+        System.setProperty("GRIS_MIDDLE", "0x3A353C");
+        System.setProperty("PRUNE", "0X44233B");
+        System.setProperty("BORDEAU", "0X682636");
+        System.setProperty("BLEU_ELECTRIQUE", "0X5AC0E6");
+        System.setProperty("VIOLET", "0X844CA2");
+        System.setProperty("ROSE", "0XE54F72");
+        System.setProperty("ROSE_CLAIR", "0XF19CBD");
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
@@ -90,23 +103,29 @@ public class MainFrame extends JFrame {
         createTextArea();
         createMenuBar();
         createToolBar();
-        JScrollPane textView = new JScrollPane(rSyntaxTextArea);
+        JScrollPane textView = new JScrollPane(rSyntaxTextArea);;
+        Graphics.ScrollPaneDesign(textView);
+
         JScrollPane treeView = initTree(project.getRootNode());
+        Graphics.ScrollPaneDesign(treeView);
+
         createPopupMenu();
         createConsole();
         JScrollPane consoleView = console.scrollPane;
+        Graphics.ScrollPaneDesign(consoleView);
 
         //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
         //jToolBar.setBorder(new EtchedBorder());
 
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,treeView, textView);
         mainSplitPane.setResizeWeight(0.10);
+        //mainSplitPane.setBackground(Color.getColor("GRIS_CLAIR"));
         JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, consoleView);
-
+        //bottomSplitPane.setForeground(Color.getColor("GRIS_CLAIR"));
 
         this.setJMenuBar(jMenuBar);
         contentPane.add(jToolBar, BorderLayout.NORTH);
-        contentPane.add(bottomSplitPane, BorderLayout.CENTER);
+        contentPane.add(bottomSplitPane, BorderLayout.SOUTH);
         this.pack();
         if (!this.isVisible())
             this.setVisible(true);
@@ -164,11 +183,14 @@ public class MainFrame extends JFrame {
     private void createMenuBar() {
         // Create a menubar
         jMenuBar = new JMenuBar();
+        jMenuBar.setBackground(Color.getColor("GRIS_SOMBRE"));
 
         // Create a menu
         JMenu mFile = new JMenu("File");
+        mFile.setForeground(Color.WHITE);
         mFile.setMnemonic('F');
         JMenu mNew = new JMenu("New");
+        mNew.setForeground(Color.WHITE);
         mNew.add(new IdeAction.actNewProject(this));
         mNew.addSeparator();
         mNew.add(new IdeAction.actNewFile(this));
@@ -183,6 +205,7 @@ public class MainFrame extends JFrame {
 
         JMenu mEdit = new JMenu("Edit");
         mEdit.setMnemonic('E');
+        mEdit.setForeground(Color.WHITE);
 
         mEdit.add(new IdeAction.actUndo(this));
         mEdit.add(new IdeAction.actRedo(this));
@@ -195,6 +218,7 @@ public class MainFrame extends JFrame {
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
             JMenu mGit = new JMenu("Git");
+            mGit.setForeground(Color.WHITE);
             mGit.setMnemonic('G');
             mGit.add(new GitAction.actGitPull(this));
             mGit.add(new GitAction.actGitAdd(this));
@@ -206,6 +230,7 @@ public class MainFrame extends JFrame {
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.MAVEN)) {
             JMenu mMaven = new JMenu("Maven");
+            mMaven.setForeground(Color.WHITE);
             mMaven.setMnemonic('M');
             mMaven.add(new MavenAction.actMvnClean(this));
             mMaven.add(new MavenAction.actMvnCompile(this));
@@ -228,7 +253,7 @@ public class MainFrame extends JFrame {
     private void createToolBar() {
         // Create a toolbar
         jToolBar = new JToolBar();
-        jToolBar.setBackground(Color.GRAY);
+        jToolBar.setBackground(Color.getColor("GRIS_MIDDLE"));
 
         jToolBar.add(new IdeAction.actOpenProject(this)).setHideActionText(true);
         jToolBar.add(new IdeAction.actSave(this)).setHideActionText(true);
@@ -319,6 +344,14 @@ public class MainFrame extends JFrame {
         DefaultMutableTreeNode top = createTree(root);
         jTree = new JTree(top);
 
+        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) jTree.getCellRenderer();
+        renderer.setTextSelectionColor(Color.white);
+        renderer.setBackgroundSelectionColor(Color.getColor("ROSE"));
+        renderer.setBorderSelectionColor(Color.black);
+        renderer.setTextNonSelectionColor(Color.getColor("BLEU_ELECTRIQUE"));
+        renderer.setBackgroundNonSelectionColor(Color.getColor("PRUNE"));
+        jTree.setBackground(Color.getColor("PRUNE"));
+
         jTree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -336,6 +369,7 @@ public class MainFrame extends JFrame {
             }
         });
         JScrollPane treeView = new JScrollPane(jTree);
+        treeView.setBackground(Color.getColor("GRIS_CLAIR"));
         return treeView;
     }
 
