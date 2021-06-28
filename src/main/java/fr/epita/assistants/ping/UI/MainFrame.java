@@ -26,12 +26,16 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.fife.ui.rtextarea.*;
+import org.fife.ui.rsyntaxtextarea.*;
+
+
 public class MainFrame extends JFrame {
 
     public JFrame jFrame;
 
     private JTree jTree;
-    private JTextArea jTextArea;
+    private RSyntaxTextArea rSyntaxTextArea;
     private JToolBar jToolBar;
     private JMenuBar jMenuBar;
 
@@ -106,7 +110,7 @@ public class MainFrame extends JFrame {
         createTextArea();
         createMenuBar();
         createToolBar();
-        JScrollPane textView = new JScrollPane(jTextArea);
+        JScrollPane textView = new JScrollPane(rSyntaxTextArea);
         JScrollPane treeView = initTree(project.getRootNode());
         createPopupMenu();
         createConsole();
@@ -128,19 +132,47 @@ public class MainFrame extends JFrame {
             this.setVisible(true);
     }
 
+    public static void setFont(RSyntaxTextArea textArea, Font font) {
+        if (font != null) {
+            SyntaxScheme ss = textArea.getSyntaxScheme();
+            ss = (SyntaxScheme) ss.clone();
+            for (int i = 0; i < ss.getStyleCount(); i++) {
+                if (ss.getStyle(i) != null) {
+                    ss.getStyle(i).font = font;
+                }
+            }
+            textArea.setSyntaxScheme(ss);
+            textArea.setFont(font);
+        }
+    }
 
     private void createTextArea() {
-        jTextArea = new JTextArea();
-        jTextArea.setBackground(Color.DARK_GRAY);
-        jTextArea.setForeground(Color.WHITE);
+        rSyntaxTextArea = new RSyntaxTextArea();
+        rSyntaxTextArea.setBackground(Color.DARK_GRAY);
+        rSyntaxTextArea.setForeground(Color.WHITE);
+        rSyntaxTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        rSyntaxTextArea.setCodeFoldingEnabled(true);
+        rSyntaxTextArea.setAnimateBracketMatching(true);
+
+
         undoManager = new UndoManager();
-        jTextArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
+        rSyntaxTextArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
             @Override
             public void undoableEditHappened(UndoableEditEvent e) {
                 undoManager.addEdit(e.getEdit());
             }
         });
 
+        // Set the font for all token types.
+        // setFont(rSyntaxTextArea, new Font("Comic Sans MS", Font.PLAIN, 16));
+
+        try {
+            Theme theme = Theme.load(getClass().getResourceAsStream(
+                    "/themes/vs.xml"));
+            theme.apply(rSyntaxTextArea);
+        } catch (IOException ioe) { // Never happens
+            ioe.printStackTrace();
+        }
     }
 
     private void createConsole()
@@ -175,9 +207,9 @@ public class MainFrame extends JFrame {
         mEdit.add(new IdeAction.actUndo(this));
         mEdit.add(new IdeAction.actRedo(this));
         mEdit.addSeparator();
-        mEdit.add(new IdeAction.actCut(this, jTextArea));
-        mEdit.add(new IdeAction.actCopy(this, jTextArea));
-        mEdit.add(new IdeAction.actPaste(this, jTextArea));
+        mEdit.add(new IdeAction.actCut(this, rSyntaxTextArea));
+        mEdit.add(new IdeAction.actCopy(this, rSyntaxTextArea));
+        mEdit.add(new IdeAction.actPaste(this, rSyntaxTextArea));
         jMenuBar.add(mEdit);
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
@@ -222,9 +254,9 @@ public class MainFrame extends JFrame {
         jToolBar.addSeparator();
         jToolBar.add(new IdeAction.actUndo(this)).setHideActionText(true);
         jToolBar.add(new IdeAction.actRedo(this)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actCopy(this, jTextArea)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actCut(this, jTextArea)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actPaste(this, jTextArea)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actCopy(this, rSyntaxTextArea)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actCut(this, rSyntaxTextArea)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actPaste(this, rSyntaxTextArea)).setHideActionText(true);
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
         jToolBar.add(label);
@@ -241,16 +273,16 @@ public class MainFrame extends JFrame {
     {
         JPopupMenu textPopupMenu = new JPopupMenu();
         JPopupMenu treePopupMenu = new JPopupMenu();
-        textPopupMenu.add(new IdeAction.actCopy(this, jTextArea));
-        textPopupMenu.add(new IdeAction.actCut(this, jTextArea));
-        textPopupMenu.add(new IdeAction.actPaste(this, jTextArea));
+        textPopupMenu.add(new IdeAction.actCopy(this, rSyntaxTextArea));
+        textPopupMenu.add(new IdeAction.actCut(this, rSyntaxTextArea));
+        textPopupMenu.add(new IdeAction.actPaste(this, rSyntaxTextArea));
 
         JMenu mNew = new JMenu("New");
         mNew.add(new IdeAction.actNewFile(this));
         mNew.add(new IdeAction.actNewFolder(this));
         treePopupMenu.add(mNew);
 
-        jTextArea.addMouseListener( new MouseAdapter() {
+        rSyntaxTextArea.addMouseListener( new MouseAdapter() {
             @Override public void mousePressed( MouseEvent event ) {
                 if ( event.isPopupTrigger() ) {
                     textPopupMenu.show( event.getComponent(), event.getX(), event.getY() );
@@ -295,7 +327,7 @@ public class MainFrame extends JFrame {
             String text = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).stream()
                     .collect(Collectors.joining(System.lineSeparator()));
             // Set the text
-            jTextArea.setText(text);
+            rSyntaxTextArea.setText(text);
         } catch (Exception evt) {
             JOptionPane.showMessageDialog(jFrame, evt.getMessage());
         }
