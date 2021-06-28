@@ -13,15 +13,12 @@ import java.util.Arrays;
 public class Package implements Feature {
     public class ExecutionReportPackage implements Feature.ExecutionReport {
         public final boolean success;
-        public String errorMessage = "";
+        public String Output = "";
 
-        public ExecutionReportPackage() {
-            this.success = true;
-        }
 
-        public ExecutionReportPackage(String errorMessage) {
-            this.success = false;
-            this.errorMessage = errorMessage;
+        public ExecutionReportPackage(Boolean success, String Output) {
+            this.success = success;
+            this.Output = Output;
         }
 
         @Override
@@ -29,22 +26,26 @@ public class Package implements Feature {
             return success;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public String getOutput() {
+            return Output;
         }
     }
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
+
         ProcessBuilder pb = new ProcessBuilder("mvn", "package");
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            pb.start().waitFor();
+            var process = pb.start();
+            String result = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
 
-            return new Package.ExecutionReportPackage();
+            return new ExecutionReportPackage(true, result);
+
         } catch (Exception e) {
-            return new Package.ExecutionReportPackage("Maven Package failed :" + e.getMessage());
+            return new ExecutionReportPackage(false, "Maven Package failed :" + e.getMessage());
         }
     }
 

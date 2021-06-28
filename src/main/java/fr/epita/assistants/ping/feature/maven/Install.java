@@ -13,15 +13,12 @@ import java.util.Arrays;
 public class Install implements Feature {
     public class ExecutionReportInstall implements Feature.ExecutionReport {
         public final boolean success;
-        public String errorMessage = "";
+        public String Output = "";
 
-        public ExecutionReportInstall() {
-            this.success = true;
-        }
 
-        public ExecutionReportInstall(String errorMessage) {
-            this.success = false;
-            this.errorMessage = errorMessage;
+        public ExecutionReportInstall(Boolean success, String Output) {
+            this.success = success;
+            this.Output = Output;
         }
 
         @Override
@@ -29,24 +26,26 @@ public class Install implements Feature {
             return success;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public String getOutput() {
+            return Output;
         }
     }
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
+
         ProcessBuilder pb = new ProcessBuilder("mvn", "install");
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            pb.start().waitFor();
+            var process = pb.start();
+            String result = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
 
-            return new Install.ExecutionReportInstall();
-        }
-        catch (Exception e)
-        {
-            return new Install.ExecutionReportInstall("Maven Install failed :" + e.getMessage());
+            return new ExecutionReportInstall(true, result);
+
+        } catch (Exception e) {
+            return new ExecutionReportInstall(false, "Maven Exec failed :" + e.getMessage());
         }
     }
 

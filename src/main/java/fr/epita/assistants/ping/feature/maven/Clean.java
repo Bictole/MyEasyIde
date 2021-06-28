@@ -8,40 +8,40 @@ public class Clean implements Feature {
 
     public static class ExecutionReportClean implements Feature.ExecutionReport {
         public final boolean success;
-        public String errorMessage = "";
+        public String output = "";
 
-        public ExecutionReportClean() {
-            this.success = true;
+        public ExecutionReportClean(Boolean success, String Output) {
+            this.success = success;
+            this.output = Output;
         }
 
-        public ExecutionReportClean(String errorMessage) {
-            this.success = false;
-            this.errorMessage = errorMessage;
-        }
 
         @Override
         public boolean isSuccess() {
             return success;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public String getOutput() {
+            return output;
         }
     }
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
         ProcessBuilder pb = new ProcessBuilder("mvn", "clean");
+        String result = "";
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            pb.start().waitFor();
+            Process process = pb.start();
+            result = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
 
-            return new ExecutionReportClean();
+            return new Clean.ExecutionReportClean(true, result);
 
         } catch (Exception e) {
 
-            return new ExecutionReportClean("Maven Clean failed :" + e.getMessage());
+            return new Clean.ExecutionReportClean(false, result);
         }
     }
 

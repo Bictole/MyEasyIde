@@ -14,17 +14,15 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 public class Tree implements Feature {
+
     public class ExecutionReportTree implements Feature.ExecutionReport {
         public final boolean success;
-        public String errorMessage = "";
+        public String output = "";
 
-        public ExecutionReportTree() {
-            this.success = true;
-        }
 
-        public ExecutionReportTree(String errorMessage) {
-            this.success = false;
-            this.errorMessage = errorMessage;
+        public ExecutionReportTree(Boolean success, String Output) {
+            this.success = success;
+            this.output = Output;
         }
 
         @Override
@@ -32,24 +30,25 @@ public class Tree implements Feature {
             return success;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
-        }
+        public String getOutput() { return output; }
     }
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
         ProcessBuilder pb = new ProcessBuilder("mvn", "dependency:tree", (String) params[0]);
+        String result = "";
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            pb.start().waitFor();
+            Process process = pb.start();
+            result = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
 
-            return new Tree.ExecutionReportTree();
+            return new Tree.ExecutionReportTree(true, result);
         }
         catch (Exception e)
         {
-            return new Tree.ExecutionReportTree("Maven Tree failed :" + e.getMessage());
+            return new Tree.ExecutionReportTree(false, result);
         }
     }
 
