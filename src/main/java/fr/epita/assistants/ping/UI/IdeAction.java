@@ -22,30 +22,6 @@ import java.nio.file.Paths;
 
 public class IdeAction {
 
-    enum Icons {
-        NEW_PROJECT("newProject.png"),
-        OPEN_PROJECT("open.png"),
-        NEW_FOLDER("newFolder.png"),
-        NEW_FILE("newFile.png"),
-        OPEN("open.png"),
-        SAVE("save.png"),
-        SAVE_AS("save_as.png"),
-        COPY("copy.png"),
-        CUT("cut.png"),
-        PASTE("paste.png"),
-        UNDO("undo.png"),
-        REDO("redo.png"),
-        EXIT("exit.png"),
-        RUN("exit.png");
-
-        String path;
-
-        Icons(String s) {
-            String mainPath = "src/main/resources/icons/";
-            path = mainPath + s;
-        }
-    }
-
     public static class actNewProject extends AbstractAction {
 
         private MainFrame mainFrame;
@@ -215,7 +191,6 @@ public class IdeAction {
         ProjectService projectService = mainFrame.getProjectService();
         NodeManager nodeService = (NodeManager)projectService.getNodeService();
         Node root = mainFrame.project.getRootNode();
-        // dialog to get the name
         nodeService.create(nodeService.getFromSource(root, path), name, type);
         mainFrame.updateTree(root);
         System.out.println("New " + type.toString() + ": " + name);
@@ -373,11 +348,9 @@ public class IdeAction {
         }
     }
 
-    /*
     public static abstract class FileAction extends AbstractAction {
-        private JTextArea jTextArea;
 
-        public FileAction(String name, Icon icon, KeyEvent mnemonic, String description, KeyStroke keyStroke) {
+        public FileAction(String name, Icon icon, int mnemonic, String description, KeyStroke keyStroke) {
             putValue(Action.NAME, name);
             putValue(Action.SMALL_ICON, icon);
             putValue(Action.MNEMONIC_KEY, mnemonic);
@@ -385,19 +358,19 @@ public class IdeAction {
             putValue(Action.ACCELERATOR_KEY, keyStroke);
         }
     }
-    */
 
-    public static class actSave extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actSave extends FileAction {
+        private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actSave(MainFrame frame) {
+            super("Save File",
+                    MainFrame.resizeIcon(new ImageIcon(Icons.SAVE.path), frame.iconWidth, frame.iconHeight),
+                    KeyEvent.VK_S,
+                    "Save file (CTRL+S)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_S,
+                            KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            putValue(Action.NAME, "Save File");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.SAVE.path), mainFrame.iconWidth, mainFrame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
-            putValue(Action.SHORT_DESCRIPTION, "Save file (CTRL+S)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -435,21 +408,23 @@ public class IdeAction {
         }
     }
 
-    ;
-
-    public static class actSaveAs extends AbstractAction {
+    public static class actSaveAs extends FileAction {
         private MainFrame mainFrame;
 
         public actSaveAs(MainFrame frame) {
+            super("Save As...",
+                    MainFrame.resizeIcon(new ImageIcon(Icons.SAVE_AS.path), frame.iconWidth, frame.iconHeight),
+                    KeyEvent.VK_A,
+                    "Save file as",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK)
+                    );
             this.mainFrame = frame;
-            putValue(Action.NAME, "Save As...");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.SAVE_AS.path), frame.iconWidth, frame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
-            putValue(Action.SHORT_DESCRIPTION, "Save file as");
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            // TODO
+            System.out.println("Save_As action: Not implemented yet");
         }
     }
 

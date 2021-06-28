@@ -24,7 +24,7 @@ public class GitAction {
         {
             super("Git Commit");
             putValue(Action.NAME, "Git Commit");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitCommit.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.GIT_COMMIT.path), frame.iconWidth, frame.iconHeight));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Git Commit");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -60,7 +60,7 @@ public class GitAction {
         public actGitAdd(MainFrame frame)
         {
             putValue(Action.NAME, "Git Add");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitAdd.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.GIT_ADD.path), frame.iconWidth, frame.iconHeight));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Git Add");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -120,7 +120,7 @@ public class GitAction {
         {
             super("Git Commit");
             putValue(Action.NAME, "Git Pull");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitPull.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.GIT_PULL.path), frame.iconWidth, frame.iconHeight));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Git Pull");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -155,7 +155,7 @@ public class GitAction {
         {
             super("Git Commit");
             putValue(Action.NAME, "Git Push");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitPush.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.GIT_PUSH.path), frame.iconWidth, frame.iconHeight));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Git Push");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
