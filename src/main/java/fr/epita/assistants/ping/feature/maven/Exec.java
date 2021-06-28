@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.feature.maven;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.feature.any.Run;
 import org.apache.maven.DefaultMaven;
 import org.apache.maven.Maven;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
@@ -39,16 +40,19 @@ public class Exec implements Feature {
 
         String mainClass = (String) params[0];
         ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "exec:java", "-Dexec.mainClass=" + mainClass);
+        String result = "";
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-            pb.start().waitFor();
+            Process process = pb.start();
+            result = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
 
             return new Exec.ExecutionReportExecute(true, result);
-
-        } catch (Exception e) {
-            return new Exec.ExecutionReportExecute(false, "Maven Exec failed :" + e.getMessage());
+        }
+        catch (Exception e)
+        {
+            return new Exec.ExecutionReportExecute(false, result + '\n' + e.getMessage());
         }
     }
 

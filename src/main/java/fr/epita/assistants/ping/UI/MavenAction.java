@@ -111,11 +111,7 @@ public class MavenAction {
 
             ExecConfig execConfig = new ExecConfig(mainFrame, searchReport.getFilesMatch());
             Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project, execConfig.getMainClass());
-            if (!report.isSuccess())
-                System.out.println("Maven Exec Failed" + report.getErrorMessage());
-            else
-                System.out.println("Maven Exec Done");
-
+            System.out.println(report.getOutput());
         }
     }
 
