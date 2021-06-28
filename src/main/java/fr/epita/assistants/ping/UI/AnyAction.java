@@ -2,6 +2,10 @@ package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
+import fr.epita.assistants.ping.UI.Panel.ExecConfig;
+import fr.epita.assistants.ping.feature.any.Run;
+import fr.epita.assistants.ping.feature.any.Search;
+import fr.epita.assistants.ping.feature.maven.Exec;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -112,6 +116,42 @@ public class AnyAction {
                 System.out.println("Search Failed");
             else
                 System.out.println("Search Done");
+        }
+    };
+
+    public static class actAnyRun extends AbstractAction {
+
+        MainFrame frame;
+
+        public actAnyRun(MainFrame frame)
+        {
+            this.frame = frame;
+            putValue(Action.NAME, "Run");
+            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitAdd.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
+            putValue(Action.SHORT_DESCRIPTION, "Run");
+            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            this.frame = frame;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Optional<Feature> f = frame.project.getFeature(Mandatory.Features.Any.RUN);
+
+            if (f.isEmpty()) {
+                System.out.println("Error when finding the Feature");
+                return;
+            }
+
+            var AnyRun = f.get();
+
+            Search.ExecutionReportSearch searchReport = (Search.ExecutionReportSearch)
+                    frame.getProjectService().execute(frame.project, Mandatory.Features.Any.SEARCH, "public static void main");
+
+            ExecConfig execConfig = new ExecConfig(frame, searchReport.getFilesMatch());
+
+            Run.ExecutionReportRun report = (Run.ExecutionReportRun) AnyRun.execute(frame.project, execConfig.getMainFile(), execConfig.getMainParentPath(), execConfig.getMainClass(), execConfig.getMainPackagePath());
+            System.out.println(report.getOutput());
         }
     };
 }

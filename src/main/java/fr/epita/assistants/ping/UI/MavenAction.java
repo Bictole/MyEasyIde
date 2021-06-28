@@ -2,13 +2,25 @@ package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
+import fr.epita.assistants.ping.UI.Panel.ExecConfig;
+import fr.epita.assistants.ping.feature.any.Search;
 import fr.epita.assistants.ping.feature.maven.*;
 import fr.epita.assistants.ping.feature.maven.Package;
+import fr.epita.assistants.ping.project.AnyProject;
+import org.apache.commons.io.FilenameUtils;
+import org.eclipse.jgit.api.Status;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class MavenAction {
 
@@ -92,9 +104,13 @@ public class MavenAction {
                 System.out.println("THIS PROJECT IS NOT A MAVEN PROJECT");
                 return;
             }
-
             var MavenExec = f.get();
-            Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project);
+
+            Search.ExecutionReportSearch searchReport = (Search.ExecutionReportSearch)
+                    mainFrame.getProjectService().execute(mainFrame.project, Mandatory.Features.Any.SEARCH, "public static void main");
+
+            ExecConfig execConfig = new ExecConfig(mainFrame, searchReport.getFilesMatch());
+            Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project, execConfig.getMainClass());
             System.out.println(report.getOutput());
         }
     }
