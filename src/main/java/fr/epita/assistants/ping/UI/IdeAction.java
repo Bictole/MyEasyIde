@@ -195,6 +195,50 @@ public class IdeAction {
         }
     }
 
+    private static void errorDialog(MainFrame frame, String message) {
+        JOptionPane.showMessageDialog(frame, message);
+    }
+
+    private static void abstractNewFile(MainFrame mainFrame, Node.Types type, String name) {
+        if (name == null)
+            return;
+        File file = mainFrame.getSelectedFile();
+        Path path;
+        if (file == null)
+            path = mainFrame.project.getRootNode().getPath();
+        else if (file.isFile())
+            path = file.toPath().getParent();
+        else
+            path = file.toPath();
+
+        ProjectService projectService = mainFrame.getProjectService();
+        NodeManager nodeService = (NodeManager)projectService.getNodeService();
+        Node root = mainFrame.project.getRootNode();
+        // dialog to get the name
+        nodeService.create(nodeService.getFromSource(root, path), name, type);
+        mainFrame.updateTree(root);
+        System.out.println("New " + type.toString() + ": " + name);
+    }
+
+    private static String getNameDialog(MainFrame frame, String message)
+    {
+        String result = (String)JOptionPane.showInputDialog(
+                frame,
+                message,
+                "",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                "Name"
+        );
+        if(result != null && result.length() > 0){
+            return result;
+        } else {
+            errorDialog(frame, "Invalid name: " + result);
+            return null;
+        }
+    }
+
     public static class actNewFolder extends AbstractAction {
 
         private MainFrame mainFrame;
@@ -210,22 +254,8 @@ public class IdeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            File file = mainFrame.getSelectedFile();
-            Path path;
-            if (file == null)
-                path = mainFrame.project.getRootNode().getPath();
-            else if (file.isFile())
-                path = file.toPath().getParent();
-            else
-                path = file.toPath();
-
-            ProjectService projectService = mainFrame.getProjectService();
-            NodeManager nodeService = (NodeManager)projectService.getNodeService();
-            Node root = mainFrame.project.getRootNode();
-            // dialog to get the name
-            nodeService.create(nodeService.getFromSource(root, path), "New Folder", Node.Types.FOLDER);
-            mainFrame.updateTree(root);
-            System.out.println("New folder");
+            String name = getNameDialog(mainFrame, "Enter folder name");
+            abstractNewFile(mainFrame, Node.Types.FOLDER, name);
         }
     }
 
@@ -243,22 +273,8 @@ public class IdeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            File file = mainFrame.getSelectedFile();
-            Path path;
-            if (file == null)
-                path = mainFrame.project.getRootNode().getPath();
-            else if (file.isFile())
-                path = file.toPath().getParent();
-            else
-                path = file.toPath();
-
-            ProjectService projectService = mainFrame.getProjectService();
-            NodeManager nodeService = (NodeManager)projectService.getNodeService();
-            Node root = mainFrame.project.getRootNode();
-            // dialog to get the name
-            nodeService.create(nodeService.getFromSource(root, path), "New file", Node.Types.FILE);
-            mainFrame.updateTree(root);
-            System.out.println("New file");
+            String name = getNameDialog(mainFrame, "Enter file name");
+            abstractNewFile(mainFrame, Node.Types.FILE, name);
         }
     }
 
