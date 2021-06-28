@@ -19,14 +19,11 @@ import java.util.regex.Pattern;
 public class CleanUp implements Feature{
     private class ExecutionReportCleanUp implements Feature.ExecutionReport {
         public final boolean success;
-        public String errorMessage = "";
+        public String output;
 
-        public ExecutionReportCleanUp() {
-            this.success = true;
-        }
-        public ExecutionReportCleanUp(String errorMessage) {
-            this.success = false;
-            this.errorMessage = errorMessage;
+        public ExecutionReportCleanUp(Boolean success, String output) {
+            this.success = success;
+            this.output = output;
         }
 
         @Override
@@ -35,14 +32,12 @@ public class CleanUp implements Feature{
         }
 
         public String getErrorMessage() {
-            return errorMessage;
+            return output;
         }
     }
 
     @Override
     public ExecutionReport execute(Project project, Object... param) {
-        /*if (param.length > 0)
-            return new CleanUp.ExecutionReportCleanUp("Too much argument provided");*/
 
         NodeManager nodeManager = new NodeManager();
 
@@ -92,10 +87,10 @@ public class CleanUp implements Feature{
         }
         catch (Exception e)
         {
-            return new ExecutionReportCleanUp("Deletion failed");
+            return new ExecutionReportCleanUp(false, "Deletion failed");
         }
 
-        return new ExecutionReportCleanUp();
+        return new ExecutionReportCleanUp(true, "");
     }
 
     @Override

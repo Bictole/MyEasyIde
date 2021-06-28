@@ -8,21 +8,20 @@ import org.apache.maven.Maven;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class Exec implements Feature {
 
     public class ExecutionReportExecute implements Feature.ExecutionReport {
         public final boolean success;
-        public String errorMessage = "";
+        public String Output = "";
 
-        public ExecutionReportExecute() {
-            this.success = true;
-        }
 
-        public ExecutionReportExecute(String errorMessage) {
-            this.success = false;
-            this.errorMessage = errorMessage;
+        public ExecutionReportExecute(Boolean success, String Output) {
+            this.success = success;
+            this.Output = Output;
         }
 
         @Override
@@ -30,24 +29,26 @@ public class Exec implements Feature {
             return success;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public String getOutput() {
+            return Output;
         }
     }
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
+
         ProcessBuilder pb = new ProcessBuilder("mvn", "exec");
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            pb.inheritIO();
-            pb.start().waitFor();
+            var process = pb.start();
+            String result = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
 
-            return new Exec.ExecutionReportExecute();
+            return new Exec.ExecutionReportExecute(true, result);
 
         } catch (Exception e) {
-            return new Exec.ExecutionReportExecute("Maven Exec failed :" + e.getMessage());
+            return new Exec.ExecutionReportExecute(false, "Maven Exec failed :" + e.getMessage());
         }
     }
 

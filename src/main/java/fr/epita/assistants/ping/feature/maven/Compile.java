@@ -15,15 +15,12 @@ import java.util.Arrays;
 public class Compile implements Feature {
     public class ExecutionReportCompile implements Feature.ExecutionReport {
         public final boolean success;
-        public String errorMessage = "";
+        public String output = "";
 
-        public ExecutionReportCompile() {
-            this.success = true;
-        }
-
-        public ExecutionReportCompile(String errorMessage) {
-            this.success = false;
-            this.errorMessage = errorMessage;
+        public ExecutionReportCompile(Boolean success, String Output)
+        {
+            this.output = Output;
+            this.success = success;
         }
 
         @Override
@@ -31,8 +28,8 @@ public class Compile implements Feature {
             return success;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public String getOutput() {
+            return output;
         }
     }
 
@@ -41,16 +38,21 @@ public class Compile implements Feature {
     public Feature.ExecutionReport execute(Project project, Object... params) {
         ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "-DbuildDirectory=" + project.getRootNode().getPath().resolve("target"));
 
+        String result = "";
+
         try {
             pb.directory(project.getRootNode().getPath().toFile());
             pb.start().waitFor();
-
-            return new Compile.ExecutionReportCompile();
+            Process process = pb.start();
+            result = new String(process.getInputStream().readAllBytes());
+            return new Compile.ExecutionReportCompile(true, result);
         }
         catch (Exception e)
         {
-            return new Compile.ExecutionReportCompile("Maven Compile failed :" + e.getMessage());
+            return new Compile.ExecutionReportCompile(false, result);
         }
+
+
     }
 
     @Override

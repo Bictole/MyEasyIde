@@ -14,15 +14,11 @@ public class Test implements Feature {
 
     public class ExecutionReportTest implements Feature.ExecutionReport {
         public final boolean success;
-        public String errorMessage = "";
+        public String output;
 
-        public ExecutionReportTest() {
+        public ExecutionReportTest(Boolean success, String output) {
             this.success = true;
-        }
-
-        public ExecutionReportTest(String errorMessage) {
-            this.success = false;
-            this.errorMessage = errorMessage;
+            this.output = output;
         }
 
         @Override
@@ -30,22 +26,25 @@ public class Test implements Feature {
             return success;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public String getOutput() {
+            return output;
         }
     }
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
         ProcessBuilder pb = new ProcessBuilder("mvn", "test");
+        String result = "";
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            pb.start().waitFor();
+            Process process = pb.start();
+            result = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
 
-            return new Test.ExecutionReportTest();
+            return new Test.ExecutionReportTest(true, result);
         } catch (Exception e) {
-            return new Test.ExecutionReportTest("Maven Test failed :" + e.getMessage());
+            return new Test.ExecutionReportTest(false, result);
         }
     }
 

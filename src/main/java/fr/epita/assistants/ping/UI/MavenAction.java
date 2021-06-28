@@ -38,12 +38,7 @@ public class MavenAction {
 
             var MavenClean = f.get();
             Clean.ExecutionReportClean report = (Clean.ExecutionReportClean) MavenClean.execute(mainFrame.project);
-
-            if (!report.isSuccess()) {
-                System.out.println("Maven Clean Failed : " + report.errorMessage);
-            }
-            else
-                System.out.println("Maven Clean Done");
+            System.out.println(report.getOutput());
         }
     }
 
@@ -72,11 +67,7 @@ public class MavenAction {
 
             var MavenCompile = f.get();
             Compile.ExecutionReportCompile report = (Compile.ExecutionReportCompile) MavenCompile.execute(mainFrame.project);
-
-            if (!report.isSuccess())
-                System.out.println("Maven Compile Failed" + report.getErrorMessage());
-            else
-                System.out.println("Maven Compile Done");
+            System.out.println(report.getOutput());
         }
     }
 
@@ -95,7 +86,6 @@ public class MavenAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Maven Exec");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Maven.EXEC);
 
             if (f.isEmpty()) {
@@ -105,11 +95,7 @@ public class MavenAction {
 
             var MavenExec = f.get();
             Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project);
-
-            if (!report.isSuccess())
-                System.out.println("Maven Exec Failed" + report.getErrorMessage());
-            else
-                System.out.println("Maven Exec Done");
+            System.out.println(report.getOutput());
         }
     }
 
@@ -128,7 +114,6 @@ public class MavenAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Maven Install");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Maven.INSTALL);
 
             if (f.isEmpty()) {
@@ -138,11 +123,7 @@ public class MavenAction {
 
             var MavenInstall = f.get();
             Install.ExecutionReportInstall report = (Install.ExecutionReportInstall) MavenInstall.execute(mainFrame.project);
-
-            if (!report.isSuccess())
-                System.out.println("Maven Install Failed" + report.getErrorMessage());
-            else
-                System.out.println("Maven Install Done");
+            System.out.println(report.getOutput());
         }
     }
 
@@ -161,7 +142,6 @@ public class MavenAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Maven Package");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Maven.PACKAGE);
 
             if (f.isEmpty()) {
@@ -171,11 +151,7 @@ public class MavenAction {
 
             var MavenPackage = f.get();
             Package.ExecutionReportPackage report = (Package.ExecutionReportPackage) MavenPackage.execute(mainFrame.project);
-
-            if (!report.isSuccess())
-                System.out.println("Maven Package Failed" + report.getErrorMessage());
-            else
-                System.out.println("Maven Package Done");
+            System.out.println(report.getOutput());
         }
     }
 
@@ -194,7 +170,6 @@ public class MavenAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Maven Test");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Maven.TEST);
 
             if (f.isEmpty()) {
@@ -204,11 +179,7 @@ public class MavenAction {
 
             var MavenTest = f.get();
             Test.ExecutionReportTest report = (Test.ExecutionReportTest) MavenTest.execute(mainFrame.project);
-
-            if (!report.isSuccess())
-                System.out.println("Maven Test Failed" + report.getErrorMessage());
-            else
-                System.out.println("Maven Test Done");
+            System.out.println(report.getOutput());
         }
     }
 
@@ -227,7 +198,6 @@ public class MavenAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Maven Tree");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Maven.TREE);
 
             if (f.isEmpty()) {
@@ -236,12 +206,8 @@ public class MavenAction {
             }
 
             var MavenClean = f.get();
-            Clean.ExecutionReportClean report = (Clean.ExecutionReportClean) MavenClean.execute(mainFrame.project, "-Doutput=tree_output.txt");
-
-            if (!report.isSuccess())
-                System.out.println("Maven Tree Failed" + report.getErrorMessage());
-            else
-                System.out.println("Maven Tree Done");
+            Tree.ExecutionReportTree report = (Tree.ExecutionReportTree) MavenClean.execute(mainFrame.project, "-Doutput=tree_output.txt");
+            System.out.println(report.getOutput());
         }
     }
 }
