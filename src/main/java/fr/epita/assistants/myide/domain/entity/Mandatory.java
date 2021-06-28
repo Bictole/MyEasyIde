@@ -42,7 +42,12 @@ import fr.epita.assistants.utils.Given;
             /**
              * Fulltext search over project files.
              */
-            SEARCH;
+            SEARCH,
+
+            /**
+             * Compile and execute the main
+             */
+            RUN;
         }
 
         /**

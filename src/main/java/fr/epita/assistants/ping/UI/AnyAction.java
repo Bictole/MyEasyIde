@@ -114,4 +114,39 @@ public class AnyAction {
                 System.out.println("Search Done");
         }
     };
+
+    public static class actAnyRun extends AbstractAction {
+
+        MainFrame frame;
+
+        public actAnyRun(MainFrame frame)
+        {
+            this.frame = frame;
+            putValue(Action.NAME, "Run");
+            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitAdd.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
+            putValue(Action.SHORT_DESCRIPTION, "Run");
+            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            this.frame = frame;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("RUN");
+            Optional<Feature> f = frame.project.getFeature(Mandatory.Features.Any.RUN);
+
+            if (f.isEmpty()) {
+                System.out.println("Error when finding the Feature");
+                return;
+            }
+
+            var AnyRun = f.get();
+            Feature.ExecutionReport report = AnyRun.execute(frame.project);
+
+            if (!report.isSuccess())
+                System.out.println("Run Failed");
+            else
+                System.out.println("Run Done");
+        }
+    };
 }

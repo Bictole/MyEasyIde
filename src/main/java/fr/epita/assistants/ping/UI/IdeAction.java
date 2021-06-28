@@ -35,7 +35,8 @@ public class IdeAction {
         PASTE("paste.png"),
         UNDO("undo.png"),
         REDO("redo.png"),
-        EXIT("exit.png");
+        EXIT("exit.png"),
+        RUN("exit.png");
 
         String path;
 
