@@ -4,6 +4,7 @@ import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.ping.feature.any.CleanUp;
 import fr.epita.assistants.ping.feature.any.Dist;
+import fr.epita.assistants.ping.feature.any.Run;
 import fr.epita.assistants.ping.feature.any.Search;
 import fr.epita.assistants.ping.feature.git.Add;
 import fr.epita.assistants.ping.feature.git.Commit;
@@ -24,6 +25,7 @@ public class FeatureFactory {
         DIST(Mandatory.Features.Any.DIST, new Dist()),
         CLEANUP(Mandatory.Features.Any.CLEANUP, new CleanUp()),
         SEARCH(Mandatory.Features.Any.SEARCH, new Search()),
+        RUN(Mandatory.Features.Any.RUN, new Run()),
 
         // GIT FEATURES
         ADD(Mandatory.Features.Git.ADD, new Add()),

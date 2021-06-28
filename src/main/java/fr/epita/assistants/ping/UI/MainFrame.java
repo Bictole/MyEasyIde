@@ -178,6 +178,7 @@ public class MainFrame extends JFrame {
         mEdit.add(new IdeAction.actCut(this, jTextArea));
         mEdit.add(new IdeAction.actCopy(this, jTextArea));
         mEdit.add(new IdeAction.actPaste(this, jTextArea));
+        mEdit.add(new AnyAction.actAnyRun(this));
         jMenuBar.add(mEdit);
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
@@ -225,6 +226,7 @@ public class MainFrame extends JFrame {
         jToolBar.add(new IdeAction.actCopy(this, jTextArea)).setHideActionText(true);
         jToolBar.add(new IdeAction.actCut(this, jTextArea)).setHideActionText(true);
         jToolBar.add(new IdeAction.actPaste(this, jTextArea)).setHideActionText(true);
+        jToolBar.add(new AnyAction.actAnyRun(this)).setHideActionText(true);
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
         jToolBar.add(label);
