@@ -7,22 +7,21 @@ import fr.epita.assistants.myide.domain.entity.Project;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 public class Search implements Feature {
 
-    private class ExecutionReportSearch implements Feature.ExecutionReport {
+    public class ExecutionReportSearch implements Feature.ExecutionReport {
         public final boolean success;
         public String errorMessage = "";
-        public Path fileFound = null;
+        public List<Path> filesMatch = new ArrayList<>();
 
-        public ExecutionReportSearch(Optional<Path> path) {
-            success = path.isPresent();
-            if (success)
-                fileFound = path.get();
-            if (!success)
-                errorMessage = "No such expression found";
+        public ExecutionReportSearch(List<Path> filesMatch) {
+            this.filesMatch = filesMatch;
+            this.success = true;
         }
 
         public ExecutionReportSearch(String errorMessage) {
@@ -35,8 +34,8 @@ public class Search implements Feature {
             return success;
         }
 
-        public Path getFileFound() {
-            return fileFound;
+        public List<Path> getFilesMatch() {
+            return filesMatch;
         }
 
         public String getErrorMessage() {
@@ -50,33 +49,30 @@ public class Search implements Feature {
             return new ExecutionReportSearch("Too much string provided");
         try {
             String research = String.valueOf(param[0]);
-            Optional<Path> found = search(project.getRootNode(), research);
-            return new ExecutionReportSearch(found);
+            List<Path> filesMatch = new ArrayList<>();
+            search(project.getRootNode(), research, filesMatch);
+            return new ExecutionReportSearch(filesMatch);
         } catch (FileNotFoundException f) {
-            return new ExecutionReportSearch("File not found");
+            return new ExecutionReportSearch("File not found exception");
         } catch (IllegalArgumentException e) {
             return new ExecutionReportSearch("Illegal argument provided");
         }
     }
 
-    private Optional<Path> search(Node root, String research) throws FileNotFoundException {
+    private void search(Node root, String research, List<Path> filesMatch) throws FileNotFoundException {
         for (var child : root.getChildren()) {
-            if (child.isFolder())
-            {
-                var s = this.search(child, research);
-                if (s.isPresent())
-                    return s;
+            if (child.isFolder()) {
+                search(child, research, filesMatch);
             }
             else if (child.isFile() && this.scan_file(child, research).isPresent())
-                return Optional.of(child.getPath());
+                filesMatch.add(child.getPath());
         }
-        return Optional.empty();
     }
 
     private Optional<Path> scan_file(Node file, String research) throws FileNotFoundException {
         Scanner scan = new Scanner(file.getPath().toFile());
         while (scan.hasNext()) {
-            String line = scan.nextLine().toString();
+            String line = scan.nextLine();
             if (line.contains(research)) {
                 return Optional.of(file.getPath());
             }

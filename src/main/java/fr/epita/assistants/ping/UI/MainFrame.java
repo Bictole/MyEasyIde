@@ -64,25 +64,6 @@ public class MainFrame extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    // Frame constructor
-    public MainFrame(String title, ProjectService projectService, Path path) {
-        super(title);
-
-        try {
-            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-            MetalLookAndFeel.setCurrentTheme(new OceanTheme());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        jFrame = this;
-        this.projectService = projectService;
-
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-        loadProjectFrame(path);
-    }
 
     public File getSelectedFile() {
         return selectedFile;
@@ -405,7 +386,8 @@ public class MainFrame extends JFrame {
         ProjectService projectService = MyIde.init(null);
 
         Path path = Path.of(new File("").getAbsolutePath());
-        JFrame frame = new MainFrame("PingIDE", projectService, path);
+        MainFrame frame = new MainFrame("PingIDE", projectService);
+        frame.loadProjectFrame(path);
         frame.setVisible(true);
     }
 

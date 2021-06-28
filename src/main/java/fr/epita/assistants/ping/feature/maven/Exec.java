@@ -8,6 +8,8 @@ import org.apache.maven.Maven;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
 
+import java.io.File;
+import java.io.OutputStream;
 import java.util.Arrays;
 
 public class Exec implements Feature {
@@ -37,8 +39,9 @@ public class Exec implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "exec:java", "-Dexec.mainClass=Main");
 
+        String mainClass = (String) params[0];
+        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "exec:java", "-Dexec.mainClass=" + mainClass);
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
