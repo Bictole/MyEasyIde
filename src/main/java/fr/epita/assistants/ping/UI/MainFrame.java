@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.fife.ui.rtextarea.*;
 import org.fife.ui.rsyntaxtextarea.*;
 
-
 public class MainFrame extends JFrame {
 
     public JFrame jFrame;

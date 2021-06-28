@@ -4,6 +4,7 @@ import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.ping.feature.any.Run;
+import fr.epita.assistants.ping.project.AnyProject;
 import org.apache.maven.DefaultMaven;
 import org.apache.maven.Maven;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
@@ -39,7 +40,9 @@ public class Exec implements Feature {
     public Feature.ExecutionReport execute(Project project, Object... params) {
 
         String mainClass = (String) params[0];
-        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "exec:java", "-Dexec.mainClass=" + mainClass);
+        AnyProject p = (AnyProject) project;
+        ProcessBuilder pb = new ProcessBuilder(p.config.mavenCmd, "compile",
+                "exec:java", "-Dexec.mainClass=" + mainClass);
         String result = "";
 
         try {

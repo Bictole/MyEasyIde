@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.feature.maven;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.project.AnyProject;
 import org.apache.maven.DefaultMaven;
 import org.apache.maven.Maven;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
@@ -33,7 +34,8 @@ public class Test implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "test");
+        AnyProject p = (AnyProject) project;
+        ProcessBuilder pb = new ProcessBuilder(p.config.mavenCmd, "test");
         String result = "";
 
         try {
@@ -44,7 +46,7 @@ public class Test implements Feature {
 
             return new Test.ExecutionReportTest(true, result);
         } catch (Exception e) {
-            return new Test.ExecutionReportTest(false, result);
+            return new Test.ExecutionReportTest(false, e.getMessage());
         }
     }
 
