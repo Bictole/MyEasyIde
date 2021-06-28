@@ -197,7 +197,7 @@ public class IdeAction {
     }
 
     private static void errorDialog(MainFrame frame, String message) {
-        JOptionPane.showMessageDialog(frame, message);
+        JOptionPane.showMessageDialog(frame, message, "", JOptionPane.ERROR_MESSAGE);
     }
 
     private static void abstractNewFile(MainFrame mainFrame, Node.Types type, String name) {
