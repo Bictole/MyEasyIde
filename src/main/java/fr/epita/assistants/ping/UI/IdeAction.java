@@ -17,17 +17,19 @@ import static fr.epita.assistants.ping.UI.UITools.*;
 
 public class IdeAction {
 
-    public static class actNewProject extends AbstractAction {
+    public static class actNewProject extends ActionTemplate {
 
         private final MainFrame mainFrame;
 
         public actNewProject(MainFrame frame) {
+            super(
+                    "New Project",
+                    getResizedIcon(frame, Icons.NEW_PROJECT),
+                    KeyEvent.VK_N,
+                    "New Project",
+                    null);
             this.mainFrame = frame;
-            putValue(Action.NAME, "Project");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.NEW_PROJECT));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(Action.SHORT_DESCRIPTION, "New Project");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
+            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         }
 
 
@@ -249,18 +251,19 @@ public class IdeAction {
     }
 
 
-    public static class actOpenFile extends AbstractAction {
+    public static class actOpenFile extends ActionTemplate {
         private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actOpenFile(MainFrame frame, JTextArea jTextArea) {
+            super(
+                    "Open File",
+                    getResizedIcon(frame, Icons.OPEN),
+                    KeyEvent.VK_O,
+                    "Open file (CTRL+O)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
-            putValue(Action.NAME, "Open File");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.OPEN));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
-            putValue(Action.SHORT_DESCRIPTION, "Open file (CTRL+O)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -308,16 +311,17 @@ public class IdeAction {
 
     ;
 
-    public static class actOpenProject extends AbstractAction {
+    public static class actOpenProject extends ActionTemplate {
         private final MainFrame mainFrame;
 
         public actOpenProject(MainFrame frame) {
+            super(
+                    "Open Project",
+                    getResizedIcon(frame, Icons.OPEN),
+                    KeyEvent.VK_O,
+                    "Open Project (CTRL+O)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            putValue(Action.NAME, "Open Project");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.OPEN));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
-            putValue(Action.SHORT_DESCRIPTION, "Open Project (CTRL+O)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -456,19 +460,19 @@ public class IdeAction {
         }
     }
 
-    public static class actPaste extends AbstractAction {
+    public static class actPaste extends ActionTemplate {
         private final MainFrame mainFrame;
-
         private JTextArea jTextArea;
 
         public actPaste(MainFrame frame, JTextArea jTextArea) {
+            super(
+                    "Paste",
+                    getResizedIcon(frame, Icons.PASTE),
+                    KeyEvent.VK_P,
+                    "Paste (CTRL+V)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
-            putValue(Action.NAME, "Paste");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.PASTE));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_P);
-            putValue(Action.SHORT_DESCRIPTION, "Paste (CTRL+V)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -477,17 +481,18 @@ public class IdeAction {
         }
     }
 
-    public static class actUndo extends AbstractAction {
+    public static class actUndo extends ActionTemplate {
         private final MainFrame mainFrame;
 
 
         public actUndo(MainFrame frame ) {
+            super(
+                    "Undo",
+                    getResizedIcon(frame, Icons.UNDO),
+                    KeyEvent.VK_U,
+                    "Undo (CTRL+Z)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            putValue(Action.NAME, "Undo");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.UNDO));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_U);
-            putValue(Action.SHORT_DESCRIPTION, "Undo (CTRL+Z)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -496,16 +501,17 @@ public class IdeAction {
         }
     }
 
-    public static class actRedo extends AbstractAction {
+    public static class actRedo extends ActionTemplate {
         private final MainFrame mainFrame;
 
         public actRedo(MainFrame frame) {
+            super(
+                    "Redo",
+                    getResizedIcon(frame, Icons.REDO),
+                    KeyEvent.VK_R,
+                    "Redo (CTRL+Y)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            putValue(Action.NAME, "Redo");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.REDO));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
-            putValue(Action.SHORT_DESCRIPTION, "Redo (CTRL+Y)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -514,16 +520,17 @@ public class IdeAction {
         }
     }
 
-    public static class actExit extends AbstractAction {
+    public static class actExit extends ActionTemplate {
         private final MainFrame mainFrame;
 
         public actExit(MainFrame frame) {
+            super(
+                    "Exit",
+                    getResizedIcon(frame, Icons.EXIT),
+                    KeyEvent.VK_X,
+                    "Exit (ALT+F4)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             mainFrame = frame;
-            putValue(Action.NAME, "Exit");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.EXIT));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
-            putValue(Action.SHORT_DESCRIPTION, "Exit (ALT+F4)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
         }
 
         @Override
@@ -531,6 +538,4 @@ public class IdeAction {
             mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
         }
     }
-
-    ;
 }
