@@ -9,7 +9,7 @@ import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 
 public class Exec implements Feature {
@@ -37,13 +37,13 @@ public class Exec implements Feature {
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
 
-        ProcessBuilder pb = new ProcessBuilder("mvn", "exec");
+        String mainClass = (String) params[0];
+        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "exec:java", "-Dexec.mainClass=" + mainClass);
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            var process = pb.start();
-            String result = new String(process.getInputStream().readAllBytes());
-            process.waitFor();
+            pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+            pb.start().waitFor();
 
             return new Exec.ExecutionReportExecute(true, result);
 

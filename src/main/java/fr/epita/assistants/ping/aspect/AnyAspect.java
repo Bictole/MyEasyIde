@@ -19,6 +19,7 @@ public class AnyAspect implements Aspect {
         featureList.add(FeatureFactory.getFeature(Mandatory.Features.Any.SEARCH));
         featureList.add(FeatureFactory.getFeature(Mandatory.Features.Any.DIST));
         featureList.add(FeatureFactory.getFeature(Mandatory.Features.Any.CLEANUP));
+        featureList.add(FeatureFactory.getFeature(Mandatory.Features.Any.RUN));
     }
 
     @Override

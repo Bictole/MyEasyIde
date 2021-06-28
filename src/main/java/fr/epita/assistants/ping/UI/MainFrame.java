@@ -64,25 +64,6 @@ public class MainFrame extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    // Frame constructor
-    public MainFrame(String title, ProjectService projectService, Path path) {
-        super(title);
-
-        try {
-            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-            MetalLookAndFeel.setCurrentTheme(new OceanTheme());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        jFrame = this;
-        this.projectService = projectService;
-
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-        loadProjectFrame(path);
-    }
 
     public File getSelectedFile() {
         return selectedFile;
@@ -178,6 +159,7 @@ public class MainFrame extends JFrame {
         mEdit.add(new IdeAction.actCut(this, jTextArea));
         mEdit.add(new IdeAction.actCopy(this, jTextArea));
         mEdit.add(new IdeAction.actPaste(this, jTextArea));
+        mEdit.add(new AnyAction.actAnyRun(this));
         jMenuBar.add(mEdit);
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
@@ -225,6 +207,7 @@ public class MainFrame extends JFrame {
         jToolBar.add(new IdeAction.actCopy(this, jTextArea)).setHideActionText(true);
         jToolBar.add(new IdeAction.actCut(this, jTextArea)).setHideActionText(true);
         jToolBar.add(new IdeAction.actPaste(this, jTextArea)).setHideActionText(true);
+        jToolBar.add(new AnyAction.actAnyRun(this)).setHideActionText(true);
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
         jToolBar.add(label);
@@ -405,7 +388,8 @@ public class MainFrame extends JFrame {
         ProjectService projectService = MyIde.init(null);
 
         Path path = Path.of(new File("").getAbsolutePath());
-        JFrame frame = new MainFrame("PingIDE", projectService, path);
+        MainFrame frame = new MainFrame("PingIDE", projectService);
+        frame.loadProjectFrame(path);
         frame.setVisible(true);
     }
 
