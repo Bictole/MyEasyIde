@@ -16,15 +16,12 @@ public class Exec implements Feature {
 
     public class ExecutionReportExecute implements Feature.ExecutionReport {
         public final boolean success;
-        public String errorMessage = "";
+        public String Output = "";
 
-        public ExecutionReportExecute() {
-            this.success = true;
-        }
 
-        public ExecutionReportExecute(String errorMessage) {
-            this.success = false;
-            this.errorMessage = errorMessage;
+        public ExecutionReportExecute(Boolean success, String Output) {
+            this.success = success;
+            this.Output = Output;
         }
 
         @Override
@@ -32,8 +29,8 @@ public class Exec implements Feature {
             return success;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public String getOutput() {
+            return Output;
         }
     }
 
@@ -48,10 +45,10 @@ public class Exec implements Feature {
             pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
             pb.start().waitFor();
 
-            return new Exec.ExecutionReportExecute();
+            return new Exec.ExecutionReportExecute(true, result);
 
         } catch (Exception e) {
-            return new Exec.ExecutionReportExecute("Maven Exec failed :" + e.getMessage());
+            return new Exec.ExecutionReportExecute(false, "Maven Exec failed :" + e.getMessage());
         }
     }
 
