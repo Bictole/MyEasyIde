@@ -4,8 +4,8 @@ import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.utils.Given;
 
-import java.nio.file.Path;
 import javax.validation.constraints.NotNull;
+import java.nio.file.Path;
 
 /**
  * You will handle your projects through this service.

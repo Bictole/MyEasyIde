@@ -5,12 +5,13 @@ import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.ping.UI.Panel.ExecConfig;
 import fr.epita.assistants.ping.feature.any.Run;
 import fr.epita.assistants.ping.feature.any.Search;
-import fr.epita.assistants.ping.feature.maven.Exec;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Optional;
+
+import static fr.epita.assistants.ping.UI.UITools.getResizedIcon;
 
 public class AnyAction {
 
@@ -21,7 +22,7 @@ public class AnyAction {
         public actAnyCleanUp(MainFrame frame)
         {
             putValue(Action.NAME, "Cleanup");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.GIT_ADD.path), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Cleanup");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -56,7 +57,7 @@ public class AnyAction {
         public actAnyDist(MainFrame frame)
         {
             putValue(Action.NAME, "Dist");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.GIT_ADD.path), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Dist");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -90,7 +91,7 @@ public class AnyAction {
         public actAnySearch(MainFrame frame)
         {
             putValue(Action.NAME, "Search");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.GIT_ADD.path), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Search");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -127,7 +128,7 @@ public class AnyAction {
         {
             this.frame = frame;
             putValue(Action.NAME, "Run");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.GIT_ADD.path), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Run");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));

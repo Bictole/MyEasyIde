@@ -11,7 +11,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
 
-import java.io.File;
 import java.io.IOException;
 
 public class Push implements Feature {

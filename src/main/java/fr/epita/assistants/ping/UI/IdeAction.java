@@ -1,24 +1,19 @@
 package fr.epita.assistants.ping.UI;
 
-import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Node;
-import fr.epita.assistants.myide.domain.service.NodeService;
 import fr.epita.assistants.myide.domain.service.ProjectService;
 import fr.epita.assistants.ping.service.NodeManager;
-import fr.epita.assistants.ping.service.ProjectManager;
-import org.eclipse.sisu.launch.Main;
 
 import javax.swing.*;
-import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+
+import static fr.epita.assistants.ping.UI.UITools.*;
 
 public class IdeAction {
 
@@ -29,7 +24,7 @@ public class IdeAction {
         public actNewProject(MainFrame frame) {
             this.mainFrame = frame;
             putValue(Action.NAME, "Project");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.NEW_PROJECT.path), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.NEW_PROJECT));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
             putValue(Action.SHORT_DESCRIPTION, "New Project");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
@@ -45,7 +40,7 @@ public class IdeAction {
 
             JLabel locationLabel = new JLabel("Location:");
             JTextField locationTextField = new JTextField();
-            JButton locationButton = new JButton(mainFrame.resizeIcon(new ImageIcon(Icons.OPEN_PROJECT.path), 16, 16));
+            JButton locationButton = new JButton(MainFrame.resizeIcon(new ImageIcon(Icons.OPEN_PROJECT.path), 16, 16));
             locationButton.addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -172,10 +167,6 @@ public class IdeAction {
         }
     }
 
-    private static void errorDialog(MainFrame frame, String message) {
-        JOptionPane.showMessageDialog(frame, message, "", JOptionPane.ERROR_MESSAGE);
-    }
-
     private static void abstractNewFile(MainFrame mainFrame, Node.Types type, String name) {
         if (name == null)
             return;
@@ -222,7 +213,7 @@ public class IdeAction {
         public actNewFolder(MainFrame frame) {
             this.mainFrame = frame;
             putValue(Action.NAME, "Folder");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.NEW_FOLDER.path), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.NEW_FOLDER));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
             putValue(Action.SHORT_DESCRIPTION, "New Folder");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
@@ -241,7 +232,7 @@ public class IdeAction {
         public actNewFile(MainFrame frame) {
             this.mainFrame = frame;
             putValue(Action.NAME, "File");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.NEW_FILE.path), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.NEW_FILE));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
             putValue(Action.SHORT_DESCRIPTION, "New File");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
@@ -263,7 +254,7 @@ public class IdeAction {
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
             putValue(Action.NAME, "Open File");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.OPEN.path), mainFrame.iconWidth, mainFrame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.OPEN));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
             putValue(Action.SHORT_DESCRIPTION, "Open file (CTRL+O)");
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
@@ -320,7 +311,7 @@ public class IdeAction {
         public actOpenProject(MainFrame frame) {
             this.mainFrame = frame;
             putValue(Action.NAME, "Open Project");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.OPEN.path), mainFrame.iconWidth, mainFrame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.OPEN));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
             putValue(Action.SHORT_DESCRIPTION, "Open Project (CTRL+O)");
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
@@ -348,24 +339,14 @@ public class IdeAction {
         }
     }
 
-    public static abstract class FileAction extends AbstractAction {
 
-        public FileAction(String name, Icon icon, int mnemonic, String description, KeyStroke keyStroke) {
-            putValue(Action.NAME, name);
-            putValue(Action.SMALL_ICON, icon);
-            putValue(Action.MNEMONIC_KEY, mnemonic);
-            putValue(Action.SHORT_DESCRIPTION, description);
-            putValue(Action.ACCELERATOR_KEY, keyStroke);
-        }
-    }
-
-    public static class actSave extends FileAction {
+    public static class actSave extends ActionTemplate {
         private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actSave(MainFrame frame) {
             super("Save File",
-                    MainFrame.resizeIcon(new ImageIcon(Icons.SAVE.path), frame.iconWidth, frame.iconHeight),
+                    getResizedIcon(frame, Icons.SAVE),
                     KeyEvent.VK_S,
                     "Save file (CTRL+S)",
                     KeyStroke.getKeyStroke(KeyEvent.VK_S,
@@ -408,12 +389,12 @@ public class IdeAction {
         }
     }
 
-    public static class actSaveAs extends FileAction {
+    public static class actSaveAs extends ActionTemplate {
         private MainFrame mainFrame;
 
         public actSaveAs(MainFrame frame) {
             super("Save As...",
-                    MainFrame.resizeIcon(new ImageIcon(Icons.SAVE_AS.path), frame.iconWidth, frame.iconHeight),
+                    getResizedIcon(frame, Icons.SAVE_AS),
                     KeyEvent.VK_A,
                     "Save file as",
                     KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK)
@@ -436,7 +417,7 @@ public class IdeAction {
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
             putValue(Action.NAME, "Copy");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.COPY.path), mainFrame.iconWidth, mainFrame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.COPY));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
             putValue(Action.SHORT_DESCRIPTION, "Copy (CTRL+C)");
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
@@ -456,7 +437,7 @@ public class IdeAction {
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
             putValue(Action.NAME, "Cut");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.CUT.path), mainFrame.iconWidth, mainFrame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.CUT));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_T);
             putValue(Action.SHORT_DESCRIPTION, "Cut (CTRL+X)");
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
@@ -477,7 +458,7 @@ public class IdeAction {
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
             putValue(Action.NAME, "Paste");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.PASTE.path), mainFrame.iconWidth, mainFrame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.PASTE));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_P);
             putValue(Action.SHORT_DESCRIPTION, "Paste (CTRL+V)");
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
@@ -496,7 +477,7 @@ public class IdeAction {
         public actUndo(MainFrame frame ) {
             this.mainFrame = frame;
             putValue(Action.NAME, "Undo");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.UNDO.path), mainFrame.iconWidth, mainFrame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.UNDO));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_U);
             putValue(Action.SHORT_DESCRIPTION, "Undo (CTRL+Z)");
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
@@ -514,7 +495,7 @@ public class IdeAction {
         public actRedo(MainFrame frame) {
             this.mainFrame = frame;
             putValue(Action.NAME, "Redo");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.REDO.path), mainFrame.iconWidth, mainFrame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.REDO));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
             putValue(Action.SHORT_DESCRIPTION, "Redo (CTRL+Y)");
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
@@ -532,7 +513,7 @@ public class IdeAction {
         public actExit(MainFrame frame) {
             mainFrame = frame;
             putValue(Action.NAME, "Exit");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.EXIT.path), mainFrame.iconWidth, mainFrame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.EXIT));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
             putValue(Action.SHORT_DESCRIPTION, "Exit (ALT+F4)");
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));

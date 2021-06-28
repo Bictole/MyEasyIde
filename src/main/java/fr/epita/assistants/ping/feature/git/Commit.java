@@ -1,4 +1,5 @@
 package fr.epita.assistants.ping.feature.git;
+
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
@@ -6,7 +7,6 @@ import fr.epita.assistants.ping.project.AnyProject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-import java.io.File;
 import java.io.IOException;
 
 public class Commit implements Feature {

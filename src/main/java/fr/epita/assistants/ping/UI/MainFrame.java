@@ -1,13 +1,14 @@
 package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.MyIde;
-import fr.epita.assistants.myide.domain.entity.*;
+import fr.epita.assistants.myide.domain.entity.Mandatory;
+import fr.epita.assistants.myide.domain.entity.Node;
+import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.myide.domain.service.ProjectService;
-import fr.epita.assistants.ping.UI.Panel.*;
-//import fr.epita.assistants.ping.UI.examples.JCheckBoxes;
-
-import java.awt.event.*;
-import java.util.*;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
+import org.fife.ui.rsyntaxtextarea.Theme;
 
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
@@ -19,15 +20,16 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
-import java.io.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import org.fife.ui.rtextarea.*;
-import org.fife.ui.rsyntaxtextarea.*;
 
 
 public class MainFrame extends JFrame {

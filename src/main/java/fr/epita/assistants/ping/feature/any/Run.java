@@ -3,11 +3,8 @@ package fr.epita.assistants.ping.feature.any;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
-import fr.epita.assistants.ping.feature.maven.Compile;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
-import java.util.Optional;
 
 public class Run implements Feature {
 

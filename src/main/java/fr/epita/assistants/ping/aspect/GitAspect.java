@@ -4,7 +4,6 @@ import fr.epita.assistants.myide.domain.entity.Aspect;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.ping.feature.FeatureFactory;
-import fr.epita.assistants.ping.feature.git.*;
 
 import java.util.ArrayList;
 import java.util.List;
