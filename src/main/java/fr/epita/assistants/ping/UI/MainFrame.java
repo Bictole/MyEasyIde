@@ -149,7 +149,7 @@ public class MainFrame extends JFrame {
 
         try {
             Theme theme = Theme.load(getClass().getResourceAsStream(
-                    "/themes/vs.xml"));
+                    "/themes/dark.xml"));
             theme.apply(rSyntaxTextArea);
         } catch (IOException ioe) { // Never happens
             ioe.printStackTrace();
