@@ -120,7 +120,7 @@ public class ExecConfig {
             try {
                 if (mainFrame.project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.MAVEN))
                     MavenMainClass(mainFrame, filesMatch);
-                if (mainFrame.project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.ANY))
+                else if (mainFrame.project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.ANY))
                     AnyExecMainClass(mainFrame, filesMatch);
             }
             catch (Exception e) {

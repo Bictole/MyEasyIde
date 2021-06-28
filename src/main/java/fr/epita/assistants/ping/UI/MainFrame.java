@@ -188,9 +188,9 @@ public class MainFrame extends JFrame {
         mEdit.add(new IdeAction.actUndo(this));
         mEdit.add(new IdeAction.actRedo(this));
         mEdit.addSeparator();
-        mEdit.add(new IdeAction.actCut(this, jTextArea));
-        mEdit.add(new IdeAction.actCopy(this, jTextArea));
-        mEdit.add(new IdeAction.actPaste(this, jTextArea));
+        mEdit.add(new IdeAction.actCut(this, rSyntaxTextArea));
+        mEdit.add(new IdeAction.actCopy(this, rSyntaxTextArea));
+        mEdit.add(new IdeAction.actPaste(this, rSyntaxTextArea));
         mEdit.add(new AnyAction.actAnyRun(this));
         jMenuBar.add(mEdit);
 
@@ -236,9 +236,9 @@ public class MainFrame extends JFrame {
         jToolBar.addSeparator();
         jToolBar.add(new IdeAction.actUndo(this)).setHideActionText(true);
         jToolBar.add(new IdeAction.actRedo(this)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actCopy(this, jTextArea)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actCut(this, jTextArea)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actPaste(this, jTextArea)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actCopy(this, rSyntaxTextArea)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actCut(this, rSyntaxTextArea)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actPaste(this, rSyntaxTextArea)).setHideActionText(true);
         jToolBar.add(new AnyAction.actAnyRun(this)).setHideActionText(true);
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
