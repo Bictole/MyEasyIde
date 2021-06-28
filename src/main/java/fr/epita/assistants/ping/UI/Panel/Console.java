@@ -20,6 +20,7 @@ public class Console extends Panel
         textArea.setEditable(false);
         textArea.setBackground(Color.getColor("GRIS_MIDDLE"));
         textArea.setForeground(Color.getColor("ROSE"));
+        textArea.setBorder(BorderFactory.createEmptyBorder());
 
         scrollPane = new JScrollPane(textArea);
 

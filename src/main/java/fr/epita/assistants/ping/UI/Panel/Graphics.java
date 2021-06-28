@@ -1,18 +1,30 @@
 package fr.epita.assistants.ping.UI.Panel;
 
 import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import javax.swing.plaf.basic.BasicBorders;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
 
 public class Graphics {
 
-    public static void ScrollPaneDesign(JScrollPane scrollPane)
+    public static void BottomSplitPaneDesign(JSplitPane bottomSplitPane)
+    {
+        bottomSplitPane.setUI(new BasicSplitPaneUI());
+        bottomSplitPane.setBackground(Color.getColor("GRIS_CLAIR"));
+        bottomSplitPane.setForeground(Color.getColor("GRIS_CLAIR"));
+        //var raisedetched = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
+        bottomSplitPane.setBorder(BorderFactory.createEmptyBorder());
+    }
+
+    public static void ScrollPaneDesign(JScrollPane scrollPane, Color Background)
     {
         scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
                 this.thumbColor = Color.getColor("GRIS_CLAIR");
-                this.trackColor = Color.getColor("GRIS_MIDDLE");
+                this.trackColor = Background;
                 this.thumbDarkShadowColor = Color.getColor("GRIS_CLAIR");
             }
 
@@ -27,13 +39,13 @@ public class Graphics {
             }
         });
 
-        scrollPane.setBorder(null);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         scrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
                 this.thumbColor = Color.getColor("GRIS_CLAIR");
-                this.trackColor = Color.getColor("GRIS_MIDDLE");
+                this.trackColor = Background;
                 this.thumbDarkShadowColor = Color.getColor("GRIS_CLAIR");
             }
 

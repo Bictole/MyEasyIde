@@ -13,6 +13,7 @@ import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -95,37 +96,36 @@ public class MainFrame extends JFrame {
 
     public void loadProjectFrame(Path path) {
 
-        JPanel contentPane = (JPanel) getContentPane();
-        contentPane.removeAll();
+        //JPanel contentPane = (JPanel) getContentPane();
+        //contentPane.removeAll();
 
         project = projectService.load(path);
 
         createTextArea();
         createMenuBar();
         createToolBar();
-        JScrollPane textView = new JScrollPane(rSyntaxTextArea);;
-        Graphics.ScrollPaneDesign(textView);
 
+        JScrollPane textView = new JScrollPane(rSyntaxTextArea);;
+        Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
         JScrollPane treeView = initTree(project.getRootNode());
-        Graphics.ScrollPaneDesign(treeView);
+        Graphics.ScrollPaneDesign(treeView,Color.getColor("PRUNE"));
 
         createPopupMenu();
         createConsole();
         JScrollPane consoleView = console.scrollPane;
-        Graphics.ScrollPaneDesign(consoleView);
+        Graphics.ScrollPaneDesign(consoleView, Color.getColor("GRIS_MIDDLE"));
 
         //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
         //jToolBar.setBorder(new EtchedBorder());
 
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,treeView, textView);
-        mainSplitPane.setResizeWeight(0.10);
-        //mainSplitPane.setBackground(Color.getColor("GRIS_CLAIR"));
+        Graphics.BottomSplitPaneDesign(mainSplitPane);
         JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, consoleView);
-        //bottomSplitPane.setForeground(Color.getColor("GRIS_CLAIR"));
+        Graphics.BottomSplitPaneDesign(bottomSplitPane);
 
         this.setJMenuBar(jMenuBar);
-        contentPane.add(jToolBar, BorderLayout.NORTH);
-        contentPane.add(bottomSplitPane, BorderLayout.SOUTH);
+        jFrame.add(jToolBar, BorderLayout.NORTH);
+        jFrame.add(bottomSplitPane, BorderLayout.SOUTH);
         this.pack();
         if (!this.isVisible())
             this.setVisible(true);
@@ -152,6 +152,7 @@ public class MainFrame extends JFrame {
         rSyntaxTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         rSyntaxTextArea.setCodeFoldingEnabled(true);
         rSyntaxTextArea.setAnimateBracketMatching(true);
+        rSyntaxTextArea.setBorder(BorderFactory.createEmptyBorder());
 
 
         undoManager = new UndoManager();
@@ -184,6 +185,7 @@ public class MainFrame extends JFrame {
         // Create a menubar
         jMenuBar = new JMenuBar();
         jMenuBar.setBackground(Color.getColor("GRIS_SOMBRE"));
+        jMenuBar.setBorder(BorderFactory.createEmptyBorder());
 
         // Create a menu
         JMenu mFile = new JMenu("File");
@@ -253,7 +255,9 @@ public class MainFrame extends JFrame {
     private void createToolBar() {
         // Create a toolbar
         jToolBar = new JToolBar();
+        jToolBar.setBorder(BorderFactory.createBevelBorder(1, Color.getColor("GRIS_MIDDLE"), Color.getColor("GRIS_MIDDLE")));
         jToolBar.setBackground(Color.getColor("GRIS_MIDDLE"));
+        jToolBar.setForeground(Color.getColor("GRIS_MIDDLE"));
 
         jToolBar.add(new IdeAction.actOpenProject(this)).setHideActionText(true);
         jToolBar.add(new IdeAction.actSave(this)).setHideActionText(true);
@@ -266,6 +270,7 @@ public class MainFrame extends JFrame {
         jToolBar.add(new AnyAction.actAnyRun(this)).setHideActionText(true);
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
+        label.setForeground(Color.WHITE);
         jToolBar.add(label);
         jToolBar.addSeparator();
         jToolBar.add(new GitAction.actGitPull(this)).setHideActionText(true);
@@ -343,6 +348,7 @@ public class MainFrame extends JFrame {
     private JScrollPane initTree(Node root) {
         DefaultMutableTreeNode top = createTree(root);
         jTree = new JTree(top);
+        jTree.setBorder(BorderFactory.createEmptyBorder());
 
         DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) jTree.getCellRenderer();
         renderer.setTextSelectionColor(Color.white);
