@@ -2,6 +2,10 @@ package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
+import fr.epita.assistants.ping.UI.Panel.ExecConfig;
+import fr.epita.assistants.ping.feature.any.Run;
+import fr.epita.assistants.ping.feature.any.Search;
+import fr.epita.assistants.ping.feature.maven.Exec;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -132,7 +136,6 @@ public class AnyAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("RUN");
             Optional<Feature> f = frame.project.getFeature(Mandatory.Features.Any.RUN);
 
             if (f.isEmpty()) {
@@ -141,12 +144,14 @@ public class AnyAction {
             }
 
             var AnyRun = f.get();
-            Feature.ExecutionReport report = AnyRun.execute(frame.project);
 
-            if (!report.isSuccess())
-                System.out.println("Run Failed");
-            else
-                System.out.println("Run Done");
+            Search.ExecutionReportSearch searchReport = (Search.ExecutionReportSearch)
+                    frame.getProjectService().execute(frame.project, Mandatory.Features.Any.SEARCH, "public static void main");
+
+            ExecConfig execConfig = new ExecConfig(frame, searchReport.getFilesMatch());
+
+            Run.ExecutionReportRun report = (Run.ExecutionReportRun) AnyRun.execute(frame.project, execConfig.getMainFile(), execConfig.getMainParentPath(), execConfig.getMainClass(), execConfig.getMainPackagePath());
+            System.out.println(report.getOutput());
         }
     };
 }

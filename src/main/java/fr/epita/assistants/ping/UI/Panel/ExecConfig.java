@@ -17,8 +17,24 @@ public class ExecConfig {
 
     private String mainClass;
 
+    private String mainFile;
+    private String mainParentPath;
+    private String mainPackagePath;
+
     public String getMainClass() {
         return mainClass;
+    }
+
+    public String getMainFile() {
+        return mainFile;
+    }
+
+    public String getMainParentPath() {
+        return mainParentPath;
+    }
+
+    public String getMainPackagePath() {
+        return mainPackagePath;
     }
 
     private void MavenMainClass(MainFrame mainFrame, List<Path> filesMatch){
@@ -58,13 +74,54 @@ public class ExecConfig {
         this.mainClass = mainClass[0];
     }
 
+    private void AnyExecMainClass(MainFrame mainFrame, List<Path> filesMatch){
+        Set<Path> to_Exec = new HashSet<Path>();
+        to_Exec.addAll(filesMatch);
+
+
+        Box pbox = Box.createVerticalBox();
+        JLabel label = new JLabel("Choose main class");
+        ButtonGroup buttonGroup = new ButtonGroup();
+        pbox.add(label);
+        for (var p : to_Exec) {
+            String path = p.toString();
+            String toRemove = "src" + File.separator + "main" + File.separator + "java" + File.separator;
+            if (!path.contains(toRemove))
+                continue;
+            String elt = path.substring(path.lastIndexOf(toRemove));
+            StringBuilder builder = new StringBuilder(elt);
+            builder.delete(0, toRemove.length());
+            elt = builder.toString();
+            elt = FilenameUtils.removeExtension(elt);
+            elt = elt.replace(File.separator, ".");
+            JRadioButton radioButton = new JRadioButton(elt);
+            radioButton.addItemListener(new ItemListener() {
+                private Path path = p;
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    if (radioButton.isSelected()) {
+                        mainClass = radioButton.getText();
+                        mainFile = path.toFile().getName();
+                        mainParentPath = path.toFile().getParent();
+                        mainPackagePath = path.toFile().getPath().substring(0, path.toFile().getPath().indexOf(toRemove) + toRemove.length());
+                    }
+
+                }
+            });
+            buttonGroup.add(radioButton);
+            pbox.add(radioButton);
+        }
+        JOptionPane.showConfirmDialog(mainFrame.jFrame, pbox, "Select the main class you want to exec", JOptionPane.OK_CANCEL_OPTION);
+    }
+
     public ExecConfig(MainFrame mainFrame, List<Path> filesMatch) {
 
         if (!filesMatch.isEmpty()) {
             try {
                 if (mainFrame.project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.MAVEN))
                     MavenMainClass(mainFrame, filesMatch);
-
+                if (mainFrame.project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.ANY))
+                    AnyExecMainClass(mainFrame, filesMatch);
             }
             catch (Exception e) {
                 e.printStackTrace();

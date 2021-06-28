@@ -4,6 +4,7 @@ import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.ping.feature.maven.Compile;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.util.Optional;
@@ -12,15 +13,11 @@ public class Run implements Feature {
 
     public class ExecutionReportRun implements Feature.ExecutionReport {
         public final boolean success;
-        public String errorMessage = "";
+        public String output = "";
 
-        public ExecutionReportRun() {
-
-            this.success = true;
-        }
-        public ExecutionReportRun(String errorMessage) {
-            this.success = false;
-            this.errorMessage = errorMessage;
+        public ExecutionReportRun(Boolean success, String errorMessage) {
+            this.success = success;
+            this.output = errorMessage;
         }
 
         @Override
@@ -28,56 +25,62 @@ public class Run implements Feature {
             return success;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public String getOutput() {
+            return output;
         }
     }
 
 
     @Override
     public ExecutionReport execute(Project project, Object... params) {
-        Optional<String> compiled = compile(project, "src.main.java.Main");
-        if (compiled.isEmpty())
-            return new ExecutionReportRun("Compilation Failed");
+        String execFile = (String) params[0];
+        String execParentPath = (String) params[1];
+        String mainClass= (String) params[2];
+        String packagePath = (String) params[3];
+        var compiled = compile(project, execFile, execParentPath);
+        if (!compiled.isSuccess())
+            return compiled;
 
-        return run(project, compiled.get());
-
-    }
-
-    private Optional<String> compile(Project project, String main)
-    {
-        ProcessBuilder pb = new ProcessBuilder("javac", "Main.java");
-
-        try {
-            pb.directory(new File(project.getRootNode().getPath() + "/src/main/java/"));
-            pb.redirectError(ProcessBuilder.Redirect.INHERIT);
-            pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-            pb.start().waitFor();
-
-            return Optional.of("Main");
-        }
-        catch (Exception e)
-        {
-            return Optional.empty();
-        }
+        return run(project, mainClass, packagePath);
 
     }
 
-    private ExecutionReport run(Project project, String main)
+    private ExecutionReportRun compile(Project project, String main, String path)
     {
-        ProcessBuilder pb = new ProcessBuilder("java", "Main");
+        ProcessBuilder pb = new ProcessBuilder("javac", main);
+        String result = "";
 
         try {
-            pb.directory(new File(project.getRootNode().getPath() + "/src/main/java/"));
-            pb.redirectError(ProcessBuilder.Redirect.INHERIT);
-            pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-            pb.start().waitFor();
+            pb.directory(new File(path));
+            Process process = pb.start();
+            result = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
 
-            return new ExecutionReportRun();
+            return new ExecutionReportRun(true, result);
         }
         catch (Exception e)
         {
-            return new ExecutionReportRun(e.getMessage());
+            return new ExecutionReportRun(false, result + '\n' + e.getMessage());
+        }
+
+    }
+
+    private ExecutionReport run(Project project, String main, String packagePath)
+    {
+        ProcessBuilder pb = new ProcessBuilder("java", main);
+        String result = "";
+
+        try {
+            pb.directory(new File(packagePath));
+            Process process = pb.start();
+            result = new String(process.getInputStream().readAllBytes());
+            process.waitFor();
+
+            return new ExecutionReportRun(true, result);
+        }
+        catch (Exception e)
+        {
+            return new ExecutionReportRun(false, result + '\n' + e.getMessage());
         }
     }
 
