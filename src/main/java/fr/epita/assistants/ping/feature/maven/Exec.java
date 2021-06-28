@@ -37,11 +37,12 @@ public class Exec implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "exec");
+        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "exec:java", "-Dexec.mainClass=Main");
+
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
-            pb.inheritIO();
+            pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
             pb.start().waitFor();
 
             return new Exec.ExecutionReportExecute();
