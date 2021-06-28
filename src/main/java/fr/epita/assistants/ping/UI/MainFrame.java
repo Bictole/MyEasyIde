@@ -96,8 +96,8 @@ public class MainFrame extends JFrame {
 
     public void loadProjectFrame(Path path) {
 
-        //JPanel contentPane = (JPanel) getContentPane();
-        //contentPane.removeAll();
+        JPanel contentPane = (JPanel) getContentPane();
+        contentPane.removeAll();
 
         project = projectService.load(path);
 
@@ -375,7 +375,6 @@ public class MainFrame extends JFrame {
             }
         });
         JScrollPane treeView = new JScrollPane(jTree);
-        treeView.setBackground(Color.getColor("GRIS_CLAIR"));
         return treeView;
     }
 
