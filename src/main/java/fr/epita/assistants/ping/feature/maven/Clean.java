@@ -6,7 +6,7 @@ import fr.epita.assistants.myide.domain.entity.Project;
 
 public class Clean implements Feature {
 
-    static class ExecutionReportClean implements Feature.ExecutionReport {
+    public static class ExecutionReportClean implements Feature.ExecutionReport {
         public final boolean success;
         public String errorMessage = "";
 

@@ -27,8 +27,7 @@ public class MyIde {
      * Record to specify where the configuration of your IDE
      * must be stored. Might be useful for the search feature.
      */
-    public static record Configuration(Path indexFile,
-                                       Path tempFolder) {}
+    public static record Configuration(Path indexFile,Path tempFolder) {}
 
     ;
 }

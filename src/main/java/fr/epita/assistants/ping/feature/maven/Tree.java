@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 public class Tree implements Feature {
-    private class ExecutionReportTree implements Feature.ExecutionReport {
+    public class ExecutionReportTree implements Feature.ExecutionReport {
         public final boolean success;
         public String errorMessage = "";
 
@@ -39,13 +39,6 @@ public class Tree implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        /*try {
-            Files.createFile(Path.of(project.getRootNode().getPath() + "/" + params[0]));
-        }
-        catch (Exception e) {
-            return new Tree.ExecutionReportTree("Maven Tree failed :" + e.getMessage());
-        }*/
-
         ProcessBuilder pb = new ProcessBuilder("mvn", "dependency:tree", (String) params[0]);
 
         try {

@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 public class Exec implements Feature {
 
-    private class ExecutionReportExecute implements Feature.ExecutionReport {
+    public class ExecutionReportExecute implements Feature.ExecutionReport {
         public final boolean success;
         public String errorMessage = "";
 
@@ -41,6 +41,7 @@ public class Exec implements Feature {
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
+            pb.inheritIO();
             pb.start().waitFor();
 
             return new Exec.ExecutionReportExecute();

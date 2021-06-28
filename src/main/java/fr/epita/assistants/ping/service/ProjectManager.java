@@ -13,6 +13,7 @@ import fr.epita.assistants.ping.node.FileNode;
 import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.project.AnyProject;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,13 +54,15 @@ public class ProjectManager implements ProjectService {
                 if (aspects.contains(MavenAspect.class) && aspects.contains(GitAspect.class))
                     return;
 
-                if (child.isFile() && child.getPath().toString().endsWith("/pom.xml")) {
+                //Pour les Path Linux : / et les Path Windows : \
+                if (child.isFile() && child.getPath().toString().endsWith(File.separator + "pom.xml"))
+                {
                     if (!aspects.contains(MavenAspect.class)) {
                         aspects.add(new MavenAspect());
                     }
                 }
 
-                if (child.isFolder() && child.getPath().toString().endsWith("/.git")) {
+                if (child.isFolder() && child.getPath().toString().endsWith(File.separator +".git")) {
                     if (!aspects.contains(GitAspect.class)) {
                         aspects.add(new GitAspect());
                     }

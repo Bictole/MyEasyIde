@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 public class Test implements Feature {
 
-    private class ExecutionReportTest implements Feature.ExecutionReport {
+    public class ExecutionReportTest implements Feature.ExecutionReport {
         public final boolean success;
         public String errorMessage = "";
 
