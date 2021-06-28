@@ -19,7 +19,7 @@ public class IdeAction {
 
     public static class actNewProject extends AbstractAction {
 
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
         public actNewProject(MainFrame frame) {
             this.mainFrame = frame;
@@ -206,17 +206,19 @@ public class IdeAction {
         }
     }
 
-    public static class actNewFolder extends AbstractAction {
+    public static class actNewFolder extends ActionTemplate {
 
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
         public actNewFolder(MainFrame frame) {
+            super(
+                    "Fodler",
+                    getResizedIcon(frame, Icons.NEW_FOLDER),
+                    KeyEvent.VK_N,
+                    "New Folder",
+                    null);
             this.mainFrame = frame;
-            putValue(Action.NAME, "Folder");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.NEW_FOLDER));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(Action.SHORT_DESCRIPTION, "New Folder");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         }
 
         @Override
@@ -226,16 +228,17 @@ public class IdeAction {
         }
     }
 
-    public static class actNewFile extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actNewFile extends ActionTemplate {
+        private final MainFrame mainFrame;
 
         public actNewFile(MainFrame frame) {
+            super(
+                    "File",
+                    getResizedIcon(frame, Icons.NEW_FILE),
+                    KeyEvent.VK_N,
+                    "Create new file",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            putValue(Action.NAME, "File");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.NEW_FILE));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(Action.SHORT_DESCRIPTION, "New File");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -247,7 +250,7 @@ public class IdeAction {
 
 
     public static class actOpenFile extends AbstractAction {
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actOpenFile(MainFrame frame, JTextArea jTextArea) {
@@ -306,7 +309,7 @@ public class IdeAction {
     ;
 
     public static class actOpenProject extends AbstractAction {
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
         public actOpenProject(MainFrame frame) {
             this.mainFrame = frame;
@@ -345,7 +348,8 @@ public class IdeAction {
         private JTextArea jTextArea;
 
         public actSave(MainFrame frame) {
-            super("Save File",
+            super(
+                    "Save File",
                     getResizedIcon(frame, Icons.SAVE),
                     KeyEvent.VK_S,
                     "Save file (CTRL+S)",
@@ -390,10 +394,11 @@ public class IdeAction {
     }
 
     public static class actSaveAs extends ActionTemplate {
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
         public actSaveAs(MainFrame frame) {
-            super("Save As...",
+            super(
+                    "Save As...",
                     getResizedIcon(frame, Icons.SAVE_AS),
                     KeyEvent.VK_A,
                     "Save file as",
@@ -409,18 +414,19 @@ public class IdeAction {
         }
     }
 
-    public static class actCopy extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actCopy extends ActionTemplate {
+        private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actCopy(MainFrame frame, JTextArea jTextArea) {
+            super(
+                    "Copy",
+                    getResizedIcon(frame, Icons.COPY),
+                    KeyEvent.VK_C,
+                    "Copy (CTRL+C)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
-            putValue(Action.NAME, "Copy");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.COPY));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
-            putValue(Action.SHORT_DESCRIPTION, "Copy (CTRL+C)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -429,18 +435,19 @@ public class IdeAction {
         }
     }
 
-    public static class actCut extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actCut extends ActionTemplate {
+        private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actCut(MainFrame frame, JTextArea jTextArea) {
+            super(
+                    "Cut",
+                    getResizedIcon(frame, Icons.CUT),
+                    KeyEvent.VK_T,
+                    "Cut (CTRL+X)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
-            putValue(Action.NAME, "Cut");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.CUT));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_T);
-            putValue(Action.SHORT_DESCRIPTION, "Cut (CTRL+X)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -450,7 +457,7 @@ public class IdeAction {
     }
 
     public static class actPaste extends AbstractAction {
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
         private JTextArea jTextArea;
 
@@ -471,7 +478,7 @@ public class IdeAction {
     }
 
     public static class actUndo extends AbstractAction {
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
 
         public actUndo(MainFrame frame ) {
@@ -490,7 +497,7 @@ public class IdeAction {
     }
 
     public static class actRedo extends AbstractAction {
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
         public actRedo(MainFrame frame) {
             this.mainFrame = frame;
@@ -508,7 +515,7 @@ public class IdeAction {
     }
 
     public static class actExit extends AbstractAction {
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
         public actExit(MainFrame frame) {
             mainFrame = frame;
