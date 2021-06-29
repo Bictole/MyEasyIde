@@ -36,6 +36,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import fr.epita.assistants.ping.UI.Panel.Graphics;
+import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
 
 
 public class MainFrame extends JFrame {
@@ -216,6 +217,17 @@ public class MainFrame extends JFrame {
         CompletionProvider provider = createCompletionProvider();
         AutoCompletion ac = new AutoCompletion(provider);
         ac.install(rSyntaxTextArea);
+
+        //Spell Checking Module
+        File zip = new File("./src/main/resources/dico/english_dic.zip");
+        boolean usEnglish = true; // "false" will use British English
+        try {
+            SpellingParser parser = SpellingParser.createEnglishSpellingParser(zip, usEnglish);
+            rSyntaxTextArea.addParser(parser);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void createConsole()
