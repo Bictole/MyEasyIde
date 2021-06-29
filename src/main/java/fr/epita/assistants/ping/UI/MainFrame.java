@@ -5,6 +5,7 @@ import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.myide.domain.service.ProjectService;
+import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -149,6 +150,39 @@ public class MainFrame extends JFrame {
         }
     }
 
+    private CompletionProvider createCompletionProvider() {
+        // This provider has no understanding of
+        // language semantics. It simply checks the text entered up to the
+        // caret position for a match against known completions.
+        DefaultCompletionProvider provider = new DefaultCompletionProvider();
+
+        // Add completions for all Java keywords
+        provider.addCompletion(new BasicCompletion(provider, "abstract"));
+        provider.addCompletion(new BasicCompletion(provider, "assert"));
+        provider.addCompletion(new BasicCompletion(provider, "break"));
+        provider.addCompletion(new BasicCompletion(provider, "case"));
+
+        provider.addCompletion(new BasicCompletion(provider, "private"));
+        provider.addCompletion(new BasicCompletion(provider, "public"));
+        provider.addCompletion(new BasicCompletion(provider, "protected"));
+        provider.addCompletion(new BasicCompletion(provider, "class"));
+        // ... etc ...
+        provider.addCompletion(new BasicCompletion(provider, "transient"));
+        provider.addCompletion(new BasicCompletion(provider, "try"));
+        provider.addCompletion(new BasicCompletion(provider, "void"));
+        provider.addCompletion(new BasicCompletion(provider, "volatile"));
+        provider.addCompletion(new BasicCompletion(provider, "while"));
+
+        // Add a couple of "shorthand" completions. These completions don't
+        // require the input text to be the same thing as the replacement text.
+        provider.addCompletion(new ShorthandCompletion(provider, "sout",
+                "System.out.println(", "System.out.println("));
+        provider.addCompletion(new ShorthandCompletion(provider, "serr",
+                "System.err.println(", "System.err.println("));
+
+        return provider;
+    }
+
     private void createTextArea() {
         rSyntaxTextArea = new RSyntaxTextArea();
         rSyntaxTextArea.setBackground(Color.DARK_GRAY);
@@ -177,6 +211,11 @@ public class MainFrame extends JFrame {
         } catch (IOException ioe) { // Never happens
             ioe.printStackTrace();
         }
+
+        // Autocompletion Module
+        CompletionProvider provider = createCompletionProvider();
+        AutoCompletion ac = new AutoCompletion(provider);
+        ac.install(rSyntaxTextArea);
     }
 
     private void createConsole()
