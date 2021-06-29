@@ -106,6 +106,8 @@ public class MavenAction {
                     mainFrame.getProjectService().execute(mainFrame.project, Mandatory.Features.Any.SEARCH, "public static void main");
 
             ExecConfig execConfig = new ExecConfig(mainFrame, searchReport.getFilesMatch());
+            if (execConfig.getMainClass() == null)
+                return;
             Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project, execConfig.getMainClass());
             System.out.println(report.getOutput());
         }

@@ -153,7 +153,8 @@ public class AnyAction {
                     frame.getProjectService().execute(frame.project, Mandatory.Features.Any.SEARCH, "public static void main");
 
             ExecConfig execConfig = new ExecConfig(frame, searchReport.getFilesMatch());
-
+            if (execConfig.getMainClass() == null)
+                return;
             Run.ExecutionReportRun report = (Run.ExecutionReportRun) AnyRun.execute(frame.project, execConfig.getMainFile(), execConfig.getMainParentPath(), execConfig.getMainClass(), execConfig.getMainPackagePath());
             System.out.println(report.getOutput());
         }
