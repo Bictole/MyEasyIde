@@ -15,23 +15,23 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import static fr.epita.assistants.ping.UI.UITools.getResizedIcon;
+import static fr.epita.assistants.ping.UI.UITools.*;
 
 
 public class GitAction {
 
-    public static class actGitCommit extends AbstractAction
-    {
-        MainFrame mainFrame;
+    public static class actGitCommit extends ActionTemplate {
+        private final MainFrame mainFrame;
 
         public actGitCommit(MainFrame frame)
         {
-            super("Git Commit");
-            putValue(Action.NAME, "Git Commit");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_COMMIT));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Git Commit");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            super(
+                    "Git Commit",
+                    getResizedIcon(frame, Icons.GIT_COMMIT),
+                    KeyEvent.VK_G,
+                    "Git commit",
+                    null);
+            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             this.mainFrame = frame;
         }
 
@@ -57,17 +57,18 @@ public class GitAction {
         }
     };
 
-    public static class actGitAdd extends AbstractAction {
+    public static class actGitAdd extends ActionTemplate {
 
-        MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
-        public actGitAdd(MainFrame frame)
-        {
-            putValue(Action.NAME, "Git Add");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Git Add");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+        public actGitAdd(MainFrame frame) {
+            super(
+                    "Git add",
+                    getResizedIcon(frame, Icons.GIT_ADD),
+                    KeyEvent.VK_G,
+                    "Git add",
+                    null);
+            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             this.mainFrame = frame;
         }
 
@@ -116,18 +117,18 @@ public class GitAction {
         }
     };
 
-    public static class actGitPull extends AbstractAction
-    {
-        MainFrame mainFrame;
+    public static class actGitPull extends ActionTemplate {
+        private final MainFrame mainFrame;
 
         public actGitPull(MainFrame frame)
         {
-            super("Git Commit");
-            putValue(Action.NAME, "Git Pull");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_PULL));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Git Pull");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            super(
+                    "Git pull",
+                    getResizedIcon(frame, Icons.GIT_PULL),
+                    KeyEvent.VK_G,
+                    "Git pull",
+                    null);
+            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             this.mainFrame = frame;
         }
 
@@ -151,18 +152,18 @@ public class GitAction {
         }
     };
 
-    public static class actGitPush extends AbstractAction
-    {
-        MainFrame mainFrame;
+    public static class actGitPush extends ActionTemplate {
+        private final MainFrame mainFrame;
 
         public actGitPush(MainFrame frame)
         {
-            super("Git Commit");
-            putValue(Action.NAME, "Git Push");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Git Push");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            super(
+                    "Git Push",
+                    getResizedIcon(frame, Icons.GIT_PUSH),
+                    KeyEvent.VK_G,
+                    "Git push",
+                    null);
+            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             this.mainFrame = frame;
         }
 
