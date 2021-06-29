@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.feature.maven;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.project.AnyProject;
 
 public class Tree implements Feature {
 

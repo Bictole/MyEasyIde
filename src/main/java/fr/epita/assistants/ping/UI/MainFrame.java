@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import fr.epita.assistants.ping.UI.Panel.Graphics;
+
 
 public class MainFrame extends JFrame {
 
