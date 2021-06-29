@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.UI;
 
 import javax.swing.*;
+import java.io.File;
 
 public class UITools {
 
@@ -12,6 +13,21 @@ public class UITools {
         return MainFrame.resizeIcon(new ImageIcon(icon.path), frame.iconWidth, frame.iconHeight);
     }
 
+    public static File fileSelector(MainFrame frame) {
+        // Create an object of JFileChooser class
+        JFileChooser j = new JFileChooser("f:");
+
+        // Invoke the showsSaveDialog function to show the save dialog
+        int r = j.showSaveDialog(null);
+
+        if (r == JFileChooser.APPROVE_OPTION) {
+            // Set the label to the path of the selected directory
+            return j.getSelectedFile();
+        } else {
+            JOptionPane.showMessageDialog(frame, "the user cancelled the operation");
+            return null;
+        }
+    }
 
     /*
         Extend you action from this template, calling super() with right arguments

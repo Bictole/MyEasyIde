@@ -3,8 +3,10 @@ package fr.epita.assistants.ping.UI;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.service.ProjectService;
 import fr.epita.assistants.ping.service.NodeManager;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -349,11 +351,12 @@ public class IdeAction {
     }
 
 
+
     public static class actSave extends ActionTemplate {
         private final MainFrame mainFrame;
-        private JTextArea jTextArea;
+        private RSyntaxTextArea rSyntaxTextArea;
 
-        public actSave(MainFrame frame) {
+        public actSave(MainFrame frame, RSyntaxTextArea rSyntaxTextArea) {
             super(
                     "Save File",
                     getResizedIcon(frame, Icons.SAVE),
@@ -361,6 +364,50 @@ public class IdeAction {
                     "Save file (CTRL+S)",
                     KeyStroke.getKeyStroke(KeyEvent.VK_S,
                             KeyEvent.CTRL_DOWN_MASK));
+            this.mainFrame = frame;
+            this.rSyntaxTextArea = rSyntaxTextArea;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            // Set the label to the path of the selected directory
+            File file = mainFrame.getOpenedFile();
+            if (file == null)
+                file = fileSelector(mainFrame);
+            if (file == null)
+                return;
+
+            try {
+                // Create a file writer
+                FileWriter wr = new FileWriter(file, false);
+
+                // Create buffered writer to write
+                BufferedWriter w = new BufferedWriter(wr);
+
+                // Write
+                w.write(rSyntaxTextArea.getText());
+
+                w.flush();
+                w.close();
+            } catch (Exception evt) {
+                JOptionPane.showMessageDialog(mainFrame, evt.getMessage());
+            }
+        }
+    }
+
+    public static class actSaveAs extends ActionTemplate {
+        private final MainFrame mainFrame;
+        private JTextArea jTextArea;
+
+        public actSaveAs(MainFrame frame) {
+            super(
+                    "Save As...",
+                    getResizedIcon(frame, Icons.SAVE_AS),
+                    KeyEvent.VK_A,
+                    "Save file as",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK)
+                    );
             this.mainFrame = frame;
         }
 
@@ -396,27 +443,6 @@ public class IdeAction {
             // If the user cancelled the operation
             else
                 JOptionPane.showMessageDialog(mainFrame, "the user cancelled the operation");
-        }
-    }
-
-    public static class actSaveAs extends ActionTemplate {
-        private final MainFrame mainFrame;
-
-        public actSaveAs(MainFrame frame) {
-            super(
-                    "Save As...",
-                    getResizedIcon(frame, Icons.SAVE_AS),
-                    KeyEvent.VK_A,
-                    "Save file as",
-                    KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK)
-                    );
-            this.mainFrame = frame;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // TODO
-            System.out.println("Save_As action: Not implemented yet");
         }
     }
 
