@@ -5,6 +5,10 @@ import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.myide.domain.service.ProjectService;
+import org.fife.rsta.ac.LanguageSupport;
+import org.fife.rsta.ac.LanguageSupportFactory;
+import org.fife.rsta.ac.java.JavaLanguageSupport;
+import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -13,9 +17,12 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoManager;
@@ -31,8 +38,11 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import fr.epita.assistants.ping.UI.Panel.Graphics;
+import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
 
-public class MainFrame extends JFrame {
+
+public class MainFrame extends JFrame implements SyntaxConstants {
 
     public JFrame jFrame;
 
@@ -52,8 +62,7 @@ public class MainFrame extends JFrame {
 
     private UndoManager undoManager;
 
-    public MainFrame(String title, ProjectService projectService)
-    {
+    public MainFrame(String title, ProjectService projectService) {
         super(title);
 
         try {
@@ -65,6 +74,16 @@ public class MainFrame extends JFrame {
 
         jFrame = this;
         this.projectService = projectService;
+
+        System.setProperty("GRIS_SOMBRE", "0X221F1F");
+        System.setProperty("GRIS_CLAIR", "0X737373");
+        System.setProperty("GRIS_MIDDLE", "0x3A353C");
+        System.setProperty("PRUNE", "0X44233B");
+        System.setProperty("BORDEAU", "0X682636");
+        System.setProperty("BLEU_ELECTRIQUE", "0X5AC0E6");
+        System.setProperty("VIOLET", "0X844CA2");
+        System.setProperty("ROSE", "0XE54F72");
+        System.setProperty("ROSE_CLAIR", "0XF19CBD");
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -93,23 +112,29 @@ public class MainFrame extends JFrame {
         createTextArea();
         createMenuBar();
         createToolBar();
+
         JScrollPane textView = new JScrollPane(rSyntaxTextArea);
+        ;
+        Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
         JScrollPane treeView = initTree(project.getRootNode());
+        Graphics.ScrollPaneDesign(treeView, Color.getColor("PRUNE"));
+
         createPopupMenu();
         createConsole();
         JScrollPane consoleView = console.scrollPane;
+        Graphics.ScrollPaneDesign(consoleView, Color.getColor("GRIS_MIDDLE"));
 
         //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
         //jToolBar.setBorder(new EtchedBorder());
 
-        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,treeView, textView);
-        mainSplitPane.setResizeWeight(0.10);
+        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, textView);
+        Graphics.BottomSplitPaneDesign(mainSplitPane);
         JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, consoleView);
-
+        Graphics.BottomSplitPaneDesign(bottomSplitPane);
 
         this.setJMenuBar(jMenuBar);
-        contentPane.add(jToolBar, BorderLayout.NORTH);
-        contentPane.add(bottomSplitPane, BorderLayout.CENTER);
+        jFrame.add(jToolBar, BorderLayout.NORTH);
+        jFrame.add(bottomSplitPane, BorderLayout.SOUTH);
         this.pack();
         if (!this.isVisible())
             this.setVisible(true);
@@ -129,6 +154,39 @@ public class MainFrame extends JFrame {
         }
     }
 
+    private CompletionProvider createCompletionProvider() {
+        // This provider has no understanding of
+        // language semantics. It simply checks the text entered up to the
+        // caret position for a match against known completions.
+        DefaultCompletionProvider provider = new DefaultCompletionProvider();
+
+        // Add completions for all Java keywords
+        provider.addCompletion(new BasicCompletion(provider, "abstract"));
+        provider.addCompletion(new BasicCompletion(provider, "assert"));
+        provider.addCompletion(new BasicCompletion(provider, "break"));
+        provider.addCompletion(new BasicCompletion(provider, "case"));
+
+        provider.addCompletion(new BasicCompletion(provider, "private"));
+        provider.addCompletion(new BasicCompletion(provider, "public"));
+        provider.addCompletion(new BasicCompletion(provider, "protected"));
+        provider.addCompletion(new BasicCompletion(provider, "class"));
+        // ... etc ...
+        provider.addCompletion(new BasicCompletion(provider, "transient"));
+        provider.addCompletion(new BasicCompletion(provider, "try"));
+        provider.addCompletion(new BasicCompletion(provider, "void"));
+        provider.addCompletion(new BasicCompletion(provider, "volatile"));
+        provider.addCompletion(new BasicCompletion(provider, "while"));
+
+        // Add a couple of "shorthand" completions. These completions don't
+        // require the input text to be the same thing as the replacement text.
+        provider.addCompletion(new ShorthandCompletion(provider, "sout",
+                "System.out.println(", "System.out.println("));
+        provider.addCompletion(new ShorthandCompletion(provider, "serr",
+                "System.err.println(", "System.err.println("));
+
+        return provider;
+    }
+
     private void createTextArea() {
         rSyntaxTextArea = new RSyntaxTextArea();
         rSyntaxTextArea.setBackground(Color.DARK_GRAY);
@@ -136,6 +194,7 @@ public class MainFrame extends JFrame {
         rSyntaxTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         rSyntaxTextArea.setCodeFoldingEnabled(true);
         rSyntaxTextArea.setAnimateBracketMatching(true);
+        rSyntaxTextArea.setBorder(BorderFactory.createEmptyBorder());
 
 
         undoManager = new UndoManager();
@@ -156,10 +215,29 @@ public class MainFrame extends JFrame {
         } catch (IOException ioe) { // Never happens
             ioe.printStackTrace();
         }
+
+        // Autocompletion Module
+        CompletionProvider provider = createCompletionProvider();
+        AutoCompletion ac = new AutoCompletion(provider);
+        ac.install(rSyntaxTextArea);
+
+        //Spell Checking Module
+        File zip = new File("./src/main/resources/dico/english_dic.zip");
+        boolean usEnglish = true; // "false" will use British English
+        try {
+            SpellingParser parser = SpellingParser.createEnglishSpellingParser(zip, usEnglish);
+            rSyntaxTextArea.addParser(parser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Language Support
+        LanguageSupportFactory lsf = LanguageSupportFactory.get();
+        LanguageSupport support = lsf.getSupportFor(SYNTAX_STYLE_JAVA);
+        LanguageSupportFactory.get().register(rSyntaxTextArea);
     }
 
-    private void createConsole()
-    {
+    private void createConsole() {
         console = new fr.epita.assistants.ping.UI.Panel.Console(jFrame);
         return;
     }
@@ -167,11 +245,15 @@ public class MainFrame extends JFrame {
     private void createMenuBar() {
         // Create a menubar
         jMenuBar = new JMenuBar();
+        jMenuBar.setBackground(Color.getColor("GRIS_SOMBRE"));
+        jMenuBar.setBorder(BorderFactory.createEmptyBorder());
 
         // Create a menu
         JMenu mFile = new JMenu("File");
+        mFile.setForeground(Color.WHITE);
         mFile.setMnemonic('F');
         JMenu mNew = new JMenu("New");
+        mNew.setForeground(Color.WHITE);
         mNew.add(new IdeAction.actNewProject(this));
         mNew.addSeparator();
         mNew.add(new IdeAction.actNewFile(this));
@@ -187,6 +269,7 @@ public class MainFrame extends JFrame {
 
         JMenu mEdit = new JMenu("Edit");
         mEdit.setMnemonic('E');
+        mEdit.setForeground(Color.WHITE);
 
         mEdit.add(new IdeAction.actUndo(this));
         mEdit.add(new IdeAction.actRedo(this));
@@ -199,6 +282,7 @@ public class MainFrame extends JFrame {
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
             JMenu mGit = new JMenu("Git");
+            mGit.setForeground(Color.WHITE);
             mGit.setMnemonic('G');
             mGit.add(new GitAction.actGitPull(this));
             mGit.add(new GitAction.actGitAdd(this));
@@ -210,6 +294,7 @@ public class MainFrame extends JFrame {
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.MAVEN)) {
             JMenu mMaven = new JMenu("Maven");
+            mMaven.setForeground(Color.WHITE);
             mMaven.setMnemonic('M');
             mMaven.add(new MavenAction.actMvnClean(this));
             mMaven.add(new MavenAction.actMvnCompile(this));
@@ -232,7 +317,9 @@ public class MainFrame extends JFrame {
     private void createToolBar() {
         // Create a toolbar
         jToolBar = new JToolBar();
-        jToolBar.setBackground(Color.GRAY);
+        jToolBar.setBorder(BorderFactory.createBevelBorder(1, Color.getColor("GRIS_MIDDLE"), Color.getColor("GRIS_MIDDLE")));
+        jToolBar.setBackground(Color.getColor("GRIS_MIDDLE"));
+        jToolBar.setForeground(Color.getColor("GRIS_MIDDLE"));
 
         jToolBar.add(new IdeAction.actOpenProject(this)).setHideActionText(true);
         jToolBar.add(new IdeAction.actSave(this)).setHideActionText(true);
@@ -242,9 +329,16 @@ public class MainFrame extends JFrame {
         jToolBar.add(new IdeAction.actCopy(this, rSyntaxTextArea)).setHideActionText(true);
         jToolBar.add(new IdeAction.actCut(this, rSyntaxTextArea)).setHideActionText(true);
         jToolBar.add(new IdeAction.actPaste(this, rSyntaxTextArea)).setHideActionText(true);
-        jToolBar.add(new AnyAction.actAnyRun(this)).setHideActionText(true);
+
+        jToolBar.add(Box.createHorizontalGlue());
+        if (project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.MAVEN))
+            jToolBar.add(new MavenAction.actMvnExec(this)).setHideActionText(true);
+        else if (project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.ANY))
+            jToolBar.add(new AnyAction.actAnyRun(this)).setHideActionText(true);
+        
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
+        label.setForeground(Color.WHITE);
         jToolBar.add(label);
         jToolBar.addSeparator();
         jToolBar.add(new GitAction.actGitPull(this)).setHideActionText(true);
@@ -255,8 +349,7 @@ public class MainFrame extends JFrame {
         jToolBar.setFloatable(false);
     }
 
-    private void createPopupMenu()
-    {
+    private void createPopupMenu() {
         JPopupMenu textPopupMenu = new JPopupMenu();
         JPopupMenu treePopupMenu = new JPopupMenu();
         textPopupMenu.add(new IdeAction.actCopy(this, rSyntaxTextArea));
@@ -268,21 +361,23 @@ public class MainFrame extends JFrame {
         mNew.add(new IdeAction.actNewFolder(this));
         treePopupMenu.add(mNew);
 
-        rSyntaxTextArea.addMouseListener( new MouseAdapter() {
-            @Override public void mousePressed( MouseEvent event ) {
-                if ( event.isPopupTrigger() ) {
-                    textPopupMenu.show( event.getComponent(), event.getX(), event.getY() );
+        rSyntaxTextArea.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent event) {
+                if (event.isPopupTrigger()) {
+                    textPopupMenu.show(event.getComponent(), event.getX(), event.getY());
                 }
             }
         });
 
-        jTree.addMouseListener( new MouseAdapter() {
-            @Override public void mousePressed( MouseEvent event ) {
-                if ( event.isPopupTrigger() ) {
-                    treePopupMenu.show( event.getComponent(), event.getX(), event.getY() );
+        jTree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent event) {
+                if (event.isPopupTrigger()) {
+                    treePopupMenu.show(event.getComponent(), event.getX(), event.getY());
                 }
             }
-        } );
+        });
     }
 
     ////////////////////////////////////////////
@@ -322,6 +417,15 @@ public class MainFrame extends JFrame {
     private JScrollPane initTree(Node root) {
         DefaultMutableTreeNode top = createTree(root);
         jTree = new JTree(top);
+        jTree.setBorder(BorderFactory.createEmptyBorder());
+
+        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) jTree.getCellRenderer();
+        renderer.setTextSelectionColor(Color.white);
+        renderer.setBackgroundSelectionColor(Color.getColor("ROSE"));
+        renderer.setBorderSelectionColor(Color.black);
+        renderer.setTextNonSelectionColor(Color.getColor("BLEU_ELECTRIQUE"));
+        renderer.setBackgroundNonSelectionColor(Color.getColor("PRUNE"));
+        jTree.setBackground(Color.getColor("PRUNE"));
 
         jTree.addMouseListener(new MouseAdapter() {
             @Override
@@ -343,13 +447,12 @@ public class MainFrame extends JFrame {
         return treeView;
     }
 
-    public void checkUpdateTree(Node root)
-    {
-        if(!checkTree(root))
+    public void checkUpdateTree(Node root) {
+        if (!checkTree(root))
             updateTree(root);
     }
 
-    public void updateTree(Node root){
+    public void updateTree(Node root) {
 
         //((ProjectManager)projectService).update(root);
         DefaultMutableTreeNode top = createTree(root);
@@ -409,7 +512,7 @@ public class MainFrame extends JFrame {
             File file = ol.get(i);
             Optional<Node> next = nodes.stream()
                     .filter(node -> ((node.isFile() && file.isFile()) || (node.isFolder() && file.isDirectory()))
-                    && node.getPath().equals(file.toPath())).findAny();
+                            && node.getPath().equals(file.toPath())).findAny();
             if (!next.isPresent())
                 return false;
             if (file.isDirectory() && !checkTree(next.get()))

@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.feature.maven;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.project.AnyProject;
 
 public class Package implements Feature {
     public class ExecutionReportPackage implements Feature.ExecutionReport {
@@ -28,7 +29,8 @@ public class Package implements Feature {
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
 
-        ProcessBuilder pb = new ProcessBuilder("mvn", "package");
+        AnyProject p = (AnyProject) project;
+        ProcessBuilder pb = new ProcessBuilder(p.config.mavenCmd, "package");
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
@@ -39,7 +41,7 @@ public class Package implements Feature {
             return new ExecutionReportPackage(true, result);
 
         } catch (Exception e) {
-            return new ExecutionReportPackage(false, "Maven Package failed :" + e.getMessage());
+            return new ExecutionReportPackage(false, e.getMessage());
         }
     }
 
