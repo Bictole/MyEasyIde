@@ -28,7 +28,8 @@ public class Install implements Feature {
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
 
-        ProcessBuilder pb = new ProcessBuilder("mvn", "install");
+        AnyProject p = (AnyProject) project;
+        ProcessBuilder pb = new ProcessBuilder(p.config.mavenCmd, "install");
 
         try {
             pb.directory(project.getRootNode().getPath().toFile());
@@ -39,7 +40,7 @@ public class Install implements Feature {
             return new ExecutionReportInstall(true, result);
 
         } catch (Exception e) {
-            return new ExecutionReportInstall(false, "Maven Exec failed :" + e.getMessage());
+            return new ExecutionReportInstall(false, e.getMessage());
         }
     }
 

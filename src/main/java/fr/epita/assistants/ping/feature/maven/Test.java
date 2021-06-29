@@ -27,7 +27,8 @@ public class Test implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "test");
+        AnyProject p = (AnyProject) project;
+        ProcessBuilder pb = new ProcessBuilder(p.config.mavenCmd, "test");
         String result = "";
 
         try {
@@ -38,7 +39,7 @@ public class Test implements Feature {
 
             return new Test.ExecutionReportTest(true, result);
         } catch (Exception e) {
-            return new Test.ExecutionReportTest(false, result);
+            return new Test.ExecutionReportTest(false, e.getMessage());
         }
     }
 

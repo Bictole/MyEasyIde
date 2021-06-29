@@ -13,9 +13,12 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoManager;
@@ -66,6 +69,16 @@ public class MainFrame extends JFrame {
         jFrame = this;
         this.projectService = projectService;
 
+        System.setProperty("GRIS_SOMBRE", "0X221F1F");
+        System.setProperty("GRIS_CLAIR", "0X737373");
+        System.setProperty("GRIS_MIDDLE", "0x3A353C");
+        System.setProperty("PRUNE", "0X44233B");
+        System.setProperty("BORDEAU", "0X682636");
+        System.setProperty("BLEU_ELECTRIQUE", "0X5AC0E6");
+        System.setProperty("VIOLET", "0X844CA2");
+        System.setProperty("ROSE", "0XE54F72");
+        System.setProperty("ROSE_CLAIR", "0XF19CBD");
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
@@ -93,23 +106,28 @@ public class MainFrame extends JFrame {
         createTextArea();
         createMenuBar();
         createToolBar();
-        JScrollPane textView = new JScrollPane(rSyntaxTextArea);
+
+        JScrollPane textView = new JScrollPane(rSyntaxTextArea);;
+        Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
         JScrollPane treeView = initTree(project.getRootNode());
+        Graphics.ScrollPaneDesign(treeView,Color.getColor("PRUNE"));
+
         createPopupMenu();
         createConsole();
         JScrollPane consoleView = console.scrollPane;
+        Graphics.ScrollPaneDesign(consoleView, Color.getColor("GRIS_MIDDLE"));
 
         //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
         //jToolBar.setBorder(new EtchedBorder());
 
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,treeView, textView);
-        mainSplitPane.setResizeWeight(0.10);
+        Graphics.BottomSplitPaneDesign(mainSplitPane);
         JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, consoleView);
-
+        Graphics.BottomSplitPaneDesign(bottomSplitPane);
 
         this.setJMenuBar(jMenuBar);
-        contentPane.add(jToolBar, BorderLayout.NORTH);
-        contentPane.add(bottomSplitPane, BorderLayout.CENTER);
+        jFrame.add(jToolBar, BorderLayout.NORTH);
+        jFrame.add(bottomSplitPane, BorderLayout.SOUTH);
         this.pack();
         if (!this.isVisible())
             this.setVisible(true);
@@ -136,6 +154,7 @@ public class MainFrame extends JFrame {
         rSyntaxTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         rSyntaxTextArea.setCodeFoldingEnabled(true);
         rSyntaxTextArea.setAnimateBracketMatching(true);
+        rSyntaxTextArea.setBorder(BorderFactory.createEmptyBorder());
 
 
         undoManager = new UndoManager();
@@ -167,11 +186,15 @@ public class MainFrame extends JFrame {
     private void createMenuBar() {
         // Create a menubar
         jMenuBar = new JMenuBar();
+        jMenuBar.setBackground(Color.getColor("GRIS_SOMBRE"));
+        jMenuBar.setBorder(BorderFactory.createEmptyBorder());
 
         // Create a menu
         JMenu mFile = new JMenu("File");
+        mFile.setForeground(Color.WHITE);
         mFile.setMnemonic('F');
         JMenu mNew = new JMenu("New");
+        mNew.setForeground(Color.WHITE);
         mNew.add(new IdeAction.actNewProject(this));
         mNew.addSeparator();
         mNew.add(new IdeAction.actNewFile(this));
@@ -187,6 +210,7 @@ public class MainFrame extends JFrame {
 
         JMenu mEdit = new JMenu("Edit");
         mEdit.setMnemonic('E');
+        mEdit.setForeground(Color.WHITE);
 
         mEdit.add(new IdeAction.actUndo(this));
         mEdit.add(new IdeAction.actRedo(this));
@@ -199,6 +223,7 @@ public class MainFrame extends JFrame {
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
             JMenu mGit = new JMenu("Git");
+            mGit.setForeground(Color.WHITE);
             mGit.setMnemonic('G');
             mGit.add(new GitAction.actGitPull(this));
             mGit.add(new GitAction.actGitAdd(this));
@@ -210,6 +235,7 @@ public class MainFrame extends JFrame {
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.MAVEN)) {
             JMenu mMaven = new JMenu("Maven");
+            mMaven.setForeground(Color.WHITE);
             mMaven.setMnemonic('M');
             mMaven.add(new MavenAction.actMvnClean(this));
             mMaven.add(new MavenAction.actMvnCompile(this));
@@ -232,7 +258,9 @@ public class MainFrame extends JFrame {
     private void createToolBar() {
         // Create a toolbar
         jToolBar = new JToolBar();
-        jToolBar.setBackground(Color.GRAY);
+        jToolBar.setBorder(BorderFactory.createBevelBorder(1, Color.getColor("GRIS_MIDDLE"), Color.getColor("GRIS_MIDDLE")));
+        jToolBar.setBackground(Color.getColor("GRIS_MIDDLE"));
+        jToolBar.setForeground(Color.getColor("GRIS_MIDDLE"));
 
         jToolBar.add(new IdeAction.actOpenProject(this)).setHideActionText(true);
         jToolBar.add(new IdeAction.actSave(this)).setHideActionText(true);
@@ -245,6 +273,7 @@ public class MainFrame extends JFrame {
         jToolBar.add(new AnyAction.actAnyRun(this)).setHideActionText(true);
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
+        label.setForeground(Color.WHITE);
         jToolBar.add(label);
         jToolBar.addSeparator();
         jToolBar.add(new GitAction.actGitPull(this)).setHideActionText(true);
@@ -322,6 +351,15 @@ public class MainFrame extends JFrame {
     private JScrollPane initTree(Node root) {
         DefaultMutableTreeNode top = createTree(root);
         jTree = new JTree(top);
+        jTree.setBorder(BorderFactory.createEmptyBorder());
+
+        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) jTree.getCellRenderer();
+        renderer.setTextSelectionColor(Color.white);
+        renderer.setBackgroundSelectionColor(Color.getColor("ROSE"));
+        renderer.setBorderSelectionColor(Color.black);
+        renderer.setTextNonSelectionColor(Color.getColor("BLEU_ELECTRIQUE"));
+        renderer.setBackgroundNonSelectionColor(Color.getColor("PRUNE"));
+        jTree.setBackground(Color.getColor("PRUNE"));
 
         jTree.addMouseListener(new MouseAdapter() {
             @Override

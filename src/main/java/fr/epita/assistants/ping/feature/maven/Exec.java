@@ -30,7 +30,9 @@ public class Exec implements Feature {
     public Feature.ExecutionReport execute(Project project, Object... params) {
 
         String mainClass = (String) params[0];
-        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "exec:java", "-Dexec.mainClass=" + mainClass);
+        AnyProject p = (AnyProject) project;
+        ProcessBuilder pb = new ProcessBuilder(p.config.mavenCmd, "compile",
+                "exec:java", "-Dexec.mainClass=" + mainClass);
         String result = "";
 
         try {

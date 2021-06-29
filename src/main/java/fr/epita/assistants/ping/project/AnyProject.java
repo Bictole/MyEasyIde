@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.project;
 
 import fr.epita.assistants.myide.domain.entity.*;
+import fr.epita.assistants.ping.config.Configuration;
 import org.eclipse.jgit.api.Git;
 
 import javax.validation.constraints.NotNull;
@@ -14,11 +15,13 @@ public class AnyProject implements Project {
     private final Node rootNode;
     private final Set<Aspect> aspects;
     private Git git = null;
+    public Configuration config;
 
     public AnyProject(Node root, Set<Aspect> aspects)
     {
         rootNode = root;
         this.aspects = aspects;
+        config = new Configuration();
 
         for (var a : aspects)
         {
