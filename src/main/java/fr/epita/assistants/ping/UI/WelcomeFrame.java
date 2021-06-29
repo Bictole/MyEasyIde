@@ -7,10 +7,6 @@ import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.nio.file.Path;
 
 public class WelcomeFrame extends JFrame {
 

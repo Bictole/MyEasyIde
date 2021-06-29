@@ -7,7 +7,6 @@ import fr.epita.assistants.ping.project.AnyProject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-import java.io.File;
 import java.io.IOException;
 
 public class Add implements Feature {

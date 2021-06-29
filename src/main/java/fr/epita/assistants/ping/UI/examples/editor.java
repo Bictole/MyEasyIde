@@ -2,10 +2,13 @@ package fr.epita.assistants.ping.UI.examples;
 
 
 // Java Program to create a text editor using java
+
 import javax.swing.*;
-        import java.io.*;
-        import java.awt.event.*;
-        import javax.swing.plaf.metal.*;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.OceanTheme;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
 
 class editor extends JFrame implements ActionListener {
     // Text component

@@ -4,23 +4,15 @@ import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.ping.UI.Panel.ExecConfig;
 import fr.epita.assistants.ping.feature.any.Search;
-import fr.epita.assistants.ping.feature.maven.*;
 import fr.epita.assistants.ping.feature.maven.Package;
-import fr.epita.assistants.ping.project.AnyProject;
-import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jgit.api.Status;
+import fr.epita.assistants.ping.feature.maven.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+
+import static fr.epita.assistants.ping.UI.UITools.getResizedIcon;
 
 public class MavenAction {
 
@@ -31,7 +23,7 @@ public class MavenAction {
         public actMvnClean(MainFrame frame) {
 
             putValue(Action.NAME, "Maven Clean");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitAdd.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Maven Clean");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -60,7 +52,7 @@ public class MavenAction {
 
         public actMvnCompile(MainFrame frame) {
             putValue(Action.NAME, "Maven Compile");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitAdd.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Maven Compile");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -89,7 +81,7 @@ public class MavenAction {
 
         public actMvnExec(MainFrame frame) {
             putValue(Action.NAME, "Maven Exec");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitAdd.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Maven Exec");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -121,7 +113,7 @@ public class MavenAction {
 
         public actMvnInstall(MainFrame frame) {
             putValue(Action.NAME, "Maven Install");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitAdd.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Maven Install");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -149,7 +141,7 @@ public class MavenAction {
 
         public actMvnPackage(MainFrame frame) {
             putValue(Action.NAME, "Maven Package");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitAdd.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Maven Package");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -177,7 +169,7 @@ public class MavenAction {
 
         public actMvnTest(MainFrame frame) {
             putValue(Action.NAME, "Maven Test");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitAdd.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Maven Test");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -205,7 +197,7 @@ public class MavenAction {
 
         public actMvnTree(MainFrame frame) {
             putValue(Action.NAME, "Maven Tree");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon("src/main/resources/icons/gitAdd.png"), frame.iconWidth, frame.iconHeight));
+            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
             putValue(Action.SHORT_DESCRIPTION, "Maven Tree");
             //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));

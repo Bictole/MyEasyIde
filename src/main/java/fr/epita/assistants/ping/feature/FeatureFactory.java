@@ -10,8 +10,8 @@ import fr.epita.assistants.ping.feature.git.Add;
 import fr.epita.assistants.ping.feature.git.Commit;
 import fr.epita.assistants.ping.feature.git.Pull;
 import fr.epita.assistants.ping.feature.git.Push;
-import fr.epita.assistants.ping.feature.maven.*;
 import fr.epita.assistants.ping.feature.maven.Package;
+import fr.epita.assistants.ping.feature.maven.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;

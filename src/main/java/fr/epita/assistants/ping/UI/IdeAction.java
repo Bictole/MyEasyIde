@@ -1,62 +1,35 @@
 package fr.epita.assistants.ping.UI;
 
-import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Node;
-import fr.epita.assistants.myide.domain.service.NodeService;
 import fr.epita.assistants.myide.domain.service.ProjectService;
 import fr.epita.assistants.ping.service.NodeManager;
-import fr.epita.assistants.ping.service.ProjectManager;
-import org.eclipse.sisu.launch.Main;
 
 import javax.swing.*;
-import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+
+import static fr.epita.assistants.ping.UI.UITools.*;
 
 public class IdeAction {
 
-    enum Icons {
-        NEW_PROJECT("newProject.png"),
-        OPEN_PROJECT("open.png"),
-        NEW_FOLDER("newFolder.png"),
-        NEW_FILE("newFile.png"),
-        OPEN("open.png"),
-        SAVE("save.png"),
-        SAVE_AS("save_as.png"),
-        COPY("copy.png"),
-        CUT("cut.png"),
-        PASTE("paste.png"),
-        UNDO("undo.png"),
-        REDO("redo.png"),
-        EXIT("exit.png"),
-        RUN("exit.png");
+    public static class actNewProject extends ActionTemplate {
 
-        String path;
-
-        Icons(String s) {
-            String mainPath = "src/main/resources/icons/";
-            path = mainPath + s;
-        }
-    }
-
-    public static class actNewProject extends AbstractAction {
-
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
         public actNewProject(MainFrame frame) {
+            super(
+                    "New Project",
+                    getResizedIcon(frame, Icons.NEW_PROJECT),
+                    KeyEvent.VK_N,
+                    "New Project",
+                    null);
             this.mainFrame = frame;
-            putValue(Action.NAME, "Project");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.NEW_PROJECT.path), frame.iconWidth, frame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(Action.SHORT_DESCRIPTION, "New Project");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
+            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         }
 
 
@@ -69,7 +42,7 @@ public class IdeAction {
 
             JLabel locationLabel = new JLabel("Location:");
             JTextField locationTextField = new JTextField();
-            JButton locationButton = new JButton(mainFrame.resizeIcon(new ImageIcon(Icons.OPEN_PROJECT.path), 16, 16));
+            JButton locationButton = new JButton(MainFrame.resizeIcon(new ImageIcon(Icons.OPEN_PROJECT.path), 16, 16));
             locationButton.addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -196,86 +169,103 @@ public class IdeAction {
         }
     }
 
-    public static class actNewFolder extends AbstractAction {
+    private static void abstractNewFile(MainFrame mainFrame, Node.Types type, String name) {
+        if (name == null)
+            return;
+        File file = mainFrame.getSelectedFile();
+        Path path;
+        if (file == null)
+            path = mainFrame.project.getRootNode().getPath();
+        else if (file.isFile())
+            path = file.toPath().getParent();
+        else
+            path = file.toPath();
 
-        private MainFrame mainFrame;
+        ProjectService projectService = mainFrame.getProjectService();
+        NodeManager nodeService = (NodeManager)projectService.getNodeService();
+        Node root = mainFrame.project.getRootNode();
+        nodeService.create(nodeService.getFromSource(root, path), name, type);
+        mainFrame.updateTree(root);
+        System.out.println("New " + type.toString() + ": " + name);
+    }
+
+    private static String getNameDialog(MainFrame frame, String message) {
+        String result = (String) JOptionPane.showInputDialog(
+                frame,
+                message,
+                "",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                "Name"
+        );
+        if (result != null) {
+            if (result.length() > 0) {
+                return result;
+            } else {
+                // test if valid filename
+                errorDialog(frame, "Invalid name: " + result);
+            }
+        }
+        return null;
+    }
+
+    public static class actNewFolder extends ActionTemplate {
+
+        private final MainFrame mainFrame;
 
         public actNewFolder(MainFrame frame) {
+            super(
+                    "Fodler",
+                    getResizedIcon(frame, Icons.NEW_FOLDER),
+                    KeyEvent.VK_N,
+                    "New Folder",
+                    null);
             this.mainFrame = frame;
-            putValue(Action.NAME, "Folder");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.NEW_FOLDER.path), frame.iconWidth, frame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(Action.SHORT_DESCRIPTION, "New Folder");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
+            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            File file = mainFrame.getSelectedFile();
-            Path path;
-            if (file == null)
-                path = mainFrame.project.getRootNode().getPath();
-            else if (file.isFile())
-                path = file.toPath().getParent();
-            else
-                path = file.toPath();
-
-            ProjectService projectService = mainFrame.getProjectService();
-            NodeManager nodeService = (NodeManager)projectService.getNodeService();
-            Node root = mainFrame.project.getRootNode();
-            // dialog to get the name
-            nodeService.create(nodeService.getFromSource(root, path), "New Folder", Node.Types.FOLDER);
-            mainFrame.updateTree(root);
-            System.out.println("New folder");
+            String name = getNameDialog(mainFrame, "Enter folder name");
+            abstractNewFile(mainFrame, Node.Types.FOLDER, name);
         }
     }
 
-    public static class actNewFile extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actNewFile extends ActionTemplate {
+        private final MainFrame mainFrame;
 
         public actNewFile(MainFrame frame) {
+            super(
+                    "File",
+                    getResizedIcon(frame, Icons.NEW_FILE),
+                    KeyEvent.VK_N,
+                    "Create new file",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            putValue(Action.NAME, "File");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.NEW_FILE.path), frame.iconWidth, frame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(Action.SHORT_DESCRIPTION, "New File");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            File file = mainFrame.getSelectedFile();
-            Path path;
-            if (file == null)
-                path = mainFrame.project.getRootNode().getPath();
-            else if (file.isFile())
-                path = file.toPath().getParent();
-            else
-                path = file.toPath();
-
-            ProjectService projectService = mainFrame.getProjectService();
-            NodeManager nodeService = (NodeManager)projectService.getNodeService();
-            Node root = mainFrame.project.getRootNode();
-            // dialog to get the name
-            nodeService.create(nodeService.getFromSource(root, path), "New file", Node.Types.FILE);
-            mainFrame.updateTree(root);
-            System.out.println("New file");
+            String name = getNameDialog(mainFrame, "Enter file name");
+            abstractNewFile(mainFrame, Node.Types.FILE, name);
         }
     }
 
 
-    public static class actOpenFile extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actOpenFile extends ActionTemplate {
+        private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actOpenFile(MainFrame frame, JTextArea jTextArea) {
+            super(
+                    "Open File",
+                    getResizedIcon(frame, Icons.OPEN),
+                    KeyEvent.VK_O,
+                    "Open file (CTRL+O)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
-            putValue(Action.NAME, "Open File");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.OPEN.path), mainFrame.iconWidth, mainFrame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
-            putValue(Action.SHORT_DESCRIPTION, "Open file (CTRL+O)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -323,16 +313,17 @@ public class IdeAction {
 
     ;
 
-    public static class actOpenProject extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actOpenProject extends ActionTemplate {
+        private final MainFrame mainFrame;
 
         public actOpenProject(MainFrame frame) {
+            super(
+                    "Open Project",
+                    getResizedIcon(frame, Icons.OPEN),
+                    KeyEvent.VK_O,
+                    "Open Project (CTRL+O)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            putValue(Action.NAME, "Open Project");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.OPEN.path), mainFrame.iconWidth, mainFrame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
-            putValue(Action.SHORT_DESCRIPTION, "Open Project (CTRL+O)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -357,31 +348,20 @@ public class IdeAction {
         }
     }
 
-    /*
-    public static abstract class FileAction extends AbstractAction {
-        private JTextArea jTextArea;
 
-        public FileAction(String name, Icon icon, KeyEvent mnemonic, String description, KeyStroke keyStroke) {
-            putValue(Action.NAME, name);
-            putValue(Action.SMALL_ICON, icon);
-            putValue(Action.MNEMONIC_KEY, mnemonic);
-            putValue(Action.SHORT_DESCRIPTION, description);
-            putValue(Action.ACCELERATOR_KEY, keyStroke);
-        }
-    }
-    */
-
-    public static class actSave extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actSave extends ActionTemplate {
+        private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actSave(MainFrame frame) {
+            super(
+                    "Save File",
+                    getResizedIcon(frame, Icons.SAVE),
+                    KeyEvent.VK_S,
+                    "Save file (CTRL+S)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_S,
+                            KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            putValue(Action.NAME, "Save File");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.SAVE.path), mainFrame.iconWidth, mainFrame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
-            putValue(Action.SHORT_DESCRIPTION, "Save file (CTRL+S)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -419,36 +399,40 @@ public class IdeAction {
         }
     }
 
-    ;
-
-    public static class actSaveAs extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actSaveAs extends ActionTemplate {
+        private final MainFrame mainFrame;
 
         public actSaveAs(MainFrame frame) {
+            super(
+                    "Save As...",
+                    getResizedIcon(frame, Icons.SAVE_AS),
+                    KeyEvent.VK_A,
+                    "Save file as",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK)
+                    );
             this.mainFrame = frame;
-            putValue(Action.NAME, "Save As...");
-            putValue(Action.SMALL_ICON, frame.resizeIcon(new ImageIcon(Icons.SAVE_AS.path), frame.iconWidth, frame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
-            putValue(Action.SHORT_DESCRIPTION, "Save file as");
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            // TODO
+            System.out.println("Save_As action: Not implemented yet");
         }
     }
 
-    public static class actCopy extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actCopy extends ActionTemplate {
+        private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actCopy(MainFrame frame, JTextArea jTextArea) {
+            super(
+                    "Copy",
+                    getResizedIcon(frame, Icons.COPY),
+                    KeyEvent.VK_C,
+                    "Copy (CTRL+C)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
-            putValue(Action.NAME, "Copy");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.COPY.path), mainFrame.iconWidth, mainFrame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
-            putValue(Action.SHORT_DESCRIPTION, "Copy (CTRL+C)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -457,18 +441,19 @@ public class IdeAction {
         }
     }
 
-    public static class actCut extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actCut extends ActionTemplate {
+        private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actCut(MainFrame frame, JTextArea jTextArea) {
+            super(
+                    "Cut",
+                    getResizedIcon(frame, Icons.CUT),
+                    KeyEvent.VK_T,
+                    "Cut (CTRL+X)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
-            putValue(Action.NAME, "Cut");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.CUT.path), mainFrame.iconWidth, mainFrame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_T);
-            putValue(Action.SHORT_DESCRIPTION, "Cut (CTRL+X)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -477,19 +462,19 @@ public class IdeAction {
         }
     }
 
-    public static class actPaste extends AbstractAction {
-        private MainFrame mainFrame;
-
+    public static class actPaste extends ActionTemplate {
+        private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
         public actPaste(MainFrame frame, JTextArea jTextArea) {
+            super(
+                    "Paste",
+                    getResizedIcon(frame, Icons.PASTE),
+                    KeyEvent.VK_P,
+                    "Paste (CTRL+V)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
             this.jTextArea = jTextArea;
-            putValue(Action.NAME, "Paste");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.PASTE.path), mainFrame.iconWidth, mainFrame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_P);
-            putValue(Action.SHORT_DESCRIPTION, "Paste (CTRL+V)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -498,17 +483,18 @@ public class IdeAction {
         }
     }
 
-    public static class actUndo extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actUndo extends ActionTemplate {
+        private final MainFrame mainFrame;
 
 
         public actUndo(MainFrame frame ) {
+            super(
+                    "Undo",
+                    getResizedIcon(frame, Icons.UNDO),
+                    KeyEvent.VK_U,
+                    "Undo (CTRL+Z)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            putValue(Action.NAME, "Undo");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.UNDO.path), mainFrame.iconWidth, mainFrame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_U);
-            putValue(Action.SHORT_DESCRIPTION, "Undo (CTRL+Z)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -517,16 +503,17 @@ public class IdeAction {
         }
     }
 
-    public static class actRedo extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actRedo extends ActionTemplate {
+        private final MainFrame mainFrame;
 
         public actRedo(MainFrame frame) {
+            super(
+                    "Redo",
+                    getResizedIcon(frame, Icons.REDO),
+                    KeyEvent.VK_R,
+                    "Redo (CTRL+Y)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            putValue(Action.NAME, "Redo");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.REDO.path), mainFrame.iconWidth, mainFrame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
-            putValue(Action.SHORT_DESCRIPTION, "Redo (CTRL+Y)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
         }
 
         @Override
@@ -535,16 +522,17 @@ public class IdeAction {
         }
     }
 
-    public static class actExit extends AbstractAction {
-        private MainFrame mainFrame;
+    public static class actExit extends ActionTemplate {
+        private final MainFrame mainFrame;
 
         public actExit(MainFrame frame) {
+            super(
+                    "Exit",
+                    getResizedIcon(frame, Icons.EXIT),
+                    KeyEvent.VK_X,
+                    "Exit (ALT+F4)",
+                    KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             mainFrame = frame;
-            putValue(Action.NAME, "Exit");
-            putValue(Action.SMALL_ICON, mainFrame.resizeIcon(new ImageIcon(Icons.EXIT.path), mainFrame.iconWidth, mainFrame.iconHeight));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
-            putValue(Action.SHORT_DESCRIPTION, "Exit (ALT+F4)");
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
         }
 
         @Override
@@ -552,6 +540,4 @@ public class IdeAction {
             mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
         }
     }
-
-    ;
 }

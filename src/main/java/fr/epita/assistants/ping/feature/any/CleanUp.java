@@ -4,15 +4,9 @@ import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
-import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.service.NodeManager;
-import fr.epita.java.util.Regexes;
-import org.apache.lucene.store.Directory;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 

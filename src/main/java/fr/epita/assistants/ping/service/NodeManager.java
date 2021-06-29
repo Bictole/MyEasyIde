@@ -1,17 +1,12 @@
 package fr.epita.assistants.ping.service;
 
-import com.fasterxml.jackson.core.util.ByteArrayBuilder;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.service.NodeService;
 import fr.epita.assistants.ping.node.FileNode;
 import fr.epita.assistants.ping.node.FolderNode;
 import org.apache.commons.io.FileUtils;
-import org.assertj.core.internal.ByteArrays;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileWriter;
-import java.io.RandomAccessFile;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;

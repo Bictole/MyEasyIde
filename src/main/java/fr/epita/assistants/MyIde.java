@@ -4,7 +4,6 @@ import fr.epita.assistants.myide.domain.service.ProjectService;
 import fr.epita.assistants.ping.service.ProjectManager;
 import fr.epita.assistants.utils.Given;
 
-import java.lang.module.Configuration;
 import java.nio.file.Path;
 
 /**
