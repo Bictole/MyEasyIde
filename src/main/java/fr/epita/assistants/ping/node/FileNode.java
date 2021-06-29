@@ -2,6 +2,7 @@ package fr.epita.assistants.ping.node;
 
 import fr.epita.assistants.myide.domain.entity.Node;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -13,6 +14,8 @@ public class FileNode implements Node {
     private final Path path;
     private final Type type;
     private Node parent = null;
+
+    private DefaultMutableTreeNode treeNode= null;
 
     public FileNode(Path path, Node parent) {
         this.path = path;
@@ -28,6 +31,16 @@ public class FileNode implements Node {
     public void setParent(Node parent){
         ((FolderNode)parent).addChildren(this);
         this.parent = parent;
+    }
+
+    @Override
+    public DefaultMutableTreeNode getTreeNode() {
+        return treeNode;
+    }
+
+    @Override
+    public void setTreeNode(DefaultMutableTreeNode treeNode) {
+        this.treeNode = treeNode;
     }
 
     @Override

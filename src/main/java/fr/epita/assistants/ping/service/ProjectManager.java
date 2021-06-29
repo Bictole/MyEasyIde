@@ -30,8 +30,8 @@ public class ProjectManager implements ProjectService {
         nodeService = new NodeManager();
     }
 
-    private void initNodes(Node root) {
-        ((NodeManager) nodeService).setRootNode(root);
+
+    public void initNodes(Node root) {
         if (root.isFolder()) {
             try (Stream<Path> paths = Files.list(root.getPath())) {
                 for (var p : paths.toList()) {
@@ -79,6 +79,7 @@ public class ProjectManager implements ProjectService {
         }
         Node rootNode = new FolderNode(root, null);
         initNodes(rootNode);
+        ((NodeManager) nodeService).setRootNode(rootNode);
         Set<Aspect> aspects = new HashSet<>();
         aspects.add(new AnyAspect());
         findAspects(rootNode, aspects);

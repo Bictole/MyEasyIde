@@ -2,6 +2,7 @@ package fr.epita.assistants.myide.domain.entity;
 
 import fr.epita.assistants.utils.Given;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.validation.constraints.NotNull;
 import java.nio.file.Path;
 import java.util.List;
@@ -18,6 +19,13 @@ public interface Node {
      * @return The Node type.
      */
     @NotNull Type getType();
+
+    /**
+     * @return The Node path.
+     */
+    @NotNull DefaultMutableTreeNode getTreeNode();
+
+    @NotNull void setTreeNode(DefaultMutableTreeNode treeNode);
 
     /**
      * If the Node is a Folder, returns a list of its children,
