@@ -5,6 +5,9 @@ import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.myide.domain.service.ProjectService;
+import org.fife.rsta.ac.LanguageSupport;
+import org.fife.rsta.ac.LanguageSupportFactory;
+import org.fife.rsta.ac.java.JavaLanguageSupport;
 import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -39,7 +42,7 @@ import fr.epita.assistants.ping.UI.Panel.Graphics;
 import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
 
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements SyntaxConstants {
 
     public JFrame jFrame;
 
@@ -59,8 +62,7 @@ public class MainFrame extends JFrame {
 
     private UndoManager undoManager;
 
-    public MainFrame(String title, ProjectService projectService)
-    {
+    public MainFrame(String title, ProjectService projectService) {
         super(title);
 
         try {
@@ -111,10 +113,11 @@ public class MainFrame extends JFrame {
         createMenuBar();
         createToolBar();
 
-        JScrollPane textView = new JScrollPane(rSyntaxTextArea);;
+        JScrollPane textView = new JScrollPane(rSyntaxTextArea);
+        ;
         Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
         JScrollPane treeView = initTree(project.getRootNode());
-        Graphics.ScrollPaneDesign(treeView,Color.getColor("PRUNE"));
+        Graphics.ScrollPaneDesign(treeView, Color.getColor("PRUNE"));
 
         createPopupMenu();
         createConsole();
@@ -124,7 +127,7 @@ public class MainFrame extends JFrame {
         //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
         //jToolBar.setBorder(new EtchedBorder());
 
-        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,treeView, textView);
+        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, textView);
         Graphics.BottomSplitPaneDesign(mainSplitPane);
         JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, consoleView);
         Graphics.BottomSplitPaneDesign(bottomSplitPane);
@@ -224,14 +227,17 @@ public class MainFrame extends JFrame {
         try {
             SpellingParser parser = SpellingParser.createEnglishSpellingParser(zip, usEnglish);
             rSyntaxTextArea.addParser(parser);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Language Support
+        LanguageSupportFactory lsf = LanguageSupportFactory.get();
+        LanguageSupport support = lsf.getSupportFor(SYNTAX_STYLE_JAVA);
+        LanguageSupportFactory.get().register(rSyntaxTextArea);
     }
 
-    private void createConsole()
-    {
+    private void createConsole() {
         console = new fr.epita.assistants.ping.UI.Panel.Console(jFrame);
         return;
     }
@@ -337,8 +343,7 @@ public class MainFrame extends JFrame {
         jToolBar.setFloatable(false);
     }
 
-    private void createPopupMenu()
-    {
+    private void createPopupMenu() {
         JPopupMenu textPopupMenu = new JPopupMenu();
         JPopupMenu treePopupMenu = new JPopupMenu();
         textPopupMenu.add(new IdeAction.actCopy(this, rSyntaxTextArea));
@@ -350,21 +355,23 @@ public class MainFrame extends JFrame {
         mNew.add(new IdeAction.actNewFolder(this));
         treePopupMenu.add(mNew);
 
-        rSyntaxTextArea.addMouseListener( new MouseAdapter() {
-            @Override public void mousePressed( MouseEvent event ) {
-                if ( event.isPopupTrigger() ) {
-                    textPopupMenu.show( event.getComponent(), event.getX(), event.getY() );
+        rSyntaxTextArea.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent event) {
+                if (event.isPopupTrigger()) {
+                    textPopupMenu.show(event.getComponent(), event.getX(), event.getY());
                 }
             }
         });
 
-        jTree.addMouseListener( new MouseAdapter() {
-            @Override public void mousePressed( MouseEvent event ) {
-                if ( event.isPopupTrigger() ) {
-                    treePopupMenu.show( event.getComponent(), event.getX(), event.getY() );
+        jTree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent event) {
+                if (event.isPopupTrigger()) {
+                    treePopupMenu.show(event.getComponent(), event.getX(), event.getY());
                 }
             }
-        } );
+        });
     }
 
     ////////////////////////////////////////////
@@ -434,13 +441,12 @@ public class MainFrame extends JFrame {
         return treeView;
     }
 
-    public void checkUpdateTree(Node root)
-    {
-        if(!checkTree(root))
+    public void checkUpdateTree(Node root) {
+        if (!checkTree(root))
             updateTree(root);
     }
 
-    public void updateTree(Node root){
+    public void updateTree(Node root) {
 
         //((ProjectManager)projectService).update(root);
         DefaultMutableTreeNode top = createTree(root);
@@ -500,7 +506,7 @@ public class MainFrame extends JFrame {
             File file = ol.get(i);
             Optional<Node> next = nodes.stream()
                     .filter(node -> ((node.isFile() && file.isFile()) || (node.isFolder() && file.isDirectory()))
-                    && node.getPath().equals(file.toPath())).findAny();
+                            && node.getPath().equals(file.toPath())).findAny();
             if (!next.isPresent())
                 return false;
             if (file.isDirectory() && !checkTree(next.get()))
