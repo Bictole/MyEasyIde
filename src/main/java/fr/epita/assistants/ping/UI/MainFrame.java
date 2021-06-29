@@ -272,10 +272,13 @@ public class MainFrame extends JFrame {
         jToolBar.add(new IdeAction.actCopy(this, rSyntaxTextArea)).setHideActionText(true);
         jToolBar.add(new IdeAction.actCut(this, rSyntaxTextArea)).setHideActionText(true);
         jToolBar.add(new IdeAction.actPaste(this, rSyntaxTextArea)).setHideActionText(true);
+
+        jToolBar.add(Box.createHorizontalGlue());
         if (project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.MAVEN))
             jToolBar.add(new MavenAction.actMvnExec(this)).setHideActionText(true);
         else if (project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.ANY))
             jToolBar.add(new AnyAction.actAnyRun(this)).setHideActionText(true);
+        
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
         label.setForeground(Color.WHITE);
