@@ -184,7 +184,7 @@ public class MainFrame extends JFrame {
         mFile.add(mNew);
         mFile.add(new IdeAction.actOpenProject(this));
         mFile.add(new IdeAction.actSave(this, rSyntaxTextArea));
-        mFile.add(new IdeAction.actSaveAs(this));
+        mFile.add(new IdeAction.actSaveAs(this, rSyntaxTextArea));
         mFile.add(new IdeAction.actExit(this));
 
         jMenuBar.add(mFile);

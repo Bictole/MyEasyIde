@@ -350,13 +350,32 @@ public class IdeAction {
         }
     }
 
+    private static void saveFile(File file, JTextArea jTextArea, MainFrame frame) {
+        if (file == null)
+            return;
 
+        try {
+            // Create a file writer
+            FileWriter wr = new FileWriter(file, false);
+
+            // Create buffered writer to write
+            BufferedWriter w = new BufferedWriter(wr);
+
+            // Write
+            w.write(jTextArea.getText());
+
+            w.flush();
+            w.close();
+        } catch (Exception evt) {
+            JOptionPane.showMessageDialog(frame, evt.getMessage());
+        }
+    }
 
     public static class actSave extends ActionTemplate {
         private final MainFrame mainFrame;
-        private RSyntaxTextArea rSyntaxTextArea;
+        private JTextArea jTextArea;
 
-        public actSave(MainFrame frame, RSyntaxTextArea rSyntaxTextArea) {
+        public actSave(MainFrame frame, JTextArea jTextArea) {
             super(
                     "Save File",
                     getResizedIcon(frame, Icons.SAVE),
@@ -365,7 +384,7 @@ public class IdeAction {
                     KeyStroke.getKeyStroke(KeyEvent.VK_S,
                             KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            this.rSyntaxTextArea = rSyntaxTextArea;
+            this.jTextArea = jTextArea;
         }
 
         @Override
@@ -375,32 +394,17 @@ public class IdeAction {
             File file = mainFrame.getOpenedFile();
             if (file == null)
                 file = fileSelector(mainFrame);
-            if (file == null)
-                return;
-
-            try {
-                // Create a file writer
-                FileWriter wr = new FileWriter(file, false);
-
-                // Create buffered writer to write
-                BufferedWriter w = new BufferedWriter(wr);
-
-                // Write
-                w.write(rSyntaxTextArea.getText());
-
-                w.flush();
-                w.close();
-            } catch (Exception evt) {
-                JOptionPane.showMessageDialog(mainFrame, evt.getMessage());
-            }
+            saveFile(file, jTextArea, mainFrame);
         }
+
+
     }
 
     public static class actSaveAs extends ActionTemplate {
         private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
-        public actSaveAs(MainFrame frame) {
+        public actSaveAs(MainFrame frame, JTextArea jTextArea) {
             super(
                     "Save As...",
                     getResizedIcon(frame, Icons.SAVE_AS),
@@ -409,40 +413,13 @@ public class IdeAction {
                     KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK)
                     );
             this.mainFrame = frame;
+            this.jTextArea = jTextArea;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Create an object of JFileChooser class
-            JFileChooser j = new JFileChooser("f:");
-
-            // Invoke the showsSaveDialog function to show the save dialog
-            int r = j.showSaveDialog(null);
-
-            if (r == JFileChooser.APPROVE_OPTION) {
-
-                // Set the label to the path of the selected directory
-                File fi = new File(j.getSelectedFile().getAbsolutePath());
-
-                try {
-                    // Create a file writer
-                    FileWriter wr = new FileWriter(fi, false);
-
-                    // Create buffered writer to write
-                    BufferedWriter w = new BufferedWriter(wr);
-
-                    // Write
-                    w.write(jTextArea.getText());
-
-                    w.flush();
-                    w.close();
-                } catch (Exception evt) {
-                    JOptionPane.showMessageDialog(mainFrame, evt.getMessage());
-                }
-            }
-            // If the user cancelled the operation
-            else
-                JOptionPane.showMessageDialog(mainFrame, "the user cancelled the operation");
+            File file = fileSelector(mainFrame);
+            saveFile(file, jTextArea, mainFrame);
         }
     }
 
