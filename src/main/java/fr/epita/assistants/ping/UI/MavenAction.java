@@ -85,7 +85,7 @@ public class MavenAction {
 
             super(
                     "Maven Exec",
-                    getResizedIcon(frame, Icons.GIT_ADD),
+                    getResizedIcon(frame, Icons.RUN),
                     KeyEvent.VK_G,
                     "Maven Exec",
                     null);
