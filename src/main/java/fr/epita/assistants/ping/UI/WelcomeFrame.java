@@ -2,6 +2,7 @@ package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.MyIde;
 import fr.epita.assistants.myide.domain.service.ProjectService;
+import fr.epita.assistants.ping.UI.Action.IdeAction;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
