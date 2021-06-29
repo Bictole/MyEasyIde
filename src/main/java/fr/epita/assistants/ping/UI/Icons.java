@@ -14,7 +14,7 @@ public enum Icons {
     UNDO("undo.png"),
     REDO("redo.png"),
     EXIT("exit.png"),
-    RUN("exit.png"),
+    RUN("exec.png"),
     GIT_COMMIT("gitCommit.png"),
     GIT_ADD("gitAdd.png"),
     GIT_PULL("gitPull.png"),

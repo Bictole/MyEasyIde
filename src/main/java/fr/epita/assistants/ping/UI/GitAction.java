@@ -18,18 +18,18 @@ import static fr.epita.assistants.ping.UI.UITools.getResizedIcon;
 
 public class GitAction {
 
-    public static class actGitCommit extends AbstractAction
+    public static class actGitCommit extends UITools.ActionTemplate
     {
         MainFrame mainFrame;
 
         public actGitCommit(MainFrame frame)
         {
-            super("Git Commit");
-            putValue(Action.NAME, "Git Commit");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_COMMIT));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Git Commit");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            super(
+                    "Git Commit",
+                    getResizedIcon(frame, Icons.GIT_COMMIT),
+                    KeyEvent.VK_G,
+                    "Git Commit",
+                    null);
             this.mainFrame = frame;
         }
 
@@ -55,17 +55,18 @@ public class GitAction {
         }
     };
 
-    public static class actGitAdd extends AbstractAction {
+    public static class actGitAdd extends UITools.ActionTemplate {
 
         MainFrame mainFrame;
 
         public actGitAdd(MainFrame frame)
         {
-            putValue(Action.NAME, "Git Add");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Git Add");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            super(
+                    "Git Add",
+                    getResizedIcon(frame, Icons.GIT_ADD),
+                    KeyEvent.VK_G,
+                    "Git Add",
+                    null);
             this.mainFrame = frame;
         }
 
@@ -114,18 +115,18 @@ public class GitAction {
         }
     };
 
-    public static class actGitPull extends AbstractAction
+    public static class actGitPull extends UITools.ActionTemplate
     {
         MainFrame mainFrame;
 
         public actGitPull(MainFrame frame)
         {
-            super("Git Commit");
-            putValue(Action.NAME, "Git Pull");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_PULL));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Git Pull");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            super(
+                    "Git Pull",
+                    getResizedIcon(frame, Icons.GIT_PULL),
+                    KeyEvent.VK_G,
+                    "Git Pull",
+                    null);
             this.mainFrame = frame;
         }
 
@@ -149,18 +150,18 @@ public class GitAction {
         }
     };
 
-    public static class actGitPush extends AbstractAction
+    public static class actGitPush extends UITools.ActionTemplate
     {
         MainFrame mainFrame;
 
         public actGitPush(MainFrame frame)
         {
-            super("Git Commit");
-            putValue(Action.NAME, "Git Push");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Git Push");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            super(
+                    "Git Push",
+                    getResizedIcon(frame, Icons.GIT_PUSH),
+                    KeyEvent.VK_G,
+                    "Git Push",
+                    null);
             this.mainFrame = frame;
         }
 
