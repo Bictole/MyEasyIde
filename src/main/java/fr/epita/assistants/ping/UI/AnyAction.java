@@ -130,7 +130,7 @@ public class AnyAction {
         public actAnyRun(MainFrame frame) {
             super(
                     "Run",
-                    getResizedIcon(frame, Icons.GIT_ADD),
+                    getResizedIcon(frame, Icons.RUN),
                     KeyEvent.VK_G,
                     "Run",
                     null);
