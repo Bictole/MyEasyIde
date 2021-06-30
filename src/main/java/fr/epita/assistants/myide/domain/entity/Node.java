@@ -20,12 +20,6 @@ public interface Node {
      */
     @NotNull Type getType();
 
-    /**
-     * @return The Node path.
-     */
-    @NotNull DefaultMutableTreeNode getTreeNode();
-
-    @NotNull void setTreeNode(DefaultMutableTreeNode treeNode);
 
     /**
      * If the Node is a Folder, returns a list of its children,

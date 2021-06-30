@@ -16,8 +16,6 @@ public class FolderNode implements Node {
     private final List<Node> children;
     private Node parent;
 
-    private DefaultMutableTreeNode treeNode= null;
-
     public FolderNode(Path path, Node parent) {
         this.path = path;
         this.type = Types.FOLDER;
@@ -33,16 +31,6 @@ public class FolderNode implements Node {
     public void setParent(Node parent){
         ((FolderNode)parent).addChildren(this);
         this.parent = parent;
-    }
-
-    @Override
-    public DefaultMutableTreeNode getTreeNode() {
-        return treeNode;
-    }
-
-    @Override
-    public void setTreeNode(DefaultMutableTreeNode treeNode) {
-        this.treeNode = treeNode;
     }
 
     @Override
@@ -85,5 +73,10 @@ public class FolderNode implements Node {
 
     public void deleteChildren(Node children) {
         this.children.remove(children);
+    }
+
+    @Override
+    public String toString() {
+        return path.toFile().getName();
     }
 }

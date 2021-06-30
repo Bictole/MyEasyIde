@@ -15,8 +15,6 @@ public class FileNode implements Node {
     private final Type type;
     private Node parent = null;
 
-    private DefaultMutableTreeNode treeNode= null;
-
     public FileNode(Path path, Node parent) {
         this.path = path;
         this.type = Types.FILE;
@@ -31,16 +29,6 @@ public class FileNode implements Node {
     public void setParent(Node parent){
         ((FolderNode)parent).addChildren(this);
         this.parent = parent;
-    }
-
-    @Override
-    public DefaultMutableTreeNode getTreeNode() {
-        return treeNode;
-    }
-
-    @Override
-    public void setTreeNode(DefaultMutableTreeNode treeNode) {
-        this.treeNode = treeNode;
     }
 
     @Override
@@ -67,5 +55,10 @@ public class FileNode implements Node {
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return path.toFile().getName();
     }
 }

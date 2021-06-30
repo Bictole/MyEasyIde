@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -30,10 +31,24 @@ public class ProjectManager implements ProjectService {
         nodeService = new NodeManager();
     }
 
+    class PathComparator implements Comparator {
+        public int compare(Object o1, Object o2) {
+            Path path1 = (Path) o1;
+            Path path2 = (Path) o2;
+            if (path1.toFile().isFile()) {
+                if (!path2.toFile().isFile())
+                    return 1;
+            } else {
+                if (path2.toFile().isFile())
+                    return -1;
+            }
+            return path1.compareTo(path2);
+        }
+    }
 
     public void initNodes(Node root) {
         if (root.isFolder()) {
-            try (Stream<Path> paths = Files.list(root.getPath())) {
+            try (Stream<Path> paths = Files.list(root.getPath()).sorted(new PathComparator())) {
                 for (var p : paths.toList()) {
                     Node node = null;
                     if (p.toFile().isDirectory()) {
