@@ -80,6 +80,10 @@ public class MainFrame extends JFrame {
         return openedFile;
     }
 
+    public void setOpenedFile(File openedFile) {
+        this.openedFile = openedFile;
+    }
+
     public File getSelectedFile() {
         return selectedFile;
     }

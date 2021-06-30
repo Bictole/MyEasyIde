@@ -84,6 +84,7 @@ public class ProjectExplorer {
             // Set the text
             mainFrame.getrSyntaxTextArea().setText(text);
             mainFrame.getrSyntaxTextArea().setEditable(true);
+            mainFrame.setOpenedFile(file);
         } catch (Exception evt) {
             JOptionPane.showMessageDialog(mainFrame, evt.getMessage());
         }
