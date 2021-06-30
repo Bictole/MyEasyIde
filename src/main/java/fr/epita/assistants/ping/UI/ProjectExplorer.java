@@ -36,9 +36,8 @@ public class ProjectExplorer {
 
     class MyTreeModelListener implements TreeModelListener {
         public void treeNodesChanged(TreeModelEvent e) {
-            DefaultMutableTreeNode node;
-            node = (DefaultMutableTreeNode)
-                    (e.getTreePath().getLastPathComponent());
+            Node node;
+            node = (Node) (e.getTreePath().getLastPathComponent());
 
             /*
              * If the event lists children, then the changed
@@ -48,13 +47,12 @@ public class ProjectExplorer {
              */
             try {
                 int index = e.getChildIndices()[0];
-                node = (DefaultMutableTreeNode)
-                        (node.getChildAt(index));
+                node = node.getChildren().get(index);
             } catch (NullPointerException exc) {
             }
 
             System.out.println("The user has finished editing the node.");
-            System.out.println("New value: " + node.getUserObject());
+            System.out.println("New value: " + node.toString());
         }
 
         public void treeNodesInserted(TreeModelEvent e) {
@@ -75,15 +73,9 @@ public class ProjectExplorer {
         jTree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1) {
-                    TreePath tp = jTree.getPathForLocation(e.getX(), e.getY());
-                    if (tp == null)
-                        return;
-                }
                 if (e.getClickCount() == 2) {
                     mouseOpenFile(e);
                 }
-
             }
         });
     }

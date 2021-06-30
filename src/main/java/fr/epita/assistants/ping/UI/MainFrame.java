@@ -84,6 +84,10 @@ public class MainFrame extends JFrame {
         this.openedFile = openedFile;
     }
 
+    public JTree getjTree() {
+        return jTree;
+    }
+
     public File getSelectedFile() {
         return selectedFile;
     }

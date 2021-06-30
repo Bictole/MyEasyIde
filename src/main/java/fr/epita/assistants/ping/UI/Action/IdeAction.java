@@ -47,11 +47,15 @@ public class IdeAction {
     private static void abstractNewFile(MainFrame mainFrame, Node.Types type, String name) {
         if (name == null)
             return;
-        File file = mainFrame.getSelectedFile();
+        var selectionPath = mainFrame.getjTree().getSelectionPath();
+        Node node;
+        if (selectionPath == null)
+            node = mainFrame.project.getRootNode();
+        else
+            node = (Node) selectionPath.getLastPathComponent();
+        File file = node.getPath().toFile();
         Path path;
-        if (file == null)
-            path = mainFrame.project.getRootNode().getPath();
-        else if (file.isFile())
+        if (file.isFile())
             path = file.toPath().getParent();
         else
             path = file.toPath();
@@ -60,6 +64,7 @@ public class IdeAction {
         NodeManager nodeService = (NodeManager)projectService.getNodeService();
         Node root = mainFrame.project.getRootNode();
         nodeService.create(nodeService.getFromSource(root, path), name, type);
+        mainFrame.getjTree().updateUI();
         System.out.println("New " + type.toString() + ": " + name);
     }
 
