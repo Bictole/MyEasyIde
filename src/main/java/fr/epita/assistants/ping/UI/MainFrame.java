@@ -53,6 +53,7 @@ public class MainFrame extends JFrame {
     private ProjectService projectService;
 
     private File selectedFile = null;
+    private File openedFile = null;
     public fr.epita.assistants.ping.UI.Panel.Console console;
 
     private UndoManager undoManager;
@@ -75,6 +76,9 @@ public class MainFrame extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
+    public File getOpenedFile() {
+        return openedFile;
+    }
 
     public File getSelectedFile() {
         return selectedFile;
@@ -204,8 +208,8 @@ public class MainFrame extends JFrame {
 
         mFile.add(mNew);
         mFile.add(new IdeAction.actOpenProject(this));
-        mFile.add(new IdeAction.actSave(this));
-        mFile.add(new IdeAction.actSaveAs(this));
+        mFile.add(new IdeAction.actSave(this, rSyntaxTextArea));
+        mFile.add(new IdeAction.actSaveAs(this, rSyntaxTextArea));
         mFile.add(new IdeAction.actExit(this));
 
         jMenuBar.add(mFile);
@@ -260,7 +264,7 @@ public class MainFrame extends JFrame {
         jToolBar.setBackground(Color.GRAY);
 
         jToolBar.add(new IdeAction.actOpenProject(this)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actSave(this)).setHideActionText(true);
+        jToolBar.add(new IdeAction.actSave(this, rSyntaxTextArea)).setHideActionText(true);
         jToolBar.addSeparator();
         jToolBar.add(new IdeAction.actUndo(this)).setHideActionText(true);
         jToolBar.add(new IdeAction.actRedo(this)).setHideActionText(true);
