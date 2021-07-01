@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.feature.maven;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.project.AnyProject;
 
 public class Compile implements Feature {
     public class ExecutionReportCompile implements Feature.ExecutionReport {
@@ -28,7 +29,8 @@ public class Compile implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "compile", "-DbuildDirectory=" + project.getRootNode().getPath().resolve("target"));
+        AnyProject p = (AnyProject) project;
+        ProcessBuilder pb = new ProcessBuilder(p.config.mavenCmd, "compile", "-DbuildDirectory=" + project.getRootNode().getPath().resolve("target"));
 
         String result = "";
 
@@ -41,7 +43,7 @@ public class Compile implements Feature {
         }
         catch (Exception e)
         {
-            return new Compile.ExecutionReportCompile(false, result);
+            return new Compile.ExecutionReportCompile(false, result + e.getMessage());
         }
 
 

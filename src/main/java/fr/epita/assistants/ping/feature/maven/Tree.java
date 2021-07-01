@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.feature.maven;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.project.AnyProject;
 
 public class Tree implements Feature {
 
@@ -26,7 +27,8 @@ public class Tree implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "dependency:tree", (String) params[0]);
+        AnyProject p = (AnyProject) project;
+        ProcessBuilder pb = new ProcessBuilder(p.config.mavenCmd, "dependency:tree", (String) params[0]);
         String result = "";
 
         try {
@@ -39,7 +41,7 @@ public class Tree implements Feature {
         }
         catch (Exception e)
         {
-            return new Tree.ExecutionReportTree(false, result);
+            return new Tree.ExecutionReportTree(false, e.getMessage());
         }
     }
 

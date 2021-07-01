@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.feature.maven;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.project.AnyProject;
 
 public class Clean implements Feature {
 
@@ -28,7 +29,8 @@ public class Clean implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-        ProcessBuilder pb = new ProcessBuilder("mvn", "clean");
+        AnyProject p = (AnyProject) project;
+        ProcessBuilder pb = new ProcessBuilder(p.config.mavenCmd, "clean");
         String result = "";
 
         try {
@@ -41,7 +43,7 @@ public class Clean implements Feature {
 
         } catch (Exception e) {
 
-            return new Clean.ExecutionReportClean(false, result);
+            return new Clean.ExecutionReportClean(false, result + e.getMessage());
         }
     }
 

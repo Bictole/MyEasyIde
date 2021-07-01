@@ -16,18 +16,18 @@ import static fr.epita.assistants.ping.UI.UITools.getResizedIcon;
 
 public class MavenAction {
 
-    public static class actMvnClean extends AbstractAction {
+    public static class actMvnClean extends UITools.ActionTemplate {
 
         MainFrame mainFrame;
 
         public actMvnClean(MainFrame frame) {
-
-            putValue(Action.NAME, "Maven Clean");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Maven Clean");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
-            this.mainFrame = frame;
+            super(
+                    "Maven Clean",
+                    getResizedIcon(frame, Icons.GIT_ADD),
+                    KeyEvent.VK_G,
+                    "Maven Clean",
+                    null);
+                    this.mainFrame = frame;
         }
 
         @Override
@@ -46,16 +46,18 @@ public class MavenAction {
         }
     }
 
-    public static class actMvnCompile extends AbstractAction {
+    public static class actMvnCompile extends UITools.ActionTemplate {
 
         MainFrame mainFrame;
 
         public actMvnCompile(MainFrame frame) {
-            putValue(Action.NAME, "Maven Compile");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Maven Compile");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+
+            super(
+                    "Maven Compile",
+                    getResizedIcon(frame, Icons.GIT_ADD),
+                    KeyEvent.VK_G,
+                    "Maven Compile",
+                    null);
             this.mainFrame = frame;
         }
 
@@ -75,16 +77,18 @@ public class MavenAction {
         }
     }
 
-    public static class actMvnExec extends AbstractAction {
+    public static class actMvnExec extends UITools.ActionTemplate {
 
         MainFrame mainFrame;
 
         public actMvnExec(MainFrame frame) {
-            putValue(Action.NAME, "Maven Exec");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Maven Exec");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+
+            super(
+                    "Maven Exec",
+                    getResizedIcon(frame, Icons.RUN),
+                    KeyEvent.VK_G,
+                    "Maven Exec",
+                    null);
             this.mainFrame = frame;
         }
 
@@ -102,21 +106,25 @@ public class MavenAction {
                     mainFrame.getProjectService().execute(mainFrame.project, Mandatory.Features.Any.SEARCH, "public static void main");
 
             ExecConfig execConfig = new ExecConfig(mainFrame, searchReport.getFilesMatch());
+            if (execConfig.getMainClass() == null)
+                return;
             Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project, execConfig.getMainClass());
             System.out.println(report.getOutput());
         }
     }
 
-    public static class actMvnInstall extends AbstractAction {
+    public static class actMvnInstall extends UITools.ActionTemplate {
 
         MainFrame mainFrame;
 
         public actMvnInstall(MainFrame frame) {
-            putValue(Action.NAME, "Maven Install");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Maven Install");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+
+            super(
+                    "Maven Install",
+                    getResizedIcon(frame, Icons.GIT_ADD),
+                    KeyEvent.VK_G,
+                    "Maven Install",
+                    null);
             this.mainFrame = frame;
         }
 
@@ -135,16 +143,17 @@ public class MavenAction {
         }
     }
 
-    public static class actMvnPackage extends AbstractAction {
+    public static class actMvnPackage extends UITools.ActionTemplate {
 
         MainFrame mainFrame;
 
         public actMvnPackage(MainFrame frame) {
-            putValue(Action.NAME, "Maven Package");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Maven Package");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            super(
+                    "Maven Package",
+                    getResizedIcon(frame, Icons.GIT_ADD),
+                    KeyEvent.VK_G,
+                    "Maven Package",
+                    null);
             this.mainFrame = frame;
         }
 
@@ -163,16 +172,17 @@ public class MavenAction {
         }
     }
 
-    public static class actMvnTest extends AbstractAction {
+    public static class actMvnTest extends UITools.ActionTemplate {
 
         MainFrame mainFrame;
 
         public actMvnTest(MainFrame frame) {
-            putValue(Action.NAME, "Maven Test");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Maven Test");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            super(
+                    "Maven Test",
+                    getResizedIcon(frame, Icons.GIT_ADD),
+                    KeyEvent.VK_G,
+                    "Maven Test",
+                    null);
             this.mainFrame = frame;
         }
 
@@ -191,16 +201,17 @@ public class MavenAction {
         }
     }
 
-    public static class actMvnTree extends AbstractAction {
+    public static class actMvnTree extends UITools.ActionTemplate {
 
         MainFrame mainFrame;
 
         public actMvnTree(MainFrame frame) {
-            putValue(Action.NAME, "Maven Tree");
-            putValue(Action.SMALL_ICON, getResizedIcon(frame, Icons.GIT_ADD));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
-            putValue(Action.SHORT_DESCRIPTION, "Maven Tree");
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
+            super(
+                    "Maven Tree",
+                    getResizedIcon(frame, Icons.GIT_ADD),
+                    KeyEvent.VK_G,
+                    "Maven Tree",
+                    null);
             this.mainFrame = frame;
         }
 
