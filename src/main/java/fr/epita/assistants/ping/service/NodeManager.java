@@ -57,8 +57,12 @@ public class NodeManager implements NodeService {
             parent = ((FolderNode) file.getParent());
         } else {
             FolderNode folder = (FolderNode) node;
-            if (!folder.isEmpty()) {
-                return false; // folder is not empty
+            if (!folder.isEmpty()) { // folder is not empty
+                for (int i = 0;  i < folder.getChildren().size(); i++){
+                    deleteNode(folder.getChildren().get(i));
+                    i--;
+                }
+
             }
             parent = (FolderNode) folder.getParent();
         }

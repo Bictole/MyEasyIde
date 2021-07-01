@@ -16,6 +16,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -51,7 +52,7 @@ public class ProjectExplorer {
         this.mainFrame = mainFrame;
         treeModel = new NodeTreeModel(root);
         jTree = new JTree(treeModel);
-        createWatcher(root);
+        createUpdater(root);
 
         jTree.addMouseListener(new MouseAdapter() {
             @Override
@@ -84,18 +85,9 @@ public class ProjectExplorer {
         }
     }
 
-    private void createWatcher(Node root) {
-        Thread t = new Thread(new FilesWatcher(root));
-        t.start();
-    }
-
-    public void updateUI() {
-        Thread t = new Thread() {
-            public void run() {
-                jTree.updateUI();
-            }
-        };
-        t.start();
+    private void createUpdater(Node root) {
+        Thread updater = new Thread(this.new FilesWatcher(root));
+        updater.start();
     }
 
     class FilesWatcher implements Runnable {
@@ -122,7 +114,6 @@ public class ProjectExplorer {
 
         @Override
         public void run() {
-
             WatchService watchService
                     = null;
             try {
@@ -131,7 +122,6 @@ public class ProjectExplorer {
                 e.printStackTrace();
             }
             registerPaths(watchService, root);
-
             WatchKey key;
             try {
                 while ((key = watchService.take()) != null) {
@@ -142,10 +132,7 @@ public class ProjectExplorer {
                             System.out.println(
                                     "Event kind:" + event.kind()
                                             + ". File affected: " + event.context() + ".");
-                            ProjectManager pM = (ProjectManager)  mainFrame.getProjectService();
-                            var tpaths = jTree.getSelectionPaths();
-                            pM.updateTree(root);
-                            updateUI();
+                            updateTree();
                         }
                     }
                     key.reset();
@@ -154,8 +141,17 @@ public class ProjectExplorer {
                 e.printStackTrace();
             }
         }
+        public void updateTree() {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    ProjectManager pM = (ProjectManager) mainFrame.getProjectService();
+                    pM.updateTree(root);
+                    jTree.updateUI();
+                }
+            });
+        }
     }
-
 
 
 }

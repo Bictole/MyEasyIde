@@ -62,14 +62,12 @@ public class MainFrame extends JFrame {
     {
         super(title);
 
-        /*
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
             MetalLookAndFeel.setCurrentTheme(new OceanTheme());
         } catch (Exception e) {
             e.printStackTrace();
         }
-         */
 
         jFrame = this;
         this.projectService = projectService;
