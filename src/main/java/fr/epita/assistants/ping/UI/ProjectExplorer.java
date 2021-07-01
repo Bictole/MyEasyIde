@@ -17,6 +17,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -47,6 +49,32 @@ public class ProjectExplorer {
     public JTree getjTree() {
         return jTree;
     }
+
+    public EditAction getEditAction() {
+        return editAction;
+    }
+
+    public void setEditAction(EditAction editAction) {
+        this.editAction = editAction;
+    }
+
+    public static class EditAction {
+        public enum Action {
+            COPY,
+            CUT
+        }
+        public Node copyNode;
+        public Action action;
+
+        public EditAction(Node copyNode, Action action) {
+            this.copyNode= copyNode;
+            this.action = action;
+        }
+    }
+
+    private EditAction editAction;
+
+
 
     public ProjectExplorer(MainFrame mainFrame, Node root) {
         this.mainFrame = mainFrame;

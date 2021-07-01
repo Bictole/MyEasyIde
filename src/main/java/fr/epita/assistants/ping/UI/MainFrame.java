@@ -8,6 +8,7 @@ import fr.epita.assistants.myide.domain.service.ProjectService;
 import fr.epita.assistants.ping.UI.Action.AnyAction;
 import fr.epita.assistants.ping.UI.Action.GitAction;
 import fr.epita.assistants.ping.UI.Action.IdeAction;
+import fr.epita.assistants.ping.UI.Action.TreeAction;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -221,7 +222,6 @@ public class MainFrame extends JFrame {
         mFile.add(new IdeAction.actExit(this));
 
         jMenuBar.add(mFile);
-
         JMenu mEdit = new JMenu("Edit");
         mEdit.setMnemonic('E');
 
@@ -304,6 +304,9 @@ public class MainFrame extends JFrame {
         mNew.add(new IdeAction.actNewFile(this));
         mNew.add(new IdeAction.actNewFolder(this));
         treePopupMenu.add(mNew);
+        treePopupMenu.add(new TreeAction.actCopy(this));
+        treePopupMenu.add(new TreeAction.actCut(this));
+        treePopupMenu.add(new TreeAction.actPaste(this));
 
         rSyntaxTextArea.addMouseListener( new MouseAdapter() {
             @Override public void mousePressed( MouseEvent event ) {
