@@ -70,6 +70,7 @@ public class IdeAction {
         }
         else
             UITools.errorDialog(mainFrame, "File already exist");
+
     }
 
     private static String getNameDialog(MainFrame frame, String message) {
