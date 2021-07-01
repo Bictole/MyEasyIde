@@ -209,6 +209,12 @@ public class IdeAction {
                     KeyEvent.VK_O,
                     "Open Project (CTRL+O)",
                     KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
+            /*super(null,null,0,null,null);
+            putValue(Action.NAME, "Open Project");
+            putValue(Action.SMALL_ICON, getResizedImage(frame, Icons.OPEN));
+            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
+            putValue(Action.SHORT_DESCRIPTION, "Open Project");
+            putValue(Action.ACCELERATOR_KEY, null);*/
             this.mainFrame = frame;
         }
 

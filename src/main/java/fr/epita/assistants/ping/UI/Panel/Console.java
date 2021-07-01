@@ -17,7 +17,7 @@ public class Console extends Panel
         this.frame = frame;
         textArea = new JTextArea(10, 100);
         textArea.setEditable(false);
-        textArea.setBackground(Color.getColor("GRIS_MIDDLE"));
+        textArea.setBackground(Color.getColor("GRIS_SOMBRE"));
         textArea.setForeground(Color.getColor("ROSE"));
         textArea.setBorder(BorderFactory.createEmptyBorder());
 
