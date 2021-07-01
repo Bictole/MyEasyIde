@@ -5,6 +5,10 @@ import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.myide.domain.service.ProjectService;
+import fr.epita.assistants.ping.UI.Action.AnyAction;
+import fr.epita.assistants.ping.UI.Action.GitAction;
+import fr.epita.assistants.ping.UI.Action.IdeAction;
+import fr.epita.assistants.ping.UI.Action.TreeAction;
 import org.fife.rsta.ac.LanguageSupport;
 import org.fife.rsta.ac.LanguageSupportFactory;
 import org.fife.rsta.ac.java.JavaLanguageSupport;
@@ -47,6 +51,8 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     public JFrame jFrame;
 
     private JTree jTree;
+    private ProjectExplorer projectExplorer;
+
     private RSyntaxTextArea rSyntaxTextArea;
     private JToolBar jToolBar;
     private JMenuBar jMenuBar;
@@ -94,16 +100,40 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         return openedFile;
     }
 
+    public void setOpenedFile(File openedFile) {
+        this.openedFile = openedFile;
+    }
+
+    public JTree getjTree() {
+        return jTree;
+    }
+
     public File getSelectedFile() {
         return selectedFile;
+    }
+
+    public void setSelectedFile(File selectedFile) {
+        this.selectedFile = selectedFile;
     }
 
     public ProjectService getProjectService() {
         return projectService;
     }
 
+    public ProjectExplorer getProjectExplorer() {
+        return projectExplorer;
+    }
+
     public UndoManager getUndoManager() {
         return undoManager;
+    }
+
+    public RSyntaxTextArea getrSyntaxTextArea() {
+        return rSyntaxTextArea;
+    }
+
+    public void setrSyntaxTextArea(RSyntaxTextArea rSyntaxTextArea) {
+        this.rSyntaxTextArea = rSyntaxTextArea;
     }
 
     public void loadProjectFrame(Path path) {
@@ -118,7 +148,11 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         createToolBar();
 
         JScrollPane textView = new JScrollPane(rSyntaxTextArea);
-        ;
+
+        projectExplorer= new ProjectExplorer(this, project.getRootNode());
+        jTree = projectExplorer.getjTree();
+        JScrollPane treeView = new JScrollPane(jTree);
+        
         Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
         JScrollPane treeView = initTree(project.getRootNode());
         Graphics.ScrollPaneDesign(treeView, Color.getColor("PRUNE"));
@@ -193,6 +227,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
     private void createTextArea() {
         rSyntaxTextArea = new RSyntaxTextArea();
+        rSyntaxTextArea.setEditable(false);
         rSyntaxTextArea.setBackground(Color.DARK_GRAY);
         rSyntaxTextArea.setForeground(Color.WHITE);
         rSyntaxTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
@@ -270,7 +305,6 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         mFile.add(new IdeAction.actExit(this));
 
         jMenuBar.add(mFile);
-
         JMenu mEdit = new JMenu("Edit");
         mEdit.setMnemonic('E');
         mEdit.setForeground(Color.WHITE);
@@ -364,6 +398,10 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         mNew.add(new IdeAction.actNewFile(this));
         mNew.add(new IdeAction.actNewFolder(this));
         treePopupMenu.add(mNew);
+        treePopupMenu.add(new TreeAction.actCopy(this));
+        treePopupMenu.add(new TreeAction.actCut(this));
+        treePopupMenu.add(new TreeAction.actPaste(this));
+        treePopupMenu.add(new TreeAction.actDelete(this));
 
         rSyntaxTextArea.addMouseListener(new MouseAdapter() {
             @Override
@@ -382,149 +420,6 @@ public class MainFrame extends JFrame implements SyntaxConstants {
                 }
             }
         });
-    }
-
-    ////////////////////////////////////////////
-    //EXPLORER
-    ////////////////////////////////////////////
-
-    private static String createFilePath(TreePath treePath) {
-        StringBuilder sb = new StringBuilder();
-        Object[] nodes = treePath.getPath();
-        if (nodes.length == 0)
-            return sb.toString();
-        sb.append(nodes[0].toString());
-        for (int i = 1; i < nodes.length; i++) {
-            sb.append(File.separatorChar).append(nodes[i].toString());
-        }
-        return sb.toString();
-    }
-
-    private void mouseOpenFile(MouseEvent e) {
-        TreePath tp = jTree.getPathForLocation(e.getX(), e.getY());
-        if (tp == null)
-            return;
-        File file = new File(createFilePath(tp));
-        if (file.isDirectory())
-            return;
-        // Set the label to the path of the selected directory
-        try {
-            String text = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).stream()
-                    .collect(Collectors.joining(System.lineSeparator()));
-            // Set the text
-            rSyntaxTextArea.setText(text);
-            openedFile = file;
-        } catch (Exception evt) {
-            JOptionPane.showMessageDialog(jFrame, evt.getMessage());
-        }
-    }
-
-    private JScrollPane initTree(Node root) {
-        DefaultMutableTreeNode top = createTree(root);
-        jTree = new JTree(top);
-        jTree.setBorder(BorderFactory.createEmptyBorder());
-
-        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) jTree.getCellRenderer();
-        renderer.setTextSelectionColor(Color.white);
-        renderer.setBackgroundSelectionColor(Color.getColor("ROSE"));
-        renderer.setBorderSelectionColor(Color.black);
-        renderer.setTextNonSelectionColor(Color.getColor("BLEU_ELECTRIQUE"));
-        renderer.setBackgroundNonSelectionColor(Color.getColor("PRUNE"));
-        jTree.setBackground(Color.getColor("PRUNE"));
-
-        jTree.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1) {
-                    TreePath tp = jTree.getPathForLocation(e.getX(), e.getY());
-                    if (tp == null)
-                        return;
-                    selectedFile = new File(createFilePath(tp));
-                    checkUpdateTree(root);
-                }
-                if (e.getClickCount() == 2) {
-                    mouseOpenFile(e);
-                }
-
-            }
-        });
-        JScrollPane treeView = new JScrollPane(jTree);
-        return treeView;
-    }
-
-    public void checkUpdateTree(Node root) {
-        if (!checkTree(root))
-            updateTree(root);
-    }
-
-    public void updateTree(Node root) {
-
-        //((ProjectManager)projectService).update(root);
-        DefaultMutableTreeNode top = createTree(root);
-        jTree.setModel(new DefaultTreeModel(top));
-        jTree.repaint();
-    }
-
-    DefaultMutableTreeNode createTree(Node root) {
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode(root.getPath());
-        /*File fRoot = root.getPath().toFile();
-        if (!(fRoot.exists() && fRoot.isDirectory()))
-            return top;*/
-        if (root.isFile() || root.getChildren().isEmpty())
-            return top;
-
-        fillTree(top, root);
-
-        return top;
-    }
-
-    void fillTree(DefaultMutableTreeNode root, Node dir) {
-
-        List<Node> list = dir.getChildren();
-
-        Collections.sort(list, new Comparator<Node>() {
-            @Override
-            public int compare(Node o1, Node o2) {
-                if (o1.isFolder() && o2.isFolder()) {
-                    return o1.getPath().compareTo(o2.getPath());
-                } else if (o1.isFolder()) {
-                    return -1;
-                } else if (o2.isFolder()) {
-                    return 1;
-                }
-                return o1.getPath().compareTo(o2.getPath());
-            }
-        });
-
-        for (int i = 0; i < list.size(); i++) {
-
-            File file = list.get(i).getPath().toFile();
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(file.getName());
-            if (list.get(i).isFolder()) {
-                fillTree(node, list.get(i));
-            }
-            root.add(node);
-        }
-    }
-
-    boolean checkTree(Node dir) {
-
-        File fdir = dir.getPath().toFile();
-        File[] tmp = fdir.listFiles();
-        List<File> ol = new ArrayList<File>(Arrays.asList(tmp));
-        List<Node> nodes = new ArrayList<>(dir.getChildren());
-        for (int i = 0; i < ol.size(); i++) {
-            File file = ol.get(i);
-            Optional<Node> next = nodes.stream()
-                    .filter(node -> ((node.isFile() && file.isFile()) || (node.isFolder() && file.isDirectory()))
-                            && node.getPath().equals(file.toPath())).findAny();
-            if (!next.isPresent())
-                return false;
-            if (file.isDirectory() && !checkTree(next.get()))
-                return false;
-            nodes.remove(next.get());
-        }
-        return nodes.isEmpty();
     }
 
     public static void main(String[] args) {

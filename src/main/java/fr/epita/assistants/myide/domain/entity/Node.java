@@ -2,6 +2,7 @@ package fr.epita.assistants.myide.domain.entity;
 
 import fr.epita.assistants.utils.Given;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.validation.constraints.NotNull;
 import java.nio.file.Path;
 import java.util.List;
@@ -18,6 +19,7 @@ public interface Node {
      * @return The Node type.
      */
     @NotNull Type getType();
+
 
     /**
      * If the Node is a Folder, returns a list of its children,

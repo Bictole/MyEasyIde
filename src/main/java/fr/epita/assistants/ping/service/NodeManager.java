@@ -6,6 +6,7 @@ import fr.epita.assistants.ping.node.FileNode;
 import fr.epita.assistants.ping.node.FolderNode;
 import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -56,8 +57,12 @@ public class NodeManager implements NodeService {
             parent = ((FolderNode) file.getParent());
         } else {
             FolderNode folder = (FolderNode) node;
-            if (!folder.isEmpty()) {
-                return false; // folder is not empty
+            if (!folder.isEmpty()) { // folder is not empty
+                for (int i = 0;  i < folder.getChildren().size(); i++){
+                    deleteNode(folder.getChildren().get(i));
+                    i--;
+                }
+
             }
             parent = (FolderNode) folder.getParent();
         }
@@ -117,6 +122,10 @@ public class NodeManager implements NodeService {
             return null;
         }
         try {
+            File f = folder.getPath().resolve(name).toFile();
+            if (f.exists()){
+                return null;
+            }
             Node n = createNode(folder, name, type);
             if (n.isFolder())
                 Files.createDirectory(folder.getPath().resolve(name));
@@ -177,7 +186,7 @@ public class NodeManager implements NodeService {
     }
 
     public Node getFromSource(Node source, Path path) {
-        if (source.getPath() == path)
+        if (source.getPath().equals(path))
             return source;
         for (Node child : source.getChildren()) {
             if (path.equals(child.getPath()))

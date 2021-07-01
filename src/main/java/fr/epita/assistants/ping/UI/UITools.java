@@ -1,5 +1,7 @@
 package fr.epita.assistants.ping.UI;
 
+import fr.epita.assistants.myide.domain.entity.Node;
+
 import javax.swing.*;
 import java.io.File;
 
@@ -27,6 +29,16 @@ public class UITools {
             JOptionPane.showMessageDialog(frame, "the user cancelled the operation");
             return null;
         }
+    }
+
+    public static Node getSelectedNode(MainFrame mainFrame){
+        var selectionPath = mainFrame.getjTree().getSelectionPath();
+        Node node;
+        if (selectionPath == null)
+            node = mainFrame.project.getRootNode();
+        else
+            node = (Node) selectionPath.getLastPathComponent();
+        return node;
     }
 
     /*

@@ -2,6 +2,8 @@ package fr.epita.assistants.ping.node;
 
 import fr.epita.assistants.myide.domain.entity.Node;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.validation.groups.Default;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class FolderNode implements Node {
         ((FolderNode)parent).addChildren(this);
         this.parent = parent;
     }
+
     @Override
     public Path getPath() {
         return path;
@@ -70,5 +73,10 @@ public class FolderNode implements Node {
 
     public void deleteChildren(Node children) {
         this.children.remove(children);
+    }
+
+    @Override
+    public String toString() {
+        return path.toFile().getName();
     }
 }
