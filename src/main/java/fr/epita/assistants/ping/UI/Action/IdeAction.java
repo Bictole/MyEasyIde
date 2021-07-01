@@ -5,6 +5,7 @@ import fr.epita.assistants.myide.domain.service.ProjectService;
 import fr.epita.assistants.ping.UI.Icons;
 import fr.epita.assistants.ping.UI.MainFrame;
 import fr.epita.assistants.ping.UI.Panel.NewProject;
+import fr.epita.assistants.ping.UI.UITools;
 import fr.epita.assistants.ping.service.NodeManager;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
@@ -63,9 +64,12 @@ public class IdeAction {
         ProjectService projectService = mainFrame.getProjectService();
         NodeManager nodeService = (NodeManager)projectService.getNodeService();
         Node root = mainFrame.project.getRootNode();
-        nodeService.create(nodeService.getFromSource(root, path), name, type);
-        mainFrame.getjTree().updateUI();
-        System.out.println("New " + type.toString() + ": " + name);
+        if (nodeService.create(nodeService.getFromSource(root, path), name, type) != null){
+            mainFrame.getjTree().updateUI();
+            System.out.println("New " + type.toString() + ": " + name);
+        }
+        else
+            UITools.errorDialog(mainFrame, "File already exist");
     }
 
     private static String getNameDialog(MainFrame frame, String message) {
