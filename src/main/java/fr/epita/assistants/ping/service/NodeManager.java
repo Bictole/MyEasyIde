@@ -177,7 +177,7 @@ public class NodeManager implements NodeService {
     }
 
     public Node getFromSource(Node source, Path path) {
-        if (source.getPath() == path)
+        if (source.getPath().equals(path))
             return source;
         for (Node child : source.getChildren()) {
             if (path.equals(child.getPath()))

@@ -63,7 +63,8 @@ public class IdeAction {
         ProjectService projectService = mainFrame.getProjectService();
         NodeManager nodeService = (NodeManager)projectService.getNodeService();
         Node root = mainFrame.project.getRootNode();
-        nodeService.create(nodeService.getFromSource(root, path), name, type);
+        Node parent = nodeService.getFromSource(root, path);
+        nodeService.create(parent, name, type);
         mainFrame.getjTree().updateUI();
         System.out.println("New " + type.toString() + ": " + name);
     }
