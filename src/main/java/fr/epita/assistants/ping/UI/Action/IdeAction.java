@@ -102,7 +102,7 @@ public class IdeAction {
 
         public actNewFolder(MainFrame frame) {
             super(
-                    "Fodler",
+                    "Folder",
                     getResizedIcon(frame, Icons.NEW_FOLDER),
                     KeyEvent.VK_N,
                     "New Folder",

@@ -307,6 +307,7 @@ public class MainFrame extends JFrame {
         treePopupMenu.add(new TreeAction.actCopy(this));
         treePopupMenu.add(new TreeAction.actCut(this));
         treePopupMenu.add(new TreeAction.actPaste(this));
+        treePopupMenu.add(new TreeAction.actDelete(this));
 
         rSyntaxTextArea.addMouseListener( new MouseAdapter() {
             @Override public void mousePressed( MouseEvent event ) {

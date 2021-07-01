@@ -53,7 +53,7 @@ public class TreeAction {
 
         public actCut(MainFrame frame) {
             super(
-                    "Cut",
+                    "Cut File",
                     getResizedIcon(frame, Icons.CUT),
                     KeyEvent.VK_N,
                     "Cut File or Folder",
@@ -76,7 +76,7 @@ public class TreeAction {
 
         public actPaste(MainFrame frame) {
             super(
-                    "Paste",
+                    "Paste File",
                     getResizedIcon(frame, Icons.PASTE),
                     KeyEvent.VK_N,
                     "Paste File or Folder",
@@ -187,7 +187,7 @@ public class TreeAction {
 
         public actDelete(MainFrame frame) {
             super(
-                    "Delete",
+                    "Delete file",
                     null,
                     KeyEvent.VK_N,
                     "Delete File or Folder",
@@ -198,6 +198,9 @@ public class TreeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            Node selected = getSelectedNode(mainFrame);
+            NodeManager nM = (NodeManager) mainFrame.getProjectService().getNodeService();
+            nM.delete(selected);
         }
     }
 
