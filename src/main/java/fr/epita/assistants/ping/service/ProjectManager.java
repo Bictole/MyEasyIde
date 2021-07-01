@@ -63,6 +63,41 @@ public class ProjectManager implements ProjectService {
         }
     }
 
+    public void updateTree(Node root) {
+        if (root.isFolder()) {
+            try {
+                Stream<Path> paths = Files.list(root.getPath()).sorted(new ProjectManager.PathComparator());
+                var pathList = paths.toList();
+                for (var p : pathList) {
+                    if (root.getChildren().stream().noneMatch(node -> node.getPath().equals(p))) {
+                        Node node = null;
+                        if (p.toFile().isDirectory()) {
+                            node = new FolderNode(p, root);
+                            updateTree(node);
+                        } else
+                            node = new FileNode(p, root);
+                    } else {
+                        if (p.toFile().isDirectory()) {
+                            Node node = ((NodeManager) nodeService).getFromSource(root, p);
+                            updateTree(node);
+                        }
+                    }
+                }
+                if (pathList.size() < root.getChildren().size())
+                    for (int i = 0; i < root.getChildren().size(); i++) {
+                        var child = root.getChildren().get(i);
+                        if (pathList.stream().noneMatch(path -> path.equals(child.getPath()))) {
+                            NodeManager nM = (NodeManager) nodeService;
+                            nM.deleteNode(child);
+                            i--;
+                        }
+                    }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void findAspects(Node rootNode, Set<Aspect> aspects) {
         if (!rootNode.getChildren().isEmpty()) {
             for (var child : rootNode.getChildren()) {

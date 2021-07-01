@@ -2,6 +2,8 @@ package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.node.FileNode;
+import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.service.NodeManager;
 import fr.epita.assistants.ping.service.ProjectManager;
 import org.eclipse.sisu.launch.Main;
@@ -17,11 +19,12 @@ import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProjectExplorer {
 
@@ -30,45 +33,25 @@ public class ProjectExplorer {
 
     private MainFrame mainFrame;
 
-    public JTree getjTree() {
-        return jTree;
+    private boolean isEditing = false;
+
+    public boolean isEditing() {
+        return isEditing;
     }
 
-    class MyTreeModelListener implements TreeModelListener {
-        public void treeNodesChanged(TreeModelEvent e) {
-            Node node;
-            node = (Node) (e.getTreePath().getLastPathComponent());
+    public void setEditing(boolean editing) {
+        isEditing = editing;
+    }
 
-            /*
-             * If the event lists children, then the changed
-             * node is the child of the node we have already
-             * gotten.  Otherwise, the changed node and the
-             * specified node are the same.
-             */
-            try {
-                int index = e.getChildIndices()[0];
-                node = node.getChildren().get(index);
-            } catch (NullPointerException exc) {
-            }
-
-            System.out.println("The user has finished editing the node.");
-            System.out.println("New value: " + node.toString());
-        }
-
-        public void treeNodesInserted(TreeModelEvent e) {
-        }
-
-        public void treeNodesRemoved(TreeModelEvent e) {
-        }
-
-        public void treeStructureChanged(TreeModelEvent e) {
-        }
+    public JTree getjTree() {
+        return jTree;
     }
 
     public ProjectExplorer(MainFrame mainFrame, Node root) {
         this.mainFrame = mainFrame;
         treeModel = new NodeTreeModel(root);
         jTree = new JTree(treeModel);
+        createWatcher(root);
 
         jTree.addMouseListener(new MouseAdapter() {
             @Override
@@ -100,4 +83,79 @@ public class ProjectExplorer {
             JOptionPane.showMessageDialog(mainFrame, evt.getMessage());
         }
     }
+
+    private void createWatcher(Node root) {
+        Thread t = new Thread(new FilesWatcher(root));
+        t.start();
+    }
+
+    public void updateUI() {
+        Thread t = new Thread() {
+            public void run() {
+                jTree.updateUI();
+            }
+        };
+        t.start();
+    }
+
+    class FilesWatcher implements Runnable {
+        private final Node root;
+
+        public FilesWatcher(Node root) {
+            this.root = root;
+        }
+
+        private void registerPaths(WatchService watchService, Node node) {
+            try {
+                node.getPath().register(watchService,
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_DELETE,
+                        StandardWatchEventKinds.ENTRY_MODIFY);
+                for (var child : node.getChildren()) {
+                    if (child.isFolder())
+                        registerPaths(watchService, child);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void run() {
+
+            WatchService watchService
+                    = null;
+            try {
+                watchService = FileSystems.getDefault().newWatchService();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            registerPaths(watchService, root);
+
+            WatchKey key;
+            try {
+                while ((key = watchService.take()) != null) {
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        if (isEditing)
+                            System.out.println("Editing...");
+                        else {
+                            System.out.println(
+                                    "Event kind:" + event.kind()
+                                            + ". File affected: " + event.context() + ".");
+                            ProjectManager pM = (ProjectManager)  mainFrame.getProjectService();
+                            var tpaths = jTree.getSelectionPaths();
+                            pM.updateTree(root);
+                            updateUI();
+                        }
+                    }
+                    key.reset();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
 }

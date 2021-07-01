@@ -61,6 +61,7 @@ public class IdeAction {
         else
             path = file.toPath();
 
+        mainFrame.getProjectExplorer().setEditing(true);
         ProjectService projectService = mainFrame.getProjectService();
         NodeManager nodeService = (NodeManager)projectService.getNodeService();
         Node root = mainFrame.project.getRootNode();
@@ -71,6 +72,7 @@ public class IdeAction {
         else
             UITools.errorDialog(mainFrame, "File already exist");
 
+        mainFrame.getProjectExplorer().setEditing(false);
     }
 
     private static String getNameDialog(MainFrame frame, String message) {
