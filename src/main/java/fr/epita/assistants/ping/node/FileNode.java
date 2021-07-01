@@ -2,6 +2,7 @@ package fr.epita.assistants.ping.node;
 
 import fr.epita.assistants.myide.domain.entity.Node;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -54,5 +55,10 @@ public class FileNode implements Node {
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return path.toFile().getName();
     }
 }

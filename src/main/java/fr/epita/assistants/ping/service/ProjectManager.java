@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -30,10 +31,24 @@ public class ProjectManager implements ProjectService {
         nodeService = new NodeManager();
     }
 
-    private void initNodes(Node root) {
-        ((NodeManager) nodeService).setRootNode(root);
+    class PathComparator implements Comparator {
+        public int compare(Object o1, Object o2) {
+            Path path1 = (Path) o1;
+            Path path2 = (Path) o2;
+            if (path1.toFile().isFile()) {
+                if (!path2.toFile().isFile())
+                    return 1;
+            } else {
+                if (path2.toFile().isFile())
+                    return -1;
+            }
+            return path1.compareTo(path2);
+        }
+    }
+
+    public void initNodes(Node root) {
         if (root.isFolder()) {
-            try (Stream<Path> paths = Files.list(root.getPath())) {
+            try (Stream<Path> paths = Files.list(root.getPath()).sorted(new PathComparator())) {
                 for (var p : paths.toList()) {
                     Node node = null;
                     if (p.toFile().isDirectory()) {
@@ -43,6 +58,41 @@ public class ProjectManager implements ProjectService {
                         node = new FileNode(p, root);
                 }
             } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void updateTree(Node root) {
+        if (root.isFolder()) {
+            try {
+                Stream<Path> paths = Files.list(root.getPath()).sorted(new ProjectManager.PathComparator());
+                var pathList = paths.toList();
+                for (var p : pathList) {
+                    if (root.getChildren().stream().noneMatch(node -> node.getPath().equals(p))) {
+                        Node node = null;
+                        if (p.toFile().isDirectory()) {
+                            node = new FolderNode(p, root);
+                            updateTree(node);
+                        } else
+                            node = new FileNode(p, root);
+                    } else {
+                        if (p.toFile().isDirectory()) {
+                            Node node = ((NodeManager) nodeService).getFromSource(root, p);
+                            updateTree(node);
+                        }
+                    }
+                }
+                if (pathList.size() < root.getChildren().size())
+                    for (int i = 0; i < root.getChildren().size(); i++) {
+                        var child = root.getChildren().get(i);
+                        if (pathList.stream().noneMatch(path -> path.equals(child.getPath()))) {
+                            NodeManager nM = (NodeManager) nodeService;
+                            nM.deleteNode(child);
+                            i--;
+                        }
+                    }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -79,6 +129,7 @@ public class ProjectManager implements ProjectService {
         }
         Node rootNode = new FolderNode(root, null);
         initNodes(rootNode);
+        ((NodeManager) nodeService).setRootNode(rootNode);
         Set<Aspect> aspects = new HashSet<>();
         aspects.add(new AnyAspect());
         findAspects(rootNode, aspects);

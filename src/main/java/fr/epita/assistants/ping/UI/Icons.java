@@ -20,7 +20,7 @@ public enum Icons {
     GIT_PULL("gitPull.png"),
     GIT_PUSH("gitPush.png");
 
-    String path;
+    public String path;
 
     Icons(String s) {
         String mainPath = "src/main/resources/icons/";
