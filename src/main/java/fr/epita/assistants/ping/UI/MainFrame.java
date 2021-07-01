@@ -18,6 +18,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Theme;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -156,6 +157,17 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
         Graphics.ScrollPaneDesign(treeView, Color.getColor("PRUNE"));
 
+        jTree.setBorder(BorderFactory.createEmptyBorder());
+
+        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) jTree.getCellRenderer();
+        renderer.setTextSelectionColor(Color.white);
+        renderer.setBackgroundSelectionColor(Color.getColor("ROSE"));
+        renderer.setBorderSelectionColor(Color.black);
+        renderer.setTextNonSelectionColor(Color.getColor("BLEU_ELECTRIQUE"));
+        renderer.setBackgroundNonSelectionColor(Color.getColor("PRUNE"));
+        jTree.setBackground(Color.getColor("PRUNE"));
+
+
         createPopupMenu();
         createConsole();
         JScrollPane consoleView = console.scrollPane;
@@ -171,7 +183,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
         this.setJMenuBar(jMenuBar);
         jFrame.add(jToolBar, BorderLayout.NORTH);
-        jFrame.add(bottomSplitPane, BorderLayout.SOUTH);
+        jFrame.add(bottomSplitPane, BorderLayout.CENTER);
         this.pack();
         if (!this.isVisible())
             this.setVisible(true);

@@ -33,7 +33,7 @@ public class UITools {
     }*/
 
     public static Icon getResizedIcon(MainFrame frame, Icons icon) {
-        return new ImageIcon(ImageResize.ImageTest(icon));
+        return new ImageIcon(ImageResize.ImageTest(icon, 24));
     }
 
     public static File fileSelector(MainFrame frame) {
@@ -79,14 +79,13 @@ public class UITools {
         }
     }
 
-    public class ImageResize {
+    public static class ImageResize {
 
 
-
-        public static Image ImageTest(Icons icon) {
+        public static Image ImageTest(Icons icon, int size) {
             try {
                 BufferedImage image = ImageIO.read(new File(icon.path));
-                return resizeImage(image, 24, 24);
+                return resizeImage(image, size, size);
             } catch (IOException e) {
                 e.printStackTrace();
             }
