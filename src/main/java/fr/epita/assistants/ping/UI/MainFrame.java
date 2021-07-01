@@ -318,6 +318,18 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         return new ImageIcon(resizedImage);
     }
 
+    private JButton createToolBarButton(AbstractAction action)
+    {
+        JButton b = new JButton(action);
+        b.setBackground(Color.getColor("GRIS_MIDDLE"));
+        b.setForeground(Color.getColor("GRIS_MIDDLE"));
+        b.setBorder(BorderFactory.createLineBorder(Color.getColor("GRIS_MIDDLE"), 7));
+        b.setHideActionText(true);
+        b.setRolloverEnabled(true);
+        //b.setIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.OPEN)));
+        return b;
+    }
+
     private void createToolBar() {
         // Create a toolbar
         jToolBar = new JToolBar();
@@ -325,30 +337,31 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         jToolBar.setBackground(Color.getColor("GRIS_MIDDLE"));
         jToolBar.setForeground(Color.getColor("GRIS_MIDDLE"));
 
-        jToolBar.add(new IdeAction.actOpenProject(this)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actSave(this, rSyntaxTextArea)).setHideActionText(true);
+        jToolBar.add(createToolBarButton(new IdeAction.actOpenProject(this)));
+
+        jToolBar.add(createToolBarButton(new IdeAction.actSave(this, rSyntaxTextArea)));
         jToolBar.addSeparator();
-        jToolBar.add(new IdeAction.actUndo(this)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actRedo(this)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actCopy(this, rSyntaxTextArea)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actCut(this, rSyntaxTextArea)).setHideActionText(true);
-        jToolBar.add(new IdeAction.actPaste(this, rSyntaxTextArea)).setHideActionText(true);
+        jToolBar.add(createToolBarButton(new IdeAction.actUndo(this)));
+        jToolBar.add(createToolBarButton(new IdeAction.actRedo(this)));
+        jToolBar.add(createToolBarButton(new IdeAction.actCopy(this, rSyntaxTextArea)));
+        jToolBar.add(createToolBarButton(new IdeAction.actCut(this, rSyntaxTextArea)));
+        jToolBar.add(createToolBarButton(new IdeAction.actPaste(this, rSyntaxTextArea)));
 
         jToolBar.add(Box.createHorizontalGlue());
         if (project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.MAVEN))
-            jToolBar.add(new MavenAction.actMvnExec(this)).setHideActionText(true);
+            jToolBar.add(createToolBarButton(new MavenAction.actMvnExec(this)));
         else if (project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.ANY))
-            jToolBar.add(new AnyAction.actAnyRun(this)).setHideActionText(true);
+            jToolBar.add(createToolBarButton(new AnyAction.actAnyRun(this)));
         
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
         label.setForeground(Color.WHITE);
         jToolBar.add(label);
         jToolBar.addSeparator();
-        jToolBar.add(new GitAction.actGitPull(this)).setHideActionText(true);
-        jToolBar.add(new GitAction.actGitAdd(this)).setHideActionText(true);
-        jToolBar.add(new GitAction.actGitCommit(this)).setHideActionText(true);
-        jToolBar.add(new GitAction.actGitPush(this)).setHideActionText(true);
+        jToolBar.add(createToolBarButton(new GitAction.actGitPull(this)));
+        jToolBar.add(createToolBarButton(new GitAction.actGitAdd(this)));
+        jToolBar.add(createToolBarButton(new GitAction.actGitCommit(this)));
+        jToolBar.add(createToolBarButton(new GitAction.actGitPush(this)));
 
         jToolBar.setFloatable(false);
     }
