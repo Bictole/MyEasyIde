@@ -154,7 +154,6 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         JScrollPane treeView = new JScrollPane(jTree);
         
         Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
-        JScrollPane treeView = initTree(project.getRootNode());
         Graphics.ScrollPaneDesign(treeView, Color.getColor("PRUNE"));
 
         createPopupMenu();
