@@ -14,6 +14,7 @@ public class NewProject {
 
     public NewProject(MainFrame mainFrame) {
         JFrame f = new JFrame("New Project");
+        f.setBackground(Color.getColor("GRIS_MIDDLE"));
         JLabel nameLabel = new JLabel("Name:");
 
         JTextField nameTextField = new JTextField("undefined");
