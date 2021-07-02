@@ -155,11 +155,8 @@ public class ProjectExplorer {
                 while ((key = watchService.take()) != null) {
                     for (WatchEvent<?> event : key.pollEvents()) {
                         if (isEditing)
-                            System.out.println("Editing...");
+                            jTree.updateUI();
                         else {
-                            System.out.println(
-                                    "Event kind:" + event.kind()
-                                            + ". File affected: " + event.context() + ".");
                             updateTree();
                         }
                     }
