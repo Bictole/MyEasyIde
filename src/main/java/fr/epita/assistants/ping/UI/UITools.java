@@ -8,6 +8,7 @@ import javax.imageio.metadata.IIOMetadata;
 import fr.epita.assistants.myide.domain.entity.Node;
 
 import javax.swing.*;
+import javax.swing.plaf.FileChooserUI;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
