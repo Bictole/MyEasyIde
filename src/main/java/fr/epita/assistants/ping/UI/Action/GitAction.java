@@ -26,34 +26,32 @@ public class GitAction {
         public actGitCommit(MainFrame frame)
         {
             super(
-                    "Git Commit",
+                    "Git commit",
                     getResizedIcon(frame, Icons.GIT_COMMIT),
-                    KeyEvent.VK_G,
+                    KeyEvent.VK_C,
                     "Git commit",
                     null);
-            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             this.mainFrame = frame;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Git Commit");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Git.COMMIT);
 
             if (f.isEmpty()) {
-                System.out.println("THIS PROJECT IS NOT A GIT PROJECT");
+                JOptionPane.showMessageDialog(mainFrame, "This project is not a git project.", "Commit status", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             var GitCommit = f.get();
             String CommitMsg = JOptionPane.showInputDialog(mainFrame.jFrame,
                     "Write a Commit messsage", null);
+            if (CommitMsg == null)
+                return;
             Feature.ExecutionReport report = GitCommit.execute(mainFrame.project, CommitMsg);
 
             if (!report.isSuccess())
-                System.out.println("Commit Failed");
-            else
-                System.out.println("Commit Done");
+                JOptionPane.showMessageDialog(mainFrame, "Commit failed.", "Commit status", JOptionPane.ERROR_MESSAGE);
         }
     };
 
@@ -65,10 +63,9 @@ public class GitAction {
             super(
                     "Git add",
                     getResizedIcon(frame, Icons.GIT_ADD),
-                    KeyEvent.VK_G,
+                    KeyEvent.VK_A,
                     "Git add",
                     null);
-            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             this.mainFrame = frame;
         }
 
@@ -79,18 +76,17 @@ public class GitAction {
             int state = e.getStateChange();
             if (state != ItemEvent.DESELECTED)
             {
-                System.out.println(cb.getText() + " IS SELECTED");
+                //System.out.println(cb.getText() + " IS SELECTED");
                 ToAdd.add(cb.getText());
             }
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Gid Add");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Git.ADD);
 
             if (f.isEmpty()) {
-                System.out.println("THIS PROJECT IS NOT A GIT PROJECT");
+                JOptionPane.showMessageDialog(mainFrame, "This project is not a git project.", "Add status", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             try {
@@ -100,20 +96,21 @@ public class GitAction {
                 to_add.addAll(status.getChanged());
 
                 Box pbox = Box.createVerticalBox();
-                System.out.println("File you can add : \n");
                 for (var file : to_add) {
-                    System.out.println(file);
                     JCheckBox box = new JCheckBox(file);
                     box.addItemListener(this::itemStateChanged);
                     pbox.add(box);
                 }
-                JOptionPane.showConfirmDialog(mainFrame.jFrame, pbox, "Select the files you want to add", JOptionPane.OK_CANCEL_OPTION);
+                if(JOptionPane.showConfirmDialog(mainFrame.jFrame, pbox, "Select the files you want to add", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
+                    return;
 
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
             var GitAdd = f.get();
             Feature.ExecutionReport report = GitAdd.execute(mainFrame.project, ToAdd);
+            if (!report.isSuccess())
+                JOptionPane.showMessageDialog(mainFrame, "Add failed.", "Add status", JOptionPane.ERROR_MESSAGE);
         }
     };
 
@@ -125,20 +122,18 @@ public class GitAction {
             super(
                     "Git pull",
                     getResizedIcon(frame, Icons.GIT_PULL),
-                    KeyEvent.VK_G,
+                    KeyEvent.VK_P,
                     "Git pull",
                     null);
-            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             this.mainFrame = frame;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Git Commit");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Git.PULL);
 
             if (f.isEmpty()) {
-                System.out.println("THIS PROJECT IS NOT A GIT PROJECT");
+                JOptionPane.showMessageDialog(mainFrame, "This project is not a git project.", "Pull status", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -146,9 +141,7 @@ public class GitAction {
             Feature.ExecutionReport report = GitPull.execute(mainFrame.project);
 
             if (!report.isSuccess())
-                System.out.println("Pull Failed");
-            else
-                System.out.println("Pull Done");
+                JOptionPane.showMessageDialog(mainFrame, "Pull failed.", "Pull status", JOptionPane.ERROR_MESSAGE);
         }
     };
 
@@ -158,12 +151,11 @@ public class GitAction {
         public actGitPush(MainFrame frame)
         {
             super(
-                    "Git Push",
+                    "Git push",
                     getResizedIcon(frame, Icons.GIT_PUSH),
-                    KeyEvent.VK_G,
+                    KeyEvent.VK_U,
                     "Git push",
                     null);
-            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             this.mainFrame = frame;
         }
 
@@ -172,7 +164,7 @@ public class GitAction {
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Git.PUSH);
 
             if (f.isEmpty()) {
-                System.out.println("THIS PROJECT IS NOT A GIT PROJECT");
+                JOptionPane.showMessageDialog(mainFrame, "This project is not a git project.", "Pull status", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -180,9 +172,7 @@ public class GitAction {
             Feature.ExecutionReport report = GitPush.execute(mainFrame.project);
 
             if (!report.isSuccess())
-                System.out.println("Push Failed");
-            else
-                System.out.println("Push Done");
+                JOptionPane.showMessageDialog(mainFrame, "Push failed.", "Push status", JOptionPane.ERROR_MESSAGE);
         }
     };
 }

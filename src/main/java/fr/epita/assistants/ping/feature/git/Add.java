@@ -7,7 +7,9 @@ import fr.epita.assistants.ping.project.AnyProject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class Add implements Feature {
 
@@ -47,12 +49,15 @@ public class Add implements Feature {
     }
 
     private ExecutionReportAdd add(AnyProject project, Object... params) throws IOException, GitAPIException {
+
+        PrintStream previous = System.out;
+        System.setOut(new PrintStream(new ByteArrayOutputStream()));
         Git git = project.getgit();
 
         for (var toAdd : params) {
             git.add().addFilepattern((String) toAdd).call();
         }
-
+        System.setOut(previous);
         return new ExecutionReportAdd();
     }
 

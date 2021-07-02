@@ -7,7 +7,9 @@ import fr.epita.assistants.ping.project.AnyProject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class Commit implements Feature {
     private class ExecutionReportCommit implements Feature.ExecutionReport {
@@ -46,10 +48,12 @@ public class Commit implements Feature {
     }
 
     private Commit.ExecutionReportCommit commit(AnyProject project, Object msg) throws IOException, GitAPIException {
+        PrintStream previous = System.out;
+        System.setOut(new PrintStream(new ByteArrayOutputStream()));
         Git git = project.getgit();
 
         git.commit().setMessage((String) msg).call();
-
+        System.setOut(previous);
         return new Commit.ExecutionReportCommit();
     }
 

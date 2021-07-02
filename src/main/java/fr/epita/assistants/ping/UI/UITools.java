@@ -25,8 +25,8 @@ import java.util.Map;
 
 public class UITools {
 
-    public static void errorDialog(MainFrame frame, String message) {
-        JOptionPane.showMessageDialog(frame, message, "", JOptionPane.ERROR_MESSAGE);
+    public static void errorDialog(MainFrame frame, String message, String title) {
+        JOptionPane.showMessageDialog(frame, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
     /*public static Icon getResizedIcon(MainFrame frame, Icons icon) {

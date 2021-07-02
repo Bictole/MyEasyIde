@@ -11,7 +11,9 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class Push implements Feature {
     private class ExecutionReportPush implements Feature.ExecutionReport {
@@ -47,6 +49,8 @@ public class Push implements Feature {
     }
 
     private Push.ExecutionReportPush push(AnyProject project) throws IOException, GitAPIException {
+        PrintStream previous = System.out;
+        System.setOut(new PrintStream(new ByteArrayOutputStream()));
         Git git = project.getgit();
         try {
             RemoteAddCommand remoteAddCommand = git.remoteAdd();
@@ -61,10 +65,12 @@ public class Push implements Feature {
             pushCommand.add("master");
             pushCommand.setRemote("origin");
             pushCommand.call();
+            System.setOut(previous);
             return new Push.ExecutionReportPush();
         }
         catch (Exception e)
         {
+            System.setOut(previous);
             return new Push.ExecutionReportPush("Push failed : "+ e.getMessage());
         }
     }

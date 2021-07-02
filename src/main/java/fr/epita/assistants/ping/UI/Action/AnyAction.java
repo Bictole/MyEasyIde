@@ -24,32 +24,28 @@ public class AnyAction {
         public actAnyCleanUp(MainFrame frame) {
             super(
                     "Cleanup",
-                    getResizedIcon(frame, Icons.GIT_ADD),
-                    KeyEvent.VK_G,
+                    null,
+                    KeyEvent.VK_C,
                     "Cleanup",
                     null);
-            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             this.frame = frame;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Cleanup");
             Optional<Feature> f = frame.project.getFeature(Mandatory.Features.Any.CLEANUP);
 
             if (f.isEmpty()) {
-                System.out.println("Error when finding the Feature");
+                JOptionPane.showMessageDialog(frame, "Error when finding the Feature.", "Cleanup status", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             var AnyCleanUp = f.get();
             Feature.ExecutionReport report = AnyCleanUp.execute(frame.project);
 
-            if (!report.isSuccess()) {
-                System.out.println("Cleanup Failed");
-            }
-            else
-                System.out.println("Cleanup Done");
+            if (!report.isSuccess())
+                JOptionPane.showMessageDialog(frame, "Cleanup failed.", "Cleanup status", JOptionPane.ERROR_MESSAGE);
+
         }
     };
 
@@ -60,21 +56,19 @@ public class AnyAction {
         public actAnyDist(MainFrame frame) {
             super(
                     "Dist",
-                    getResizedIcon(frame, Icons.GIT_ADD),
-                    KeyEvent.VK_G,
+                    null,
+                    KeyEvent.VK_D,
                     "Dist",
                     null);
-            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
             this.frame = frame;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Dist");
             Optional<Feature> f = frame.project.getFeature(Mandatory.Features.Any.DIST);
 
             if (f.isEmpty()) {
-                System.out.println("Error when finding the Feature");
+                JOptionPane.showMessageDialog(frame, "Error when finding the feature.", "Dist status", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -82,9 +76,7 @@ public class AnyAction {
             Feature.ExecutionReport report = AnyDist.execute(frame.project);
 
             if (!report.isSuccess())
-                System.out.println("Dist Failed");
-            else
-                System.out.println("Dist Done");
+                JOptionPane.showMessageDialog(frame, "Dist failed.", "Dist status", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -133,11 +125,10 @@ public class AnyAction {
             super(
                     "Run",
                     getResizedIcon(frame, Icons.RUN),
-                    KeyEvent.VK_G,
+                    KeyEvent.VK_R,
                     "Run",
                     null);
             this.frame = frame;
-            //putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
         }
 
         @Override
@@ -145,7 +136,7 @@ public class AnyAction {
             Optional<Feature> f = frame.project.getFeature(Mandatory.Features.Any.RUN);
 
             if (f.isEmpty()) {
-                System.out.println("Error when finding the Feature");
+                JOptionPane.showMessageDialog(frame, "Error when finding the feature.", "Run status", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -155,8 +146,10 @@ public class AnyAction {
                     frame.getProjectService().execute(frame.project, Mandatory.Features.Any.SEARCH, "public static void main");
 
             ExecConfig execConfig = new ExecConfig(frame, searchReport.getFilesMatch());
-            if (execConfig.getMainClass() == null)
+            if (execConfig.getMainClass() == null) {
+                JOptionPane.showMessageDialog(frame, "No main class found.", "Run status", JOptionPane.ERROR_MESSAGE);
                 return;
+            }
             Run.ExecutionReportRun report = (Run.ExecutionReportRun) AnyRun.execute(frame.project, execConfig.getMainFile(), execConfig.getMainParentPath(), execConfig.getMainClass(), execConfig.getMainPackagePath());
             System.out.println(report.getOutput());
         }

@@ -6,8 +6,10 @@ import fr.epita.assistants.myide.domain.entity.Project;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class Pull implements Feature {
 
@@ -44,6 +46,8 @@ public class Pull implements Feature {
     }
 
     private Pull.ExecutionReportPull pull(Project project) throws IOException, GitAPIException {
+        PrintStream previous = System.out;
+        System.setOut(new PrintStream(new ByteArrayOutputStream()));
         Git git = Git.open(new File(String.valueOf(project.getRootNode().getPath())));
 
         var result = git.pull()
@@ -51,6 +55,7 @@ public class Pull implements Feature {
                 .setRemoteBranchName("master")
                 .call();
 
+        System.setOut(previous);
         if (result.isSuccessful()) {
             return new Pull.ExecutionReportPull();
         } else {

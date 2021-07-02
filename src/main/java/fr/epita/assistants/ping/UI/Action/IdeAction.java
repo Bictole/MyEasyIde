@@ -35,7 +35,6 @@ public class IdeAction {
                     "New Project",
                     null);
             this.mainFrame = frame;
-            // putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         }
 
 
@@ -66,10 +65,10 @@ public class IdeAction {
         NodeManager nodeService = (NodeManager)projectService.getNodeService();
         Node root = mainFrame.project.getRootNode();
         if (nodeService.create(nodeService.getFromSource(root, path), name, type) != null){
-            System.out.println("New " + type.toString() + ": " + name);
+            mainFrame.getjTree().updateUI();
         }
         else
-            UITools.errorDialog(mainFrame, "File already exist");
+            UITools.errorDialog(mainFrame, "File already exist.", "New file status");
 
         mainFrame.getProjectExplorer().setEditing(false);
     }
@@ -88,8 +87,7 @@ public class IdeAction {
             if (result.length() > 0) {
                 return result;
             } else {
-                // test if valid filename
-                errorDialog(frame, "Invalid name: " + result);
+                errorDialog(frame, "Name is : " + result, "File name error");
             }
         }
         return null;
@@ -208,12 +206,6 @@ public class IdeAction {
                     KeyEvent.VK_O,
                     "Open Project (CTRL+O)",
                     KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
-            /*super(null,null,0,null,null);
-            putValue(Action.NAME, "Open Project");
-            putValue(Action.SMALL_ICON, getResizedImage(frame, Icons.OPEN));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(Action.SHORT_DESCRIPTION, "Open Project");
-            putValue(Action.ACCELERATOR_KEY, null);*/
             this.mainFrame = frame;
         }
 

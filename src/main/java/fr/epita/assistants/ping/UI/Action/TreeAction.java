@@ -31,7 +31,7 @@ public class TreeAction {
 
         public actCopy(MainFrame frame) {
             super(
-                    "Copy File",
+                    "Copy",
                     getResizedIcon(frame, Icons.COPY),
                     KeyEvent.VK_N,
                     "Copy File or Folder",
@@ -53,7 +53,7 @@ public class TreeAction {
 
         public actCut(MainFrame frame) {
             super(
-                    "Cut File",
+                    "Cut",
                     getResizedIcon(frame, Icons.CUT),
                     KeyEvent.VK_N,
                     "Cut File or Folder",
@@ -76,7 +76,7 @@ public class TreeAction {
 
         public actPaste(MainFrame frame) {
             super(
-                    "Paste File",
+                    "Paste",
                     getResizedIcon(frame, Icons.PASTE),
                     KeyEvent.VK_N,
                     "Paste File or Folder",
@@ -99,7 +99,9 @@ public class TreeAction {
                                 if (JOptionPane.showConfirmDialog(mainFrame, "Do you want overwrite ?",
                                         "Already exists", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                                     Files.copy(source.getPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
-                                } else return;
+                                } else {
+                                    return;
+                                }
                             } else {
                                 Path filePath = destPath.toFile().isFile() ? destPath : source.getPath();
                                 String newName = filePath.toFile().getName();
@@ -111,7 +113,7 @@ public class TreeAction {
                                     destPath = destPath.getParent().resolve(newName + " - Copy");
                             }
                         } catch (Exception e) {
-                            UITools.errorDialog(mainFrame, "Can not paste here.");
+                            UITools.errorDialog(mainFrame, "Can not paste here.", "Paste error");
                             return;
                         }
                     }
@@ -131,7 +133,9 @@ public class TreeAction {
                                 if (JOptionPane.showConfirmDialog(mainFrame, "Do you want overwrite ?",
                                         "Already exists", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                                     Files.copy(source.getPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
-                                } else return;
+                                } else {
+                                    return;
+                                }
                             } else {
                                 String newName = initPath.equals(destPath) ? source.getPath().toFile().getName() : destPath.toFile().getName();
                                 if (initPath.equals(destPath)){
@@ -144,7 +148,7 @@ public class TreeAction {
                             }
 
                         } catch (Exception e) {
-                            UITools.errorDialog(mainFrame, "Can not paste here.");
+                            UITools.errorDialog(mainFrame, "Can not paste here.", "Paste error");
                             return;
                         }
                     }
@@ -157,7 +161,7 @@ public class TreeAction {
                     }
                 }
             } catch (Exception exp) {
-                UITools.errorDialog(mainFrame, exp.getMessage());
+                UITools.errorDialog(mainFrame, exp.getMessage(), "Paste error");
             }
         }
 
@@ -170,6 +174,7 @@ public class TreeAction {
             if (editAction.copyNode == null)
                 mainFrame.getProjectExplorer().setEditAction(null);
             else {
+                mainFrame.getProjectExplorer().setEditing(true);
                 if (selected.isFile()) {
                     selected = ((FileNode) selected).getParent();
                 }
@@ -177,6 +182,7 @@ public class TreeAction {
                 pasteNode(editAction.copyNode, selected);
                 if (editAction.action.equals(ProjectExplorer.EditAction.Action.CUT))
                     nM.delete(editAction.copyNode);
+                mainFrame.getProjectExplorer().setEditing(false);
             }
         }
     }
@@ -187,7 +193,7 @@ public class TreeAction {
 
         public actDelete(MainFrame frame) {
             super(
-                    "Delete file",
+                    "Delete",
                     null,
                     KeyEvent.VK_N,
                     "Delete File or Folder",
@@ -198,9 +204,11 @@ public class TreeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            mainFrame.getProjectExplorer().setEditing(true);
             Node selected = getSelectedNode(mainFrame);
             NodeManager nM = (NodeManager) mainFrame.getProjectService().getNodeService();
             nM.delete(selected);
+            mainFrame.getProjectExplorer().setEditing(true);
         }
     }
 

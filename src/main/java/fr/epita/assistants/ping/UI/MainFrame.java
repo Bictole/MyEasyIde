@@ -73,12 +73,12 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     public MainFrame(String title, ProjectService projectService) {
         super(title);
 
-        try {
+        /*try {
             UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
             MetalLookAndFeel.setCurrentTheme(new OceanTheme());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         jFrame = this;
         this.projectService = projectService;
@@ -178,8 +178,10 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         //jToolBar.setBorder(new EtchedBorder());
 
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, textView);
+        mainSplitPane.setResizeWeight(0.10);
         Graphics.BottomSplitPaneDesign(mainSplitPane);
         JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, consoleView);
+        bottomSplitPane.setResizeWeight(0.70);
         Graphics.BottomSplitPaneDesign(bottomSplitPane);
 
         this.setJMenuBar(jMenuBar);
@@ -246,7 +248,6 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         rSyntaxTextArea.setCodeFoldingEnabled(true);
         rSyntaxTextArea.setAnimateBracketMatching(true);
         rSyntaxTextArea.setBorder(BorderFactory.createEmptyBorder());
-
 
         undoManager = new UndoManager();
         rSyntaxTextArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
@@ -327,8 +328,17 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         mEdit.add(new IdeAction.actCut(this, rSyntaxTextArea));
         mEdit.add(new IdeAction.actCopy(this, rSyntaxTextArea));
         mEdit.add(new IdeAction.actPaste(this, rSyntaxTextArea));
-        mEdit.add(new AnyAction.actAnyRun(this));
         jMenuBar.add(mEdit);
+
+        JMenu mTools= new JMenu("Tools");
+        mTools.setMnemonic('T');
+        mTools.setForeground(Color.WHITE);
+
+        mTools.add(new AnyAction.actAnyCleanUp(this));
+        mTools.add(new AnyAction.actAnyDist(this));
+        mTools.addSeparator();
+        mTools.add(new AnyAction.actAnyRun(this));
+        jMenuBar.add(mTools);
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
             JMenu mGit = new JMenu("Git");
