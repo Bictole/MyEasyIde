@@ -6,6 +6,7 @@ import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.myide.domain.service.NodeService;
 import fr.epita.assistants.myide.domain.service.ProjectService;
+import fr.epita.assistants.ping.Tools;
 import fr.epita.assistants.ping.aspect.AnyAspect;
 import fr.epita.assistants.ping.aspect.GitAspect;
 import fr.epita.assistants.ping.aspect.MavenAspect;
@@ -31,24 +32,11 @@ public class ProjectManager implements ProjectService {
         nodeService = new NodeManager();
     }
 
-    class PathComparator implements Comparator {
-        public int compare(Object o1, Object o2) {
-            Path path1 = (Path) o1;
-            Path path2 = (Path) o2;
-            if (path1.toFile().isFile()) {
-                if (!path2.toFile().isFile())
-                    return 1;
-            } else {
-                if (path2.toFile().isFile())
-                    return -1;
-            }
-            return path1.compareTo(path2);
-        }
-    }
+
 
     public void initNodes(Node root) {
         if (root.isFolder()) {
-            try (Stream<Path> paths = Files.list(root.getPath()).sorted(new PathComparator())) {
+            try (Stream<Path> paths = Files.list(root.getPath())) {
                 for (var p : paths.toList()) {
                     Node node = null;
                     if (p.toFile().isDirectory()) {
@@ -66,7 +54,7 @@ public class ProjectManager implements ProjectService {
     public void updateTree(Node root) {
         if (root.isFolder()) {
             try {
-                Stream<Path> paths = Files.list(root.getPath()).sorted(new ProjectManager.PathComparator());
+                Stream<Path> paths = Files.list(root.getPath());
                 var pathList = paths.toList();
                 for (var p : pathList) {
                     if (root.getChildren().stream().noneMatch(node -> node.getPath().equals(p))) {

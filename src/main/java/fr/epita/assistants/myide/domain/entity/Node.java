@@ -46,4 +46,5 @@ public interface Node {
         FILE,
         FOLDER
     }
+
 }
