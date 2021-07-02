@@ -418,6 +418,9 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         textPopupMenu.add(new IdeAction.actCut(this, rSyntaxTextArea));
         textPopupMenu.add(new IdeAction.actPaste(this, rSyntaxTextArea));
 
+        rSyntaxTextArea.setPopupMenu(textPopupMenu);
+
+
         JMenu mNew = new JMenu("New");
         mNew.add(new IdeAction.actNewFile(this));
         mNew.add(new IdeAction.actNewFolder(this));
@@ -427,23 +430,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         treePopupMenu.add(new TreeAction.actPaste(this));
         treePopupMenu.add(new TreeAction.actDelete(this));
 
-        rSyntaxTextArea.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent event) {
-                if (event.isPopupTrigger()) {
-                    textPopupMenu.show(event.getComponent(), event.getX(), event.getY());
-                }
-            }
-        });
-
-        jTree.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent event) {
-                if (event.isPopupTrigger()) {
-                    treePopupMenu.show(event.getComponent(), event.getX(), event.getY());
-                }
-            }
-        });
+        jTree.setComponentPopupMenu(treePopupMenu);
     }
 
     public static void main(String[] args) {
