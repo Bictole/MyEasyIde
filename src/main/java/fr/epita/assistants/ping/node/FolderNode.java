@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.node;
 
 import fr.epita.assistants.myide.domain.entity.Node;
+import fr.epita.assistants.ping.Tools;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.validation.groups.Default;
@@ -51,6 +52,7 @@ public class FolderNode implements Node {
     public void addChildren(Node child)
     {
         children.add(child);
+        children.sort(new Tools.NodeComparator());
     }
 
     public boolean removeChild(Node child) {
