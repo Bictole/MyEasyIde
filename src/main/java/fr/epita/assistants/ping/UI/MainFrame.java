@@ -159,12 +159,13 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
         jTree.setBorder(BorderFactory.createEmptyBorder());
 
-        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) jTree.getCellRenderer();
+        DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
         renderer.setTextSelectionColor(Color.white);
         renderer.setBackgroundSelectionColor(Color.getColor("ROSE"));
         renderer.setBorderSelectionColor(Color.black);
         renderer.setTextNonSelectionColor(Color.getColor("BLEU_ELECTRIQUE"));
         renderer.setBackgroundNonSelectionColor(Color.getColor("PRUNE"));
+        jTree.setCellRenderer(renderer);
         jTree.setBackground(Color.getColor("PRUNE"));
 
 
