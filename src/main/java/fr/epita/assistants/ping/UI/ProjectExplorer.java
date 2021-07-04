@@ -104,18 +104,8 @@ public class ProjectExplorer {
             return;
         try {
 
-            Tab f = mainFrame.tabManager.OpenFile(file);
-            f.getText();
+            mainFrame.tabManager.OpenFile(file);
             mainFrame.setOpenedFile(file);
-            mainFrame.setrSyntaxTextArea(f.getrSyntaxTextArea());
-            mainFrame.getrSyntaxTextArea().setVisible(true);
-            mainFrame.getrSyntaxTextArea().setEditable(true);
-            mainFrame.textView.setViewportView(f.getrSyntaxTextArea());
-
-            //String text = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).stream().collect(Collectors.joining(System.lineSeparator()));
-            // Set the text
-            /*mainFrame.getrSyntaxTextArea().setText(text);
-            mainFrame.getrSyntaxTextArea().setEditable(true);*/
 
         } catch (Exception evt) {
             JOptionPane.showMessageDialog(mainFrame, evt.getMessage());

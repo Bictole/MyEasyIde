@@ -5,6 +5,8 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.print.attribute.standard.MediaSize;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.LayeredHighlighter;
 import java.awt.*;
 import java.io.File;
@@ -32,18 +34,37 @@ public class TabManager {
         theme = Theme;
 
         this.tabPane = new JTabbedPane();
+        this.tabPane.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if (tabPane.getSelectedComponent() != currentTextArea)
+                {
+                    var selected = tabPane.getSelectedComponent();
+                    for (var t : openedTabs)
+                    {
+                        if (t.getTextView() == selected)
+                        {
+                            currentFile = t;
+                            currentTextArea = t.getrSyntaxTextArea();
+                        }
+                    }
+                    System.out.println(currentFile.getFileName());
+                }
+            }
+        });
         tabPane.setBackground(Color.getColor("GRIS_MIDDLE"));
         tabPane.setBorder(BorderFactory.createRaisedBevelBorder());
         tabPane.setForeground(Color.getColor("ROSE"));
+
     }
 
     public void addPane()
     {
-        JScrollPane textView = new JScrollPane(currentFile);
-        Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
-        tabPane.addTab(currentFile.getFileName(), null, textView,
+        tabPane.addTab(currentFile.getFileName(), null, currentFile.getTextView(),
                 currentFile.getFile().getPath());
-        tabPane.setSelectedComponent(textView);
+        tabPane.setTabComponentAt(0, new Tab.ButtonTabComponent(this));
+        tabPane.setSelectedComponent(currentFile.getTextView());
     }
 
     public Tab OpenFile(File openedFile)
@@ -53,7 +74,7 @@ public class TabManager {
             Tab newOpenedFile = new Tab(openedFile, theme);
             openedTabs.add(newOpenedFile);
             setCurrentFile(newOpenedFile);
-
+            newOpenedFile.getText();
             addPane();
             return currentFile;
         }
@@ -66,15 +87,21 @@ public class TabManager {
         }
     }
 
-    public void CloseFile(Tab closedFile)
+    public void CloseFile(Component toClose)
     {
-        openedFiles.remove(closedFile.getFileName());
-        openedTabs.remove(closedFile);
-
-        if (openedFiles.size() > 0 && currentFile == closedFile)
+        for (var t : openedTabs)
         {
-            currentFile = openedTabs.get(0);
-            currentTextArea = currentFile.getrSyntaxTextArea();
+            if (t.getTextView() == toClose)
+            {
+                openedFiles.remove(t.getFileName());
+                openedTabs.remove(t);
+                
+                if (openedFiles.size() > 0 && currentFile == t)
+                {
+                    currentFile = openedTabs.get(0);
+                    currentTextArea = currentFile.getrSyntaxTextArea();
+                }
+            }
         }
     }
 
@@ -90,4 +117,6 @@ public class TabManager {
     public Tab getCurrentFile() {
         return currentFile;
     }
+
+
 }
