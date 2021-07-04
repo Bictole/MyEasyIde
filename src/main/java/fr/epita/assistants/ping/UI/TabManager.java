@@ -7,13 +7,12 @@ import javax.print.attribute.standard.MediaSize;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.text.LayeredHighlighter;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.epita.assistants.ping.UI.Panel.Graphics;
 
 public class TabManager {
 
@@ -34,6 +33,7 @@ public class TabManager {
         theme = Theme;
 
         this.tabPane = new JTabbedPane();
+        this.tabPane.setUI(new PaneUI());
         this.tabPane.addChangeListener(new ChangeListener() {
 
             @Override
@@ -54,10 +54,9 @@ public class TabManager {
                 }
             }
         });
-        tabPane.setBackground(Color.getColor("GRIS_MIDDLE"));
-        tabPane.setBorder(BorderFactory.createRaisedBevelBorder());
-        tabPane.setForeground(Color.getColor("ROSE"));
-
+        //tabPane.setBackground(Color.getColor("GRIS_MIDDLE"));
+        //tabPane.setBorder(BorderFactory.createRaisedBevelBorder());
+        //tabPane.setForeground(Color.getColor("ROSE"));
     }
 
     public void addPane()
@@ -113,5 +112,35 @@ public class TabManager {
         return currentFile;
     }
 
+    public static class PaneUI extends BasicTabbedPaneUI {
+
+        /*@Override
+        protected void paintTab(Graphics g, int tabPlacement, Rectangle[] rects,
+                                int tabIndex, Rectangle iconRect, Rectangle textRect)
+        {
+            g.setColor(Color.getColor("ROSE"));
+            g.fillRect(rects[tabIndex].x, rects[tabIndex].y,
+                    rects[tabIndex].width, rects[tabIndex].height);
+            g.setColor(Color.getColor("BLEU_ELECTRIQUE"));
+            g.drawRect(rects[tabIndex].x, rects[tabIndex].y,
+                    rects[tabIndex].width, rects[tabIndex].height);
+            g.setColor(Color.getColor("GRIS_CLAIR"));
+        }*/
+
+        @Override
+        protected void paintText(Graphics g, int tabPlacement, Font font,
+                                 FontMetrics metrics, int tabIndex, String title,
+                                 Rectangle textRect, boolean isSelected)
+        {
+            g.setColor(Color.getColor("ROSE"));
+            g.fillRect(textRect.x, textRect.y,
+                    textRect.width, textRect.height);
+            if (isSelected) {
+                g.setColor(Color.getColor("BLEU_ELECTRIQUE"));
+                g.fillRect(textRect.x, textRect.y,
+                        textRect.width, textRect.height);
+            }
+        }
+    }
 
 }
