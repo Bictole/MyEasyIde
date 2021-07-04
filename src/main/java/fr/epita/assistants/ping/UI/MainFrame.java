@@ -2,46 +2,27 @@ package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.MyIde;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
-import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.myide.domain.service.ProjectService;
-import fr.epita.assistants.ping.UI.Action.AnyAction;
-import fr.epita.assistants.ping.UI.Action.GitAction;
-import fr.epita.assistants.ping.UI.Action.IdeAction;
-import fr.epita.assistants.ping.UI.Action.TreeAction;
+import fr.epita.assistants.ping.UI.Action.*;
+import fr.epita.assistants.ping.UI.Panel.Tab;
 import org.fife.rsta.ac.LanguageSupport;
 import org.fife.rsta.ac.LanguageSupportFactory;
-import org.fife.rsta.ac.java.JavaLanguageSupport;
 import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Theme;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.plaf.basic.BasicScrollBarUI;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.swing.plaf.metal.OceanTheme;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import fr.epita.assistants.ping.UI.Panel.Graphics;
 import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
@@ -55,6 +36,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     private ProjectExplorer projectExplorer;
 
     private RSyntaxTextArea rSyntaxTextArea;
+    public JPanel textArea;
     private JToolBar jToolBar;
     private JMenuBar jMenuBar;
 
@@ -68,6 +50,8 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     private File openedFile = null;
     public fr.epita.assistants.ping.UI.Panel.Console console;
 
+    public TabManager tabManager;
+    public JScrollPane textView;
     private UndoManager undoManager;
 
     public MainFrame(String title, ProjectService projectService) {
@@ -95,6 +79,8 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        this.tabManager = new TabManager("dark");
     }
 
     public File getOpenedFile() {
@@ -144,17 +130,15 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
         project = projectService.load(path);
 
-        createTextArea();
+        //createTextArea();
         createMenuBar();
         createToolBar();
-
-        JScrollPane textView = new JScrollPane(rSyntaxTextArea);
 
         projectExplorer= new ProjectExplorer(this, project.getRootNode());
         jTree = projectExplorer.getjTree();
         JScrollPane treeView = new JScrollPane(jTree);
         
-        Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
+        //Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
         Graphics.ScrollPaneDesign(treeView, Color.getColor("PRUNE"));
 
         jTree.setBorder(BorderFactory.createEmptyBorder());
@@ -177,7 +161,8 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
         //jToolBar.setBorder(new EtchedBorder());
 
-        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, textView);
+        //JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, textView);
+        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, tabManager.tabPane);
         mainSplitPane.setResizeWeight(0.10);
         Graphics.BottomSplitPaneDesign(mainSplitPane);
         JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, consoleView);
@@ -242,7 +227,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     private void createTextArea() {
         rSyntaxTextArea = new RSyntaxTextArea();
         rSyntaxTextArea.setEditable(false);
-        rSyntaxTextArea.setBackground(Color.DARK_GRAY);
+        rSyntaxTextArea.setBackground(Color.getColor("GRIS_MIDDLE"));
         rSyntaxTextArea.setForeground(Color.WHITE);
         rSyntaxTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         rSyntaxTextArea.setCodeFoldingEnabled(true);
@@ -313,8 +298,8 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
         mFile.add(mNew);
         mFile.add(new IdeAction.actOpenProject(this));
-        mFile.add(new IdeAction.actSave(this, rSyntaxTextArea));
-        mFile.add(new IdeAction.actSaveAs(this, rSyntaxTextArea));
+        mFile.add(new IdeAction.actSave(this));
+        mFile.add(new IdeAction.actSaveAs(this, tabManager.getCurrentTextArea()));
         mFile.add(new IdeAction.actExit(this));
 
         jMenuBar.add(mFile);
@@ -325,9 +310,9 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         mEdit.add(new IdeAction.actUndo(this));
         mEdit.add(new IdeAction.actRedo(this));
         mEdit.addSeparator();
-        mEdit.add(new IdeAction.actCut(this, rSyntaxTextArea));
-        mEdit.add(new IdeAction.actCopy(this, rSyntaxTextArea));
-        mEdit.add(new IdeAction.actPaste(this, rSyntaxTextArea));
+        mEdit.add(new IdeAction.actCut(this, tabManager.getCurrentTextArea()));
+        mEdit.add(new IdeAction.actCopy(this, tabManager.getCurrentTextArea()));
+        mEdit.add(new IdeAction.actPaste(this, tabManager.getCurrentTextArea()));
         jMenuBar.add(mEdit);
 
         JMenu mTools= new JMenu("Tools");
@@ -395,13 +380,13 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
         jToolBar.add(createToolBarButton(new IdeAction.actOpenProject(this)));
 
-        jToolBar.add(createToolBarButton(new IdeAction.actSave(this, rSyntaxTextArea)));
+        jToolBar.add(createToolBarButton(new IdeAction.actSave(this)));
         jToolBar.addSeparator();
         jToolBar.add(createToolBarButton(new IdeAction.actUndo(this)));
         jToolBar.add(createToolBarButton(new IdeAction.actRedo(this)));
-        jToolBar.add(createToolBarButton(new IdeAction.actCopy(this, rSyntaxTextArea)));
-        jToolBar.add(createToolBarButton(new IdeAction.actCut(this, rSyntaxTextArea)));
-        jToolBar.add(createToolBarButton(new IdeAction.actPaste(this, rSyntaxTextArea)));
+        jToolBar.add(createToolBarButton(new IdeAction.actCopy(this, tabManager.getCurrentTextArea())));
+        jToolBar.add(createToolBarButton(new IdeAction.actCut(this, tabManager.getCurrentTextArea())));
+        jToolBar.add(createToolBarButton(new IdeAction.actPaste(this, tabManager.getCurrentTextArea())));
 
         jToolBar.add(Box.createHorizontalGlue());
         if (project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.MAVEN))
@@ -425,11 +410,11 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     private void createPopupMenu() {
         JPopupMenu textPopupMenu = new JPopupMenu();
         JPopupMenu treePopupMenu = new JPopupMenu();
-        textPopupMenu.add(new IdeAction.actCopy(this, rSyntaxTextArea));
-        textPopupMenu.add(new IdeAction.actCut(this, rSyntaxTextArea));
-        textPopupMenu.add(new IdeAction.actPaste(this, rSyntaxTextArea));
+        textPopupMenu.add(new IdeAction.actCopy(this, tabManager.getCurrentTextArea()));
+        textPopupMenu.add(new IdeAction.actCut(this, tabManager.getCurrentTextArea()));
+        textPopupMenu.add(new IdeAction.actPaste(this, tabManager.getCurrentTextArea()));
 
-        rSyntaxTextArea.setPopupMenu(textPopupMenu);
+        //tabManager.getCurrentTextArea().setPopupMenu(textPopupMenu);
 
 
         JMenu mNew = new JMenu("New");
