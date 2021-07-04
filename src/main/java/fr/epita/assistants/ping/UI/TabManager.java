@@ -47,9 +47,10 @@ public class TabManager {
                         {
                             currentFile = t;
                             currentTextArea = t.getrSyntaxTextArea();
+                            System.out.println(currentFile.getFileName());
+                            return;
                         }
                     }
-                    System.out.println(currentFile.getFileName());
                 }
             }
         });
@@ -63,7 +64,7 @@ public class TabManager {
     {
         tabPane.addTab(currentFile.getFileName(), null, currentFile.getTextView(),
                 currentFile.getFile().getPath());
-        tabPane.setTabComponentAt(0, new Tab.ButtonTabComponent(this));
+        tabPane.setTabComponentAt(openedTabs.size()-1, new Tab.ButtonTabComponent(this));
         tabPane.setSelectedComponent(currentFile.getTextView());
     }
 
@@ -87,21 +88,15 @@ public class TabManager {
         }
     }
 
-    public void CloseFile(Component toClose)
+    public void CloseFile(int i)
     {
-        for (var t : openedTabs)
+        Tab toClose = openedTabs.get(i);
+        openedFiles.remove(i);
+        openedTabs.remove(i);
+        if (openedFiles.size() > 0 && currentFile == toClose)
         {
-            if (t.getTextView() == toClose)
-            {
-                openedFiles.remove(t.getFileName());
-                openedTabs.remove(t);
-
-                if (openedFiles.size() > 0 && currentFile == t)
-                {
-                    currentFile = openedTabs.get(0);
-                    currentTextArea = currentFile.getrSyntaxTextArea();
-                }
-            }
+            currentFile = openedTabs.get(0);
+            currentTextArea = currentFile.getrSyntaxTextArea();
         }
     }
 

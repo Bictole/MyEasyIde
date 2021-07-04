@@ -199,8 +199,10 @@ public class Tab {
             setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         }
 
-        private class TabButton extends JButton implements ActionListener {
+        public class TabButton extends JButton implements ActionListener
+        {
             public TabButton() {
+
                 int size = 17;
                 setPreferredSize(new Dimension(size, size));
                 setToolTipText("close");
@@ -210,8 +212,6 @@ public class Tab {
                 setFocusable(false);
                 setBorder(BorderFactory.createEtchedBorder());
                 setBorderPainted(false);
-
-                addMouseListener(buttonMouseListener);
                 setRolloverEnabled(true);
 
                 addActionListener(this);
@@ -221,14 +221,13 @@ public class Tab {
                 int i = pane.indexOfTabComponent(ButtonTabComponent.this);
                 if (i != -1)
                 {
-                    var toRemove = pane.getComponent(i);
-                    tabManager.CloseFile(toRemove);
+                    tabManager.CloseFile(i);
                     pane.remove(i);
                 }
             }
 
             //paint the cross
-            protected void paintComponent(java.awt.Graphics g) {
+            public void paintComponent(java.awt.Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 //shift the image for pressed buttons
@@ -246,24 +245,6 @@ public class Tab {
                 g2.dispose();
             }
         }
-
-        private final static MouseListener buttonMouseListener = new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                Component component = e.getComponent();
-                if (component instanceof AbstractButton) {
-                    AbstractButton button = (AbstractButton) component;
-                    button.setBorderPainted(true);
-                }
-            }
-
-            public void mouseExited(MouseEvent e) {
-                Component component = e.getComponent();
-                if (component instanceof AbstractButton) {
-                    AbstractButton button = (AbstractButton) component;
-                    button.setBorderPainted(false);
-                }
-            }
-        };
     }
 }
 
