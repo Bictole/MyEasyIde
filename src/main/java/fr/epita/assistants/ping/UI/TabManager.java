@@ -82,7 +82,7 @@ public class TabManager {
         {
             var i = openedFiles.indexOf(openedFile.getName());
             setCurrentFile(openedTabs.get(i));
-            tabPane.setSelectedComponent(currentFile.getrSyntaxTextArea());
+            tabPane.setSelectedComponent(currentFile.getTextView());
             return currentFile;
         }
     }
@@ -95,7 +95,7 @@ public class TabManager {
             {
                 openedFiles.remove(t.getFileName());
                 openedTabs.remove(t);
-                
+
                 if (openedFiles.size() > 0 && currentFile == t)
                 {
                     currentFile = openedTabs.get(0);
