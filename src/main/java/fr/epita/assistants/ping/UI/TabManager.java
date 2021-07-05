@@ -8,7 +8,11 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import javax.swing.plaf.metal.MetalTabbedPaneUI;
+import javax.swing.plaf.multi.MultiTabbedPaneUI;
+import javax.swing.plaf.synth.SynthTabbedPaneUI;
 import javax.swing.text.LayeredHighlighter;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -33,6 +37,7 @@ public class TabManager {
         theme = Theme;
 
         this.tabPane = new JTabbedPane();
+        this.tabPane.setBorder(BorderFactory.createEmptyBorder());
         this.tabPane.setUI(new PaneUI());
         this.tabPane.addChangeListener(new ChangeListener() {
 
@@ -40,30 +45,24 @@ public class TabManager {
             public void stateChanged(ChangeEvent e) {
                 if (tabPane.getSelectedComponent() != currentTextArea)
                 {
-                    var selected = tabPane.getSelectedComponent();
-                    for (var t : openedTabs)
-                    {
-                        if (t.getTextView() == selected)
-                        {
-                            currentFile = t;
-                            currentTextArea = t.getrSyntaxTextArea();
-                            System.out.println(currentFile.getFileName());
-                            return;
-                        }
+                    var i = tabPane.getSelectedIndex();
+                    if (i >= 0) {
+                        currentFile = openedTabs.get(i);
+                        currentTextArea = currentFile.getrSyntaxTextArea();
                     }
+                    System.out.println(currentFile.getFileName());
                 }
             }
         });
-        //tabPane.setBackground(Color.getColor("GRIS_MIDDLE"));
-        //tabPane.setBorder(BorderFactory.createRaisedBevelBorder());
-        //tabPane.setForeground(Color.getColor("ROSE"));
     }
 
     public void addPane()
     {
         tabPane.addTab(currentFile.getFileName(), null, currentFile.getTextView(),
                 currentFile.getFile().getPath());
-        tabPane.setTabComponentAt(openedTabs.size()-1, new Tab.ButtonTabComponent(this));
+        var button = new Tab.ButtonTabComponent(this);
+        tabPane.setTabComponentAt(openedTabs.size()-1, button);
+        tabPane.setBackgroundAt(openedTabs.size()-1, Color.getColor("GRIS_MIDDLE"));
         tabPane.setSelectedComponent(currentFile.getTextView());
     }
 
@@ -76,6 +75,7 @@ public class TabManager {
             setCurrentFile(newOpenedFile);
             newOpenedFile.getText();
             addPane();
+
             return currentFile;
         }
         else
@@ -94,14 +94,19 @@ public class TabManager {
         openedTabs.remove(i);
         if (openedFiles.size() > 0 && currentFile == toClose)
         {
-            currentFile = openedTabs.get(0);
-            currentTextArea = currentFile.getrSyntaxTextArea();
+            var j = tabPane.getSelectedIndex();
+            setCurrentFile(openedTabs.get(j));
         }
     }
 
     public void setCurrentFile(Tab currentFile) {
         this.currentFile = currentFile;
         this.currentTextArea = currentFile.getrSyntaxTextArea();
+    }
+
+    public UndoManager getUndoManager()
+    {
+        return currentFile.getUndoManager();
     }
 
     public RSyntaxTextArea getCurrentTextArea() {
@@ -114,33 +119,18 @@ public class TabManager {
 
     public static class PaneUI extends BasicTabbedPaneUI {
 
-        /*@Override
+        @Override
         protected void paintTab(Graphics g, int tabPlacement, Rectangle[] rects,
                                 int tabIndex, Rectangle iconRect, Rectangle textRect)
         {
-            g.setColor(Color.getColor("ROSE"));
+            g.setColor(Color.getColor("GRIS_MIDDLE"));
             g.fillRect(rects[tabIndex].x, rects[tabIndex].y,
                     rects[tabIndex].width, rects[tabIndex].height);
             g.setColor(Color.getColor("BLEU_ELECTRIQUE"));
             g.drawRect(rects[tabIndex].x, rects[tabIndex].y,
                     rects[tabIndex].width, rects[tabIndex].height);
-            g.setColor(Color.getColor("GRIS_CLAIR"));
-        }*/
-
-        @Override
-        protected void paintText(Graphics g, int tabPlacement, Font font,
-                                 FontMetrics metrics, int tabIndex, String title,
-                                 Rectangle textRect, boolean isSelected)
-        {
-            g.setColor(Color.getColor("ROSE"));
-            g.fillRect(textRect.x, textRect.y,
-                    textRect.width, textRect.height);
-            if (isSelected) {
-                g.setColor(Color.getColor("BLEU_ELECTRIQUE"));
-                g.fillRect(textRect.x, textRect.y,
-                        textRect.width, textRect.height);
-            }
         }
+
     }
 
 }

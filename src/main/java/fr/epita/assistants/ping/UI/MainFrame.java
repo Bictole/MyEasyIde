@@ -52,7 +52,6 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
     public TabManager tabManager;
     public JScrollPane textView;
-    private UndoManager undoManager;
 
     public MainFrame(String title, ProjectService projectService) {
         super(title);
@@ -112,7 +111,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     }
 
     public UndoManager getUndoManager() {
-        return undoManager;
+        return tabManager.getUndoManager();
     }
 
     public RSyntaxTextArea getrSyntaxTextArea() {
@@ -222,56 +221,6 @@ public class MainFrame extends JFrame implements SyntaxConstants {
                 "System.err.println(", "System.err.println("));
 
         return provider;
-    }
-
-    private void createTextArea() {
-        rSyntaxTextArea = new RSyntaxTextArea();
-        rSyntaxTextArea.setEditable(false);
-        rSyntaxTextArea.setBackground(Color.getColor("GRIS_MIDDLE"));
-        rSyntaxTextArea.setForeground(Color.WHITE);
-        rSyntaxTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-        rSyntaxTextArea.setCodeFoldingEnabled(true);
-        rSyntaxTextArea.setAnimateBracketMatching(true);
-        rSyntaxTextArea.setBorder(BorderFactory.createEmptyBorder());
-
-        undoManager = new UndoManager();
-        rSyntaxTextArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
-            @Override
-            public void undoableEditHappened(UndoableEditEvent e) {
-                undoManager.addEdit(e.getEdit());
-            }
-        });
-
-        // Set the font for all token types.
-        // setFont(rSyntaxTextArea, new Font("Comic Sans MS", Font.PLAIN, 16));
-
-        try {
-            Theme theme = Theme.load(getClass().getResourceAsStream(
-                    "/themes/dark.xml"));
-            theme.apply(rSyntaxTextArea);
-        } catch (IOException ioe) { // Never happens
-            ioe.printStackTrace();
-        }
-
-        // Autocompletion Module
-        CompletionProvider provider = createCompletionProvider();
-        AutoCompletion ac = new AutoCompletion(provider);
-        ac.install(rSyntaxTextArea);
-
-        //Spell Checking Module
-        File zip = new File("./src/main/resources/dico/english_dic.zip");
-        boolean usEnglish = true; // "false" will use British English
-        try {
-            SpellingParser parser = SpellingParser.createEnglishSpellingParser(zip, usEnglish);
-            rSyntaxTextArea.addParser(parser);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Language Support
-        LanguageSupportFactory lsf = LanguageSupportFactory.get();
-        LanguageSupport support = lsf.getSupportFor(SYNTAX_STYLE_JAVA);
-        LanguageSupportFactory.get().register(rSyntaxTextArea);
     }
 
     private void createConsole() {

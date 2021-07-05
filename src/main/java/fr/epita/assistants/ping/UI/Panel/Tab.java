@@ -10,6 +10,8 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -170,6 +172,7 @@ public class Tab {
     public static class ButtonTabComponent extends JPanel {
         private final JTabbedPane pane;
         private final TabManager tabManager;
+        private JLabel label;
 
         public ButtonTabComponent(final TabManager tabManager) {
             //unset default FlowLayout' gaps
@@ -182,7 +185,7 @@ public class Tab {
             setOpaque(false);
 
             //make JLabel read titles from JTabbedPane
-            JLabel label = new JLabel() {
+            label = new JLabel() {
                 public String getText() {
                     int i = pane.indexOfTabComponent(ButtonTabComponent.this);
                     if (i != -1) {
@@ -194,9 +197,14 @@ public class Tab {
 
             add(label);
             label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+            label.setForeground(Color.getColor("ROSE_CLAIR"));
             JButton button = new TabButton();
             add(button);
             setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+        }
+
+        public JLabel getLabel() {
+            return label;
         }
 
         public class TabButton extends JButton implements ActionListener
@@ -210,7 +218,7 @@ public class Tab {
                 setUI(new BasicButtonUI());
                 setContentAreaFilled(false);
                 setFocusable(false);
-                setBorder(BorderFactory.createEtchedBorder());
+                setBorder(BorderFactory.createEmptyBorder());
                 setBorderPainted(false);
                 setRolloverEnabled(true);
 
@@ -235,7 +243,7 @@ public class Tab {
                     g2.translate(1, 1);
                 }
                 g2.setStroke(new BasicStroke(2));
-                g2.setColor(Color.getColor("GRIS_MIDDLE"));
+                g2.setColor(Color.WHITE);
                 if (getModel().isRollover()) {
                     g2.setColor(Color.getColor("ROSE"));
                 }
