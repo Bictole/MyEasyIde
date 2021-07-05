@@ -83,6 +83,7 @@ public class ExecConfig {
             {
                 radioButton.setSelected(true);
                 selectDefault = true;
+                this.mainClass = elt;
             }
             radioButton.addItemListener(new ItemListener() {
                 @Override
@@ -96,7 +97,7 @@ public class ExecConfig {
             pbox.add(radioButton);
         }
         JOptionPane.showConfirmDialog(mainFrame.jFrame, pbox, "Select the main class you want to exec", JOptionPane.OK_CANCEL_OPTION);
-        if( !mainClass[0].isEmpty())
+        if(!mainClass[0].isEmpty())
             this.mainClass = mainClass[0];
     }
 
@@ -135,10 +136,15 @@ public class ExecConfig {
                 continue;
 
             JRadioButton radioButton = new JRadioButton(elt);
+            //Default RadioButton Selected
             if (!selectDefault)
             {
                 radioButton.setSelected(true);
                 selectDefault = true;
+                mainClass = elt;
+                mainFile = p.toFile().getName();
+                mainParentPath = p.toFile().getParent();
+                mainPackagePath = p.toFile().getPath().substring(0, p.toFile().getPath().indexOf(toRemove) + toRemove.length());
             }
             radioButton.addItemListener(new ItemListener() {
                 private Path path = p;
