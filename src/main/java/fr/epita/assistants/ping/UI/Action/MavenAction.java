@@ -1,8 +1,11 @@
-package fr.epita.assistants.ping.UI;
+package fr.epita.assistants.ping.UI.Action;
 
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
+import fr.epita.assistants.ping.UI.Icons;
+import fr.epita.assistants.ping.UI.MainFrame;
 import fr.epita.assistants.ping.UI.Panel.ExecConfig;
+import fr.epita.assistants.ping.UI.UITools;
 import fr.epita.assistants.ping.feature.any.Search;
 import fr.epita.assistants.ping.feature.maven.Package;
 import fr.epita.assistants.ping.feature.maven.*;

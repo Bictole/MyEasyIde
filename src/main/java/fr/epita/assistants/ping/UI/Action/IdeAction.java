@@ -257,7 +257,7 @@ public class IdeAction {
         private final MainFrame mainFrame;
         private JTextArea jTextArea;
 
-        public actSave(MainFrame frame, JTextArea jTextArea) {
+        public actSave(MainFrame frame) {
             super(
                     "Save File",
                     getResizedIcon(frame, Icons.SAVE),
@@ -266,17 +266,16 @@ public class IdeAction {
                     KeyStroke.getKeyStroke(KeyEvent.VK_S,
                             KeyEvent.CTRL_DOWN_MASK));
             this.mainFrame = frame;
-            this.jTextArea = jTextArea;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
             // Set the label to the path of the selected directory
-            File file = mainFrame.getOpenedFile();
+            File file = mainFrame.tabManager.getCurrentFile().getFile();
             if (file == null)
                 file = fileSelector(mainFrame);
-            saveFile(file, jTextArea, mainFrame);
+            saveFile(file, mainFrame.tabManager.getCurrentTextArea(), mainFrame);
         }
 
 
@@ -301,7 +300,7 @@ public class IdeAction {
         @Override
         public void actionPerformed(ActionEvent e) {
             File file = fileSelector(mainFrame);
-            saveFile(file, jTextArea, mainFrame);
+            saveFile(file, mainFrame.tabManager.getCurrentTextArea(), mainFrame);
         }
     }
 

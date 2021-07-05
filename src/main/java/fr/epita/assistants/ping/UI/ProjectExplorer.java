@@ -2,6 +2,7 @@ package fr.epita.assistants.ping.UI;
 
 import fr.epita.assistants.myide.domain.entity.Node;
 import fr.epita.assistants.myide.domain.entity.Project;
+import fr.epita.assistants.ping.UI.Panel.Tab;
 import fr.epita.assistants.ping.node.FileNode;
 import fr.epita.assistants.ping.node.FolderNode;
 import fr.epita.assistants.ping.service.NodeManager;
@@ -102,12 +103,10 @@ public class ProjectExplorer {
         if (file.isDirectory())
             return;
         try {
-            String text = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).stream()
-                    .collect(Collectors.joining(System.lineSeparator()));
-            // Set the text
-            mainFrame.getrSyntaxTextArea().setText(text);
-            mainFrame.getrSyntaxTextArea().setEditable(true);
+
+            mainFrame.tabManager.OpenFile(file);
             mainFrame.setOpenedFile(file);
+
         } catch (Exception evt) {
             JOptionPane.showMessageDialog(mainFrame, evt.getMessage());
         }
