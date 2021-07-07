@@ -51,6 +51,12 @@ public class Run implements Feature {
             pb.directory(new File(path));
             Process process = pb.start();
             result = new String(process.getInputStream().readAllBytes());
+            if (result.isEmpty()) {
+                result = new String(process.getErrorStream().readAllBytes());
+                if (!result.isEmpty())
+                    return new ExecutionReportRun(false, result);
+            }
+
             process.waitFor();
 
             return new ExecutionReportRun(true, result);
@@ -71,6 +77,8 @@ public class Run implements Feature {
             pb.directory(new File(packagePath));
             Process process = pb.start();
             result = new String(process.getInputStream().readAllBytes());
+            if (result != "" || result == null)
+                result = new String(process.getErrorStream().readAllBytes());
             process.waitFor();
 
             return new ExecutionReportRun(true, result);
