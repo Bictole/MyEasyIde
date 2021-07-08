@@ -1,5 +1,7 @@
 package fr.epita.assistants.ping.UI;
 
+import fr.epita.assistants.ping.UI.Action.IdeAction;
+import fr.epita.assistants.ping.UI.Action.TreeAction;
 import fr.epita.assistants.ping.UI.Panel.Tab;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
@@ -25,16 +27,18 @@ public class TabManager {
     private List<String> openedFiles;
     private List<Tab> openedTabs;
     private String theme;
+    private MainFrame mainFrame;
 
     public JTabbedPane tabPane;
 
-    public TabManager(String Theme)
+    public TabManager(String Theme, MainFrame frame)
     {
         currentFile = null;
         currentTextArea = null;
         openedTabs = new ArrayList<>();
         openedFiles = new ArrayList<>();
         theme = Theme;
+        mainFrame = frame;
 
         this.tabPane = new JTabbedPane();
         this.tabPane.setBorder(BorderFactory.createEmptyBorder());
@@ -50,7 +54,6 @@ public class TabManager {
                         currentFile = openedTabs.get(i);
                         currentTextArea = currentFile.getrSyntaxTextArea();
                     }
-                    System.out.println(currentFile.getFileName());
                 }
             }
         });
@@ -64,6 +67,7 @@ public class TabManager {
         tabPane.setTabComponentAt(openedTabs.size()-1, button);
         tabPane.setBackgroundAt(openedTabs.size()-1, Color.getColor("GRIS_MIDDLE"));
         tabPane.setSelectedComponent(currentFile.getTextView());
+        MainFrame.createTextPopupMenu(mainFrame, currentTextArea);
     }
 
     public Tab OpenFile(File openedFile)
@@ -132,5 +136,4 @@ public class TabManager {
         }
 
     }
-
 }
