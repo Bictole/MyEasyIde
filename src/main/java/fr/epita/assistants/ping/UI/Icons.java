@@ -4,7 +4,7 @@ public enum Icons {
     NEW_PROJECT("folder.png"),
     OPEN_PROJECT("folder.png"),
     NEW_FOLDER("folder.png"),
-    NEW_FILE("newFile.png"),
+    NEW_FILE("file.png"),
     OPEN("folder.png"),
     SAVE("save.png"),
     SAVE_AS("save.png"),
