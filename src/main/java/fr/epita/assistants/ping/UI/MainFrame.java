@@ -310,9 +310,10 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     private JButton createToolBarButton(AbstractAction action)
     {
         JButton b = new JButton(action);
-        b.setBackground(Color.getColor("GRIS_MIDDLE"));
-        b.setForeground(Color.getColor("GRIS_MIDDLE"));
-        b.setBorder(BorderFactory.createLineBorder(Color.getColor("GRIS_MIDDLE"), 7));
+        //b.setBackground(Color.getColor("GRIS_MIDDLE"));
+        //b.setForeground(Color.getColor("GRIS_MIDDLE"));
+        b.setOpaque(false);
+        b.setBorder(BorderFactory.createLineBorder(Color.getColor("GRIS_MIDDLE"), 5));
         b.setHideActionText(true);
         b.setRolloverEnabled(true);
         //b.setIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.OPEN)));
