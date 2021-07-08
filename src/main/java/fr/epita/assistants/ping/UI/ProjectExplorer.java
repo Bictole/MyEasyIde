@@ -256,6 +256,8 @@ public class ProjectExplorer {
             JTree.DropLocation dl =
                     (JTree.DropLocation)support.getDropLocation();
             destination = (Node) dl.getPath().getLastPathComponent();
+            if (destination.isFile())
+                destination = ((FileNode) destination).getParent();
             return true;
         }
 
