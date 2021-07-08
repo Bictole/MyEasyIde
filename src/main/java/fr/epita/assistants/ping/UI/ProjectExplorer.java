@@ -274,6 +274,8 @@ public class ProjectExplorer {
             assert nodes != null;
             setEditing(true);
             for (Node node : nodes) {
+                if ((action & MOVE) == MOVE && node.getPath().getParent().equals(destination.getPath()))
+                    continue;
                 TreeAction.pasteNode(mainFrame, node, destination);
                 if ((action & MOVE) == MOVE) {
                     NodeManager nM = (NodeManager) mainFrame.getProjectService().getNodeService();
