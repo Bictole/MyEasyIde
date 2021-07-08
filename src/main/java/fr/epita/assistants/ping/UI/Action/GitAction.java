@@ -105,7 +105,7 @@ public class GitAction {
                     return;
 
             } catch (Exception exception) {
-                exception.printStackTrace();
+                //exception.printStackTrace();
             }
             var GitAdd = f.get();
             Feature.ExecutionReport report = GitAdd.execute(mainFrame.project, ToAdd);

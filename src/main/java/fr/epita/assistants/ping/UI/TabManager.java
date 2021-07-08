@@ -50,7 +50,6 @@ public class TabManager {
                         currentFile = openedTabs.get(i);
                         currentTextArea = currentFile.getrSyntaxTextArea();
                     }
-                    System.out.println(currentFile.getFileName());
                 }
             }
         });

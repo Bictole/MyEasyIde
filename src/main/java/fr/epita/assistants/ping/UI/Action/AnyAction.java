@@ -150,8 +150,15 @@ public class AnyAction {
                 JOptionPane.showMessageDialog(frame, "No main class found.", "Run status", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            if (!execConfig.isSuccess)
+            {
+                return;
+            }
             Run.ExecutionReportRun report = (Run.ExecutionReportRun) AnyRun.execute(frame.project, execConfig.getMainFile(), execConfig.getMainParentPath(), execConfig.getMainClass(), execConfig.getMainPackagePath());
-            System.out.println(report.getOutput());
+            if (report.isSuccess())
+                System.out.println("[ " + execConfig.getMainClass() + ".java ] [OUTPUT] : " + report.getOutput());
+            else
+                System.out.println("[ " + execConfig.getMainClass() + ".java ] [ERROR] : " + report.getOutput());
         }
     };
 }
