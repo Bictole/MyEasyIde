@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        this.tabManager = new TabManager("dark");
+        this.tabManager = new TabManager("dark", this);
     }
 
     public File getOpenedFile() {
@@ -152,7 +152,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         jTree.setBackground(Color.getColor("PRUNE"));
 
 
-        createPopupMenu();
+        createTreePopUpMenu();
         createConsole();
         JScrollPane consoleView = console.scrollPane;
         Graphics.ScrollPaneDesign(consoleView, Color.getColor("GRIS_MIDDLE"));
@@ -239,7 +239,6 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         mFile.setForeground(Color.WHITE);
         mFile.setMnemonic('F');
         JMenu mNew = new JMenu("New");
-        mNew.setForeground(Color.WHITE);
         mNew.add(new IdeAction.actNewProject(this));
         mNew.addSeparator();
         mNew.add(new IdeAction.actNewFile(this));
@@ -356,16 +355,22 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         jToolBar.setFloatable(false);
     }
 
-    private void createPopupMenu() {
+    public static void createTextPopupMenu(MainFrame frame, RSyntaxTextArea textArea)
+    {
         JPopupMenu textPopupMenu = new JPopupMenu();
+        textPopupMenu.add(new IdeAction.actCopy(frame, textArea));
+        textPopupMenu.add(new IdeAction.actCut(frame, textArea));
+        textPopupMenu.add(new IdeAction.actPaste(frame, textArea));
+        textPopupMenu.add(new IdeAction.actUndo(frame));
+        textPopupMenu.add(new IdeAction.actRedo(frame));
+
+
+        textArea.setPopupMenu(textPopupMenu);
+    }
+
+    private void createTreePopUpMenu()
+    {
         JPopupMenu treePopupMenu = new JPopupMenu();
-        textPopupMenu.add(new IdeAction.actCopy(this, tabManager.getCurrentTextArea()));
-        textPopupMenu.add(new IdeAction.actCut(this, tabManager.getCurrentTextArea()));
-        textPopupMenu.add(new IdeAction.actPaste(this, tabManager.getCurrentTextArea()));
-
-        //tabManager.getCurrentTextArea().setPopupMenu(textPopupMenu);
-
-
         JMenu mNew = new JMenu("New");
         mNew.add(new IdeAction.actNewFile(this));
         mNew.add(new IdeAction.actNewFolder(this));

@@ -11,8 +11,6 @@ import fr.epita.assistants.ping.service.NodeManager;
 import fr.epita.assistants.ping.service.ProjectManager;
 import org.eclipse.sisu.launch.Main;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
@@ -203,7 +201,6 @@ public class ProjectExplorer {
             }
         }
 
-        @Nullable
         @Override
         protected Transferable createTransferable(JComponent c) {
             JTree tree = (JTree) c;
@@ -308,7 +305,6 @@ public class ProjectExplorer {
                 return nodesFlavor.equals(flavor);
             }
 
-            @NotNull
             @Override
             public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
                 if(!isDataFlavorSupported(flavor))
