@@ -272,13 +272,15 @@ public class ProjectExplorer {
             }
             NodeService nService = mainFrame.getProjectService().getNodeService();
             assert nodes != null;
+            setEditing(true);
             for (Node node : nodes) {
+                TreeAction.pasteNode(mainFrame, node, destination);
                 if ((action & MOVE) == MOVE) {
-                    nService.move(node, destination);
-                } else {
-                    TreeAction.pasteNode(mainFrame, node, destination);
+                    NodeManager nM = (NodeManager) mainFrame.getProjectService().getNodeService();
+                    nM.delete(node);
                 }
             }
+            setEditing(false);
         }
 
         public int getSourceActions(JComponent c) {

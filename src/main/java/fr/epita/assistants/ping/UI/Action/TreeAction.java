@@ -179,10 +179,11 @@ public class TreeAction {
                 if (selected.isFile()) {
                     selected = ((FileNode) selected).getParent();
                 }
-                NodeManager nM = (NodeManager) mainFrame.getProjectService().getNodeService();
                 pasteNode(mainFrame, editAction.copyNode, selected);
-                if (editAction.action.equals(ProjectExplorer.EditAction.Action.CUT))
+                if (editAction.action.equals(ProjectExplorer.EditAction.Action.CUT)) {
+                    NodeManager nM = (NodeManager) mainFrame.getProjectService().getNodeService();
                     nM.delete(editAction.copyNode);
+                }
                 mainFrame.getProjectExplorer().setEditing(false);
             }
         }
