@@ -239,7 +239,6 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         mFile.setForeground(Color.WHITE);
         mFile.setMnemonic('F');
         JMenu mNew = new JMenu("New");
-        mNew.setForeground(Color.WHITE);
         mNew.add(new IdeAction.actNewProject(this));
         mNew.addSeparator();
         mNew.add(new IdeAction.actNewFile(this));
