@@ -11,7 +11,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class CleanUp implements Feature{
-    private class ExecutionReportCleanUp implements Feature.ExecutionReport {
+    public class ExecutionReportCleanUp implements Feature.ExecutionReport {
         public final boolean success;
         public String output;
 
@@ -25,7 +25,7 @@ public class CleanUp implements Feature{
             return success;
         }
 
-        public String getErrorMessage() {
+        public String getOutput() {
             return output;
         }
     }
@@ -39,6 +39,7 @@ public class CleanUp implements Feature{
     }
 
     private boolean cleanUpRec(Node current, NodeManager nodeManager, Path ignoreFile, Path actualPath) {
+
         for (int i = 0; i < current.getChildren().size(); i++) {
             boolean res = false;
             if (!actualPath.equals(Path.of("")) || !current.getChildren().get(i).getPath().toFile().getName().equals(".myideignore"))
@@ -68,7 +69,6 @@ public class CleanUp implements Feature{
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
             System.out.println(e.getMessage());
         }
 
@@ -77,14 +77,23 @@ public class CleanUp implements Feature{
 
     private ExecutionReportCleanUp cleanUp(Node root, NodeManager nodeManager) {
         try {
-            cleanUpRec(root, nodeManager, root.getPath().resolve(".myideignore"), Path.of(""));
+            for (var c : root.getChildren())
+            {
+                if (c.isFile() && c.getPath().getFileName().compareTo(Path.of(".myideignore")) == 0)
+                {
+                    cleanUpRec(root, nodeManager, root.getPath().resolve(".myideignore"), Path.of(""));
+                    return new ExecutionReportCleanUp(true, "");
+                }
+
+            }
         }
         catch (Exception e)
         {
             return new ExecutionReportCleanUp(false, "Deletion failed");
         }
 
-        return new ExecutionReportCleanUp(true, "");
+        return new ExecutionReportCleanUp(false, "No .myideignore file found");
+
     }
 
     @Override

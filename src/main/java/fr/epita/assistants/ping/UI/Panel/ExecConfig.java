@@ -62,6 +62,7 @@ public class ExecConfig {
             if (elt == null)
                 JOptionPane.showMessageDialog(mainFrame.jFrame, "No main class found in src/main/java", "Error main class", JOptionPane.ERROR_MESSAGE);
             this.mainClass = elt;
+            this.isSuccess = true;
             return;
         }
 
@@ -118,6 +119,7 @@ public class ExecConfig {
             mainFile = p.toFile().getName();
             mainParentPath = p.toFile().getParent();
             mainPackagePath = p.toFile().getPath().substring(0, p.toFile().getPath().indexOf(toRemove) + toRemove.length());
+            this.isSuccess = true;
 
             return;
         }
@@ -179,12 +181,11 @@ public class ExecConfig {
                     AnyExecMainClass(mainFrame, filesMatch);
             }
             catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
         else
             JOptionPane.showMessageDialog(mainFrame.jFrame, "No main class found", "Error main class", JOptionPane.ERROR_MESSAGE);
-
 
     }
 }

@@ -5,6 +5,7 @@ import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.ping.UI.Icons;
 import fr.epita.assistants.ping.UI.MainFrame;
 import fr.epita.assistants.ping.UI.Panel.ExecConfig;
+import fr.epita.assistants.ping.feature.any.CleanUp;
 import fr.epita.assistants.ping.feature.any.Run;
 import fr.epita.assistants.ping.feature.any.Search;
 
@@ -41,11 +42,12 @@ public class AnyAction {
             }
 
             var AnyCleanUp = f.get();
-            Feature.ExecutionReport report = AnyCleanUp.execute(frame.project);
+            CleanUp.ExecutionReportCleanUp report = (CleanUp.ExecutionReportCleanUp) AnyCleanUp.execute(frame.project);
 
             if (!report.isSuccess())
-                JOptionPane.showMessageDialog(frame, "Cleanup failed.", "Cleanup status", JOptionPane.ERROR_MESSAGE);
-
+                JOptionPane.showMessageDialog(frame, report.getOutput(), "Cleanup status", JOptionPane.ERROR_MESSAGE);
+            else
+                System.out.println("[ CLEANUP ] [OUTPUT] : \n\nClean Up successfully done");
         }
     };
 
@@ -77,6 +79,9 @@ public class AnyAction {
 
             if (!report.isSuccess())
                 JOptionPane.showMessageDialog(frame, "Dist failed.", "Dist status", JOptionPane.ERROR_MESSAGE);
+            else
+                System.out.println("[ DIST ] [OUTPUT] : \n\nDist successfully done. " +
+                        "Compressed folder can be found at the same location than your current project.");
         }
     }
 
@@ -146,19 +151,15 @@ public class AnyAction {
                     frame.getProjectService().execute(frame.project, Mandatory.Features.Any.SEARCH, "public static void main");
 
             ExecConfig execConfig = new ExecConfig(frame, searchReport.getFilesMatch());
-            if (execConfig.getMainClass() == null) {
-                JOptionPane.showMessageDialog(frame, "No main class found.", "Run status", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (!execConfig.isSuccess)
+            if (execConfig.getMainClass() == null || !execConfig.isSuccess)
             {
                 return;
             }
             Run.ExecutionReportRun report = (Run.ExecutionReportRun) AnyRun.execute(frame.project, execConfig.getMainFile(), execConfig.getMainParentPath(), execConfig.getMainClass(), execConfig.getMainPackagePath());
             if (report.isSuccess())
-                System.out.println("[ " + execConfig.getMainClass() + ".java ] [OUTPUT] : " + report.getOutput());
+                System.out.println("[ " + execConfig.getMainClass() + ".java ] [OUTPUT] : \n\n" + report.getOutput());
             else
-                System.out.println("[ " + execConfig.getMainClass() + ".java ] [ERROR] : " + report.getOutput());
+                System.out.println("[ " + execConfig.getMainClass() + ".java ] [ERROR] : \n\n" + report.getOutput());
         }
     };
 }
