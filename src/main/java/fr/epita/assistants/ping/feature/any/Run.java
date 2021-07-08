@@ -46,18 +46,23 @@ public class Run implements Feature {
     {
         ProcessBuilder pb = new ProcessBuilder("javac", main);
         String result = "";
+        String error = "";
 
         try {
             pb.directory(new File(path));
             Process process = pb.start();
             result = new String(process.getInputStream().readAllBytes());
+            error = new String(process.getErrorStream().readAllBytes());
+
             process.waitFor();
+            if (!error.isEmpty())
+                return new ExecutionReportRun(false, error);
 
             return new ExecutionReportRun(true, result);
         }
         catch (Exception e)
         {
-            return new ExecutionReportRun(false, result + '\n' + e.getMessage());
+            return new ExecutionReportRun(false, error + '\n' + e.getMessage());
         }
 
     }
@@ -66,18 +71,23 @@ public class Run implements Feature {
     {
         ProcessBuilder pb = new ProcessBuilder("java", main);
         String result = "";
+        String error = "";
 
         try {
             pb.directory(new File(packagePath));
             Process process = pb.start();
             result = new String(process.getInputStream().readAllBytes());
+            error = new String(process.getErrorStream().readAllBytes());
+
             process.waitFor();
+            if (!error.isEmpty())
+                return new ExecutionReportRun(false, error);
 
             return new ExecutionReportRun(true, result);
         }
         catch (Exception e)
         {
-            return new ExecutionReportRun(false, result + '\n' + e.getMessage());
+            return new ExecutionReportRun(false, error + '\n' + e.getMessage());
         }
     }
 

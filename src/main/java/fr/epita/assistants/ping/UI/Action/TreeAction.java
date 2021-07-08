@@ -69,6 +69,86 @@ public class TreeAction {
         }
     }
 
+    public static void pasteNode(MainFrame mainFrame, Node source, Node destination) { //FIXME
+        NodeManager nM = (NodeManager) mainFrame.getProjectService().getNodeService();
+        Path destPath = destination.getPath();
+        try {
+            if (source.isFile()) {
+                while (true) {
+                    try {
+                        Files.copy(source.getPath(), destPath);
+                        break;
+                    } catch (FileAlreadyExistsException exp) {
+                        Path cmpPath = destPath.toFile().isFile() ? destPath.getParent() : destPath;
+                        if (!source.getPath().getParent().equals(cmpPath) && source.getPath().toFile().getName().equals(destPath.toFile().getName())) {
+                            if (JOptionPane.showConfirmDialog(mainFrame, "Do you want overwrite ?",
+                                    "Already exists", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                                Files.copy(source.getPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
+                            } else {
+                                return;
+                            }
+                        } else {
+                            Path filePath = destPath.toFile().isFile() ? destPath : source.getPath();
+                            String newName = filePath.toFile().getName();
+                            if (destPath.toFile().isDirectory()) {
+                                destPath = destPath.resolve(newName);
+                                if (destPath.toFile().exists())
+                                    destPath = destPath.getParent().resolve(newName + " - Copy");
+                            } else
+                                destPath = destPath.getParent().resolve(newName + " - Copy");
+                        }
+                    } catch (Exception e) {
+                        UITools.errorDialog(mainFrame, "Can not paste here.", "Paste error");
+                        return;
+                    }
+                }
+            } else {
+                if (source.isFolder() && source.getPath().equals(destination.getPath())) {
+                    destination = ((FolderNode) destination).getParent();
+                    destPath = destPath.getParent();
+                }
+                Path initPath = destPath;
+                while (true) {
+                    try {
+                        Files.copy(source.getPath(), destPath);
+                        break;
+                    } catch (FileAlreadyExistsException exp) {
+                        Path cmpPath = destPath;
+                        if (!source.getPath().getParent().equals(cmpPath) && source.getPath().toFile().getName().equals(destPath.toFile().getName())) {
+                            if (JOptionPane.showConfirmDialog(mainFrame, "Do you want overwrite ?",
+                                    "Already exists", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                                Files.copy(source.getPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
+                            } else {
+                                return;
+                            }
+                        } else {
+                            String newName = initPath.equals(destPath) ? source.getPath().toFile().getName() : destPath.toFile().getName();
+                            if (initPath.equals(destPath)){
+                                destPath = destPath.resolve(newName);
+                                if (destPath.toFile().exists())
+                                    destPath = destPath.getParent().resolve(newName + " - Copy");
+                            }
+                            else
+                                destPath = destPath.getParent().resolve(newName + " - Copy");
+                        }
+
+                    } catch (Exception e) {
+                        UITools.errorDialog(mainFrame, "Can not paste here.", "Paste error");
+                        return;
+                    }
+                }
+            }
+
+            Node create = nM.createNode(destination, destPath.toFile().getName(), source.getType());
+            if (create.isFolder()) {
+                for (var c : source.getChildren()) {
+                    pasteNode(mainFrame, c, create);
+                }
+            }
+        } catch (Exception exp) {
+            UITools.errorDialog(mainFrame, exp.getMessage(), "Paste error");
+        }
+    }
 
     public static class actPaste extends UITools.ActionTemplate {
 
@@ -84,86 +164,7 @@ public class TreeAction {
             this.mainFrame = frame;
         }
 
-        private void pasteNode(Node source, Node destination) { //FIXME
-            NodeManager nM = (NodeManager) mainFrame.getProjectService().getNodeService();
-            Path destPath = destination.getPath();
-            try {
-                if (source.isFile()) {
-                    while (true) {
-                        try {
-                            Files.copy(source.getPath(), destPath);
-                            break;
-                        } catch (FileAlreadyExistsException exp) {
-                            Path cmpPath = destPath.toFile().isFile() ? destPath.getParent() : destPath;
-                            if (!source.getPath().getParent().equals(cmpPath) && source.getPath().toFile().getName().equals(destPath.toFile().getName())) {
-                                if (JOptionPane.showConfirmDialog(mainFrame, "Do you want overwrite ?",
-                                        "Already exists", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                                    Files.copy(source.getPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
-                                } else {
-                                    return;
-                                }
-                            } else {
-                                Path filePath = destPath.toFile().isFile() ? destPath : source.getPath();
-                                String newName = filePath.toFile().getName();
-                                if (destPath.toFile().isDirectory()) {
-                                    destPath = destPath.resolve(newName);
-                                    if (destPath.toFile().exists())
-                                        destPath = destPath.getParent().resolve(newName + " - Copy");
-                                } else
-                                    destPath = destPath.getParent().resolve(newName + " - Copy");
-                            }
-                        } catch (Exception e) {
-                            UITools.errorDialog(mainFrame, "Can not paste here.", "Paste error");
-                            return;
-                        }
-                    }
-                } else {
-                    if (source.isFolder() && source.getPath().equals(destination.getPath())) {
-                        destination = ((FolderNode) destination).getParent();
-                        destPath = destPath.getParent();
-                    }
-                    Path initPath = destPath;
-                    while (true) {
-                        try {
-                            Files.copy(source.getPath(), destPath);
-                            break;
-                        } catch (FileAlreadyExistsException exp) {
-                            Path cmpPath = destPath;
-                            if (!source.getPath().getParent().equals(cmpPath) && source.getPath().toFile().getName().equals(destPath.toFile().getName())) {
-                                if (JOptionPane.showConfirmDialog(mainFrame, "Do you want overwrite ?",
-                                        "Already exists", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                                    Files.copy(source.getPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
-                                } else {
-                                    return;
-                                }
-                            } else {
-                                String newName = initPath.equals(destPath) ? source.getPath().toFile().getName() : destPath.toFile().getName();
-                                if (initPath.equals(destPath)){
-                                    destPath = destPath.resolve(newName);
-                                    if (destPath.toFile().exists())
-                                        destPath = destPath.getParent().resolve(newName + " - Copy");
-                                }
-                                else
-                                    destPath = destPath.getParent().resolve(newName + " - Copy");
-                            }
 
-                        } catch (Exception e) {
-                            UITools.errorDialog(mainFrame, "Can not paste here.", "Paste error");
-                            return;
-                        }
-                    }
-                }
-
-                Node create = nM.createNode(destination, destPath.toFile().getName(), source.getType());
-                if (create.isFolder()) {
-                    for (var c : source.getChildren()) {
-                        pasteNode(c, create);
-                    }
-                }
-            } catch (Exception exp) {
-                UITools.errorDialog(mainFrame, exp.getMessage(), "Paste error");
-            }
-        }
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -178,10 +179,11 @@ public class TreeAction {
                 if (selected.isFile()) {
                     selected = ((FileNode) selected).getParent();
                 }
-                NodeManager nM = (NodeManager) mainFrame.getProjectService().getNodeService();
-                pasteNode(editAction.copyNode, selected);
-                if (editAction.action.equals(ProjectExplorer.EditAction.Action.CUT))
+                pasteNode(mainFrame, editAction.copyNode, selected);
+                if (editAction.action.equals(ProjectExplorer.EditAction.Action.CUT)) {
+                    NodeManager nM = (NodeManager) mainFrame.getProjectService().getNodeService();
                     nM.delete(editAction.copyNode);
+                }
                 mainFrame.getProjectExplorer().setEditing(false);
             }
         }

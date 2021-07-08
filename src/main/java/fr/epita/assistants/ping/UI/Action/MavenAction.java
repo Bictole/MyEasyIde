@@ -109,8 +109,14 @@ public class MavenAction {
                     mainFrame.getProjectService().execute(mainFrame.project, Mandatory.Features.Any.SEARCH, "public static void main");
 
             ExecConfig execConfig = new ExecConfig(mainFrame, searchReport.getFilesMatch());
-            if (execConfig.getMainClass() == null)
+            if (execConfig.getMainClass() == null) {
+                JOptionPane.showMessageDialog(mainFrame, "No main class found.", "Run status", JOptionPane.ERROR_MESSAGE);
                 return;
+            }
+            if (!execConfig.isSuccess)
+            {
+                return;
+            }
             Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project, execConfig.getMainClass());
             System.out.println(report.getOutput());
         }
