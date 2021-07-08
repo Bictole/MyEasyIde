@@ -21,6 +21,8 @@ public class ExecConfig {
     private String mainParentPath;
     private String mainPackagePath;
 
+    public Boolean isSuccess;
+
     public String getMainClass() {
         return mainClass;
     }
@@ -96,7 +98,8 @@ public class ExecConfig {
             buttonGroup.add(radioButton);
             pbox.add(radioButton);
         }
-        JOptionPane.showConfirmDialog(mainFrame.jFrame, pbox, "Select the main class you want to exec", JOptionPane.OK_CANCEL_OPTION);
+        int output = JOptionPane.showConfirmDialog(mainFrame.jFrame, pbox, "Select the main class you want to exec", JOptionPane.OK_CANCEL_OPTION);
+        this.isSuccess = output == 0;
         if(!mainClass[0].isEmpty())
             this.mainClass = mainClass[0];
     }
@@ -162,8 +165,8 @@ public class ExecConfig {
             buttonGroup.add(radioButton);
             pbox.add(radioButton);
         }
-        JOptionPane.showConfirmDialog(mainFrame.jFrame, pbox, "Select the main class you want to exec", JOptionPane.OK_CANCEL_OPTION);
-
+        int output = JOptionPane.showConfirmDialog(mainFrame.jFrame, pbox, "Select the main class you want to exec", JOptionPane.OK_CANCEL_OPTION);
+        this.isSuccess = output == 0;
     }
 
     public ExecConfig(MainFrame mainFrame, List<Path> filesMatch) {
