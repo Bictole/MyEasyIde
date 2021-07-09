@@ -271,6 +271,8 @@ public class ProjectExplorer {
             }
             NodeService nService = mainFrame.getProjectService().getNodeService();
             assert nodes != null;
+            if (destination == null)
+                return;
             setEditing(true);
             for (Node node : nodes) {
                 if ((action & MOVE) == MOVE && node.getPath().getParent().equals(destination.getPath()))
