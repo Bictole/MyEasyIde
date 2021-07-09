@@ -8,6 +8,8 @@ import fr.epita.assistants.ping.UI.Action.*;
 import fr.epita.assistants.ping.UI.Panel.Tab;
 import org.fife.rsta.ac.LanguageSupport;
 import org.fife.rsta.ac.LanguageSupportFactory;
+import org.fife.rsta.ui.search.FindDialog;
+import org.fife.rsta.ui.search.ReplaceDialog;
 import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -52,6 +54,9 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
     public TabManager tabManager;
     public JScrollPane textView;
+
+    private FindDialog findDialog;
+    private ReplaceDialog replaceDialog;
 
     public MainFrame(String title, ProjectService projectService) {
         super(title);
