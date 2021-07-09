@@ -3,8 +3,11 @@ package fr.epita.assistants.ping.feature.any;
 import fr.epita.assistants.myide.domain.entity.Feature;
 import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
+import org.assertj.core.util.Arrays;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Run implements Feature {
 
@@ -34,11 +37,12 @@ public class Run implements Feature {
         String execParentPath = (String) params[1];
         String mainClass= (String) params[2];
         String packagePath = (String) params[3];
+        String args = (String) params[4];
         var compiled = compile(project, execFile, execParentPath);
         if (!compiled.isSuccess())
             return compiled;
 
-        return run(project, mainClass, packagePath);
+        return run(project, mainClass, packagePath, args.split(" "));
 
     }
 
@@ -67,9 +71,16 @@ public class Run implements Feature {
 
     }
 
-    private ExecutionReport run(Project project, String main, String packagePath)
+    private ExecutionReport run(Project project, String main, String packagePath, String[] args)
     {
-        ProcessBuilder pb = new ProcessBuilder("java", main);
+        List<String> runCmd = new ArrayList<>();
+        List<String> argsList = List.of(args);
+        runCmd.add("java");
+        runCmd.add(main);
+        argsList = argsList.stream().filter(a -> !a.equals("")).toList();
+        if (!argsList.isEmpty())
+            runCmd.addAll(argsList);
+        ProcessBuilder pb = new ProcessBuilder(runCmd);
         String result = "";
         String error = "";
 
