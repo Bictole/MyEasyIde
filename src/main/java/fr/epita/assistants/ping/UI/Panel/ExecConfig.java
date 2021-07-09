@@ -62,7 +62,7 @@ public class ExecConfig {
 
     private void MavenMainClass(MainFrame mainFrame, List<Path> filesMatch) {
 
-        if (filesMatch.size() == 1) {
+        /*if (filesMatch.size() == 1) {
             String elt = PathTreatment(filesMatch.get(0));
             if (elt == null)
                 JOptionPane.showMessageDialog(mainFrame.jFrame,
@@ -70,7 +70,7 @@ public class ExecConfig {
                         "Error main class", JOptionPane.ERROR_MESSAGE);
             this.mainClass = elt;
             return;
-        }
+        }*/
 
         JPanel p = new JPanel();
 
@@ -162,7 +162,7 @@ public class ExecConfig {
     private void AnyExecMainClass(MainFrame mainFrame, List<Path> filesMatch) {
         String toRemove = "src" + File.separator + "main" + File.separator + "java" + File.separator;
 
-        if (filesMatch.size() == 1) {
+        /*if (filesMatch.size() == 1) {
             Path p = filesMatch.get(0);
             String elt = PathTreatment(p);
             if (elt == null)
@@ -176,7 +176,7 @@ public class ExecConfig {
             mainPackagePath = p.toFile().getPath().substring(0, p.toFile().getPath().indexOf(toRemove) + toRemove.length());
 
             return;
-        }
+        }*/
 
         JPanel p = new JPanel();
 
