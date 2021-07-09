@@ -5,6 +5,9 @@ import fr.epita.assistants.myide.domain.entity.Mandatory;
 import fr.epita.assistants.myide.domain.entity.Project;
 import fr.epita.assistants.ping.project.AnyProject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Exec implements Feature {
 
     public class ExecutionReportExecute implements Feature.ExecutionReport {
@@ -29,11 +32,26 @@ public class Exec implements Feature {
 
     @Override
     public Feature.ExecutionReport execute(Project project, Object... params) {
-
         String mainClass = (String) params[0];
+        String args = (String) params[1];
         AnyProject p = (AnyProject) project;
-        ProcessBuilder pb = new ProcessBuilder(p.config.mavenCmd, "compile",
-                "exec:java", "-Dexec.mainClass=" + mainClass);
+        List<String> execCmd = new ArrayList<>();
+        execCmd.add(p.config.mavenCmd);
+        execCmd.add( "compile");
+        execCmd.add("exec:java");
+        execCmd.add("-Dexec.mainClass=" + mainClass);
+        List<String> split_args = List.of(args.split(" "));
+        split_args = split_args.stream().filter(a -> !a.equals("")).toList();
+        args = "";
+        if (!split_args.isEmpty())
+        {
+            for (int i = 0; i < split_args.size() - 1; i++){
+                args += split_args.get(i) + " ";
+            }
+            args += split_args.get(split_args.size() - 1);
+        }
+        execCmd.add("-Dexec.args=" + args);
+        ProcessBuilder pb = new ProcessBuilder( execCmd);
         String result = "";
 
         try {

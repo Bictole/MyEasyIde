@@ -272,10 +272,13 @@ public class IdeAction {
         public void actionPerformed(ActionEvent e) {
 
             // Set the label to the path of the selected directory
-            File file = mainFrame.tabManager.getCurrentFile().getFile();
-            if (file == null)
-                file = fileSelector(mainFrame);
-            saveFile(file, mainFrame.tabManager.getCurrentTextArea(), mainFrame);
+            if (mainFrame.tabManager.getCurrentFile() != null) {
+                File file = mainFrame.tabManager.getCurrentFile().getFile();
+                if (file == null)
+                    file = fileSelector(mainFrame);
+                if (mainFrame.tabManager.getCurrentTextArea() != null)
+                    saveFile(file, mainFrame.tabManager.getCurrentTextArea(), mainFrame);
+            }
         }
 
 
@@ -321,7 +324,8 @@ public class IdeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            jTextArea.copy();
+            if (jTextArea != null)
+                jTextArea.copy();
         }
     }
 
@@ -342,7 +346,9 @@ public class IdeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            jTextArea.cut();
+
+            if (jTextArea != null)
+                jTextArea.cut();
         }
     }
 
@@ -363,7 +369,8 @@ public class IdeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            jTextArea.paste();
+            if (jTextArea != null)
+                jTextArea.paste();
         }
     }
 
@@ -383,7 +390,9 @@ public class IdeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            mainFrame.getUndoManager().undo();
+
+            if (mainFrame.getUndoManager() != null && mainFrame.getUndoManager().canUndo())
+                mainFrame.getUndoManager().undo();
         }
     }
 
@@ -402,7 +411,8 @@ public class IdeAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            mainFrame.getUndoManager().redo();
+            if (mainFrame.getUndoManager() != null && mainFrame.getUndoManager().canRedo())
+                mainFrame.getUndoManager().redo();
         }
     }
 

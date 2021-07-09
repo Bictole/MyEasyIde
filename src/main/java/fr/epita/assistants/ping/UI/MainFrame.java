@@ -8,6 +8,8 @@ import fr.epita.assistants.ping.UI.Action.*;
 import fr.epita.assistants.ping.UI.Panel.Tab;
 import org.fife.rsta.ac.LanguageSupport;
 import org.fife.rsta.ac.LanguageSupportFactory;
+import org.fife.rsta.ui.CollapsibleSectionPanel;
+import org.fife.rsta.ui.search.*;
 import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -17,6 +19,7 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
@@ -26,9 +29,13 @@ import java.nio.file.Path;
 
 import fr.epita.assistants.ping.UI.Panel.Graphics;
 import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
+import org.fife.ui.rtextarea.RTextScrollPane;
+import org.fife.ui.rtextarea.SearchContext;
+import org.fife.ui.rtextarea.SearchEngine;
+import org.fife.ui.rtextarea.SearchResult;
 
 
-public class MainFrame extends JFrame implements SyntaxConstants {
+public class MainFrame extends JFrame implements SyntaxConstants, SearchListener {
 
     public JFrame jFrame;
 
@@ -52,17 +59,13 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
     public TabManager tabManager;
     public JScrollPane textView;
+    public Process ongoing;
+
+    public FindDialog findDialog;
+    public ReplaceDialog replaceDialog;
 
     public MainFrame(String title, ProjectService projectService) {
         super(title);
-
-        /*try {
-            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-            MetalLookAndFeel.setCurrentTheme(new OceanTheme());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
         jFrame = this;
         this.projectService = projectService;
 
@@ -115,7 +118,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     }
 
     public RSyntaxTextArea getrSyntaxTextArea() {
-        return rSyntaxTextArea;
+        return tabManager.getCurrentTextArea();
     }
 
     public void setrSyntaxTextArea(RSyntaxTextArea rSyntaxTextArea) {
@@ -123,6 +126,8 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     }
 
     public void loadProjectFrame(Path path) {
+
+        createSearchDialogs();
 
         JPanel contentPane = (JPanel) getContentPane();
         contentPane.removeAll();
@@ -148,19 +153,19 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         renderer.setBorderSelectionColor(Color.black);
         renderer.setTextNonSelectionColor(Color.getColor("BLEU_ELECTRIQUE"));
         renderer.setBackgroundNonSelectionColor(Color.getColor("PRUNE"));
+        renderer.setClosedIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.FOLDER, 10)));
+        renderer.setLeafIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.LEAF, 10)));
+        renderer.setOpenIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.OPENED_FOLDER, 10)));
+        jTree.putClientProperty("JTree.lineStyle", "None");
+
         jTree.setCellRenderer(renderer);
         jTree.setBackground(Color.getColor("PRUNE"));
-
 
         createTreePopUpMenu();
         createConsole();
         JScrollPane consoleView = console.scrollPane;
         Graphics.ScrollPaneDesign(consoleView, Color.getColor("GRIS_MIDDLE"));
 
-        //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
-        //jToolBar.setBorder(new EtchedBorder());
-
-        //JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, textView);
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, tabManager.tabPane);
         mainSplitPane.setResizeWeight(0.10);
         Graphics.BottomSplitPaneDesign(mainSplitPane);
@@ -171,6 +176,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         this.setJMenuBar(jMenuBar);
         jFrame.add(jToolBar, BorderLayout.NORTH);
         jFrame.add(bottomSplitPane, BorderLayout.CENTER);
+
         this.pack();
         if (!this.isVisible())
             this.setVisible(true);
@@ -271,6 +277,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         mTools.add(new AnyAction.actAnyDist(this));
         mTools.addSeparator();
         mTools.add(new AnyAction.actAnyRun(this));
+        mTools.add(new AnyAction.actAnyStop(this));
         jMenuBar.add(mTools);
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
@@ -299,6 +306,13 @@ public class MainFrame extends JFrame implements SyntaxConstants {
             jMenuBar.add(mMaven);
         }
 
+        JMenu menuFind = new JMenu("Search");
+        menuFind.setForeground(Color.WHITE);
+        menuFind.add(new JMenuItem(new FindAction.ShowFindDialogAction(this)));
+        menuFind.add(new JMenuItem(new FindAction.ShowReplaceDialogAction(this)));
+        menuFind.add(new JMenuItem(new FindAction.GoToLineAction(this)));
+
+        jMenuBar.add(menuFind);
     }
 
     public static Icon resizeIcon(ImageIcon icon, int resizedWidth, int resizedHeight) {
@@ -310,9 +324,10 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     private JButton createToolBarButton(AbstractAction action)
     {
         JButton b = new JButton(action);
-        b.setBackground(Color.getColor("GRIS_MIDDLE"));
-        b.setForeground(Color.getColor("GRIS_MIDDLE"));
-        b.setBorder(BorderFactory.createLineBorder(Color.getColor("GRIS_MIDDLE"), 7));
+        //b.setBackground(Color.getColor("GRIS_MIDDLE"));
+        //b.setForeground(Color.getColor("GRIS_MIDDLE"));
+        b.setOpaque(false);
+        b.setBorder(BorderFactory.createLineBorder(Color.getColor("GRIS_MIDDLE"), 5));
         b.setHideActionText(true);
         b.setRolloverEnabled(true);
         //b.setIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.OPEN)));
@@ -329,7 +344,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         jToolBar.add(createToolBarButton(new IdeAction.actOpenProject(this)));
 
         jToolBar.add(createToolBarButton(new IdeAction.actSave(this)));
-        jToolBar.addSeparator();
+        //jToolBar.addSeparator();
         jToolBar.add(createToolBarButton(new IdeAction.actUndo(this)));
         jToolBar.add(createToolBarButton(new IdeAction.actRedo(this)));
         jToolBar.add(createToolBarButton(new IdeAction.actCopy(this, tabManager.getCurrentTextArea())));
@@ -341,7 +356,8 @@ public class MainFrame extends JFrame implements SyntaxConstants {
             jToolBar.add(createToolBarButton(new MavenAction.actMvnExec(this)));
         else if (project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.ANY))
             jToolBar.add(createToolBarButton(new AnyAction.actAnyRun(this)));
-        
+        jToolBar.add(createToolBarButton(new AnyAction.actAnyStop(this)));
+
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
         label.setForeground(Color.WHITE);
@@ -381,6 +397,59 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         treePopupMenu.add(new TreeAction.actDelete(this));
 
         jTree.setComponentPopupMenu(treePopupMenu);
+    }
+
+    @Override
+    public String getSelectedText() {
+        return this.getrSyntaxTextArea().getSelectedText();
+    }
+
+    private void createSearchDialogs() {
+        /**
+         * Creates our Find and Replace dialogs.
+         */
+        findDialog = new FindDialog(this, this);
+        replaceDialog = new ReplaceDialog(this, this);
+
+        // This ties the properties of the two dialogs together (match case,
+        // regex, etc.).
+        SearchContext context = findDialog.getSearchContext();
+        replaceDialog.setSearchContext(context);
+    }
+
+    @Override
+    public void searchEvent(SearchEvent e) {
+        /**
+         * Listens for events from our search dialogs and actually does the dirty
+         * work.
+         */
+        SearchEvent.Type type = e.getType();
+        SearchContext context = e.getSearchContext();
+        SearchResult result;
+
+        switch (type) {
+            default: // Prevent FindBugs warning later
+            case MARK_ALL:
+                result = SearchEngine.markAll(this.getrSyntaxTextArea(), context);
+                break;
+            case FIND:
+                result = SearchEngine.find(this.getrSyntaxTextArea(), context);
+                if (!result.wasFound() || result.isWrapped()) {
+                    UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+                }
+                break;
+            case REPLACE:
+                result = SearchEngine.replace(this.getrSyntaxTextArea(), context);
+                if (!result.wasFound() || result.isWrapped()) {
+                    UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+                }
+                break;
+            case REPLACE_ALL:
+                result = SearchEngine.replaceAll(this.getrSyntaxTextArea(), context);
+                JOptionPane.showMessageDialog(null, result.getCount() +
+                        " occurrences replaced.");
+                break;
+        }
     }
 
     public static void main(String[] args) {

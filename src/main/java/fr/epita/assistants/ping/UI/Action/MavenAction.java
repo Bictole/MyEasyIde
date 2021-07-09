@@ -35,7 +35,6 @@ public class MavenAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Maven Clean");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Maven.CLEAN);
 
             if (f.isEmpty()) {
@@ -66,7 +65,6 @@ public class MavenAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Maven Compile");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Maven.COMPILE);
 
             if (f.isEmpty()) {
@@ -107,17 +105,15 @@ public class MavenAction {
 
             Search.ExecutionReportSearch searchReport = (Search.ExecutionReportSearch)
                     mainFrame.getProjectService().execute(mainFrame.project, Mandatory.Features.Any.SEARCH, "public static void main");
-
+            if (searchReport.getFilesMatch().isEmpty()) {
+                JOptionPane.showMessageDialog(mainFrame, "No main class found.", "Maven Exec status", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             ExecConfig execConfig = new ExecConfig(mainFrame, searchReport.getFilesMatch());
             if (execConfig.getMainClass() == null) {
-                JOptionPane.showMessageDialog(mainFrame, "No main class found.", "Run status", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (!execConfig.isSuccess)
-            {
-                return;
-            }
-            Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project, execConfig.getMainClass());
+            Exec.ExecutionReportExecute report = (Exec.ExecutionReportExecute) MavenExec.execute(mainFrame.project, execConfig.getMainClass(), execConfig.getArgs());
             System.out.println(report.getOutput());
         }
     }
