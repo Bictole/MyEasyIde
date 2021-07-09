@@ -162,10 +162,6 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         JScrollPane consoleView = console.scrollPane;
         Graphics.ScrollPaneDesign(consoleView, Color.getColor("GRIS_MIDDLE"));
 
-        //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
-        //jToolBar.setBorder(new EtchedBorder());
-
-        //JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, textView);
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, tabManager.tabPane);
         mainSplitPane.setResizeWeight(0.10);
         Graphics.BottomSplitPaneDesign(mainSplitPane);
