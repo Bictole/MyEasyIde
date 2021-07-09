@@ -144,17 +144,15 @@ public class AnyAction {
 
             Search.ExecutionReportSearch searchReport = (Search.ExecutionReportSearch)
                     frame.getProjectService().execute(frame.project, Mandatory.Features.Any.SEARCH, "public static void main");
-
-            ExecConfig execConfig = new ExecConfig(frame, searchReport.getFilesMatch());
-            if (execConfig.getMainClass() == null) {
+            if (searchReport.getFilesMatch().isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "No main class found.", "Run status", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (!execConfig.isSuccess)
-            {
+            ExecConfig execConfig = new ExecConfig(frame, searchReport.getFilesMatch());
+            if (execConfig.getMainClass() == null) {
                 return;
             }
-            Run.ExecutionReportRun report = (Run.ExecutionReportRun) AnyRun.execute(frame.project, execConfig.getMainFile(), execConfig.getMainParentPath(), execConfig.getMainClass(), execConfig.getMainPackagePath());
+            Run.ExecutionReportRun report = (Run.ExecutionReportRun) AnyRun.execute(frame.project, execConfig.getMainFile(), execConfig.getMainParentPath(), execConfig.getMainClass(), execConfig.getMainPackagePath(), execConfig.getArgs());
             if (report.isSuccess())
                 System.out.println("[ " + execConfig.getMainClass() + ".java ] [OUTPUT] : " + report.getOutput());
             else
