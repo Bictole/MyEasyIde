@@ -10,6 +10,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashSet;
 
 public class Add implements Feature {
 
@@ -54,7 +55,7 @@ public class Add implements Feature {
         System.setOut(new PrintStream(new ByteArrayOutputStream()));
         Git git = project.getgit();
 
-        for (var toAdd : params) {
+        for (var toAdd : (HashSet) params[0]) {
             git.add().addFilepattern((String) toAdd).call();
         }
         System.setOut(previous);

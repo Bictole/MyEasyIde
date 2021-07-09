@@ -44,7 +44,7 @@ public class Tab {
         rSyntaxTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         rSyntaxTextArea.setCodeFoldingEnabled(true);
         rSyntaxTextArea.setAnimateBracketMatching(true);
-        rSyntaxTextArea.setBorder(BorderFactory.createEmptyBorder());
+        rSyntaxTextArea.setBorder(BorderFactory.createLineBorder(Color.getColor("GRIS_MIDDLE"), 5));
 
         undoManager = new UndoManager();
         rSyntaxTextArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
@@ -155,6 +155,7 @@ public class Tab {
             // Set the text
             rSyntaxTextArea.setText(text);
             rSyntaxTextArea.setEditable(true);
+
         }
         catch (Exception e)
         {}
@@ -197,7 +198,7 @@ public class Tab {
 
             add(label);
             label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
-            label.setForeground(Color.getColor("ROSE_CLAIR"));
+            label.setForeground(Color.getColor("ROSE"));
             JButton button = new TabButton();
             add(button);
             setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
@@ -229,8 +230,8 @@ public class Tab {
                 int i = pane.indexOfTabComponent(ButtonTabComponent.this);
                 if (i != -1)
                 {
-                    tabManager.CloseFile(i);
                     pane.remove(i);
+                    tabManager.CloseFile(i);
                 }
             }
 

@@ -47,7 +47,12 @@ import fr.epita.assistants.utils.Given;
             /**
              * Compile and execute the main
              */
-            RUN;
+            RUN,
+
+            /**
+             * Stop an ongoing process
+             */
+            STOP;
         }
 
         /**

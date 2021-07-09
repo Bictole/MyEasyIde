@@ -38,8 +38,6 @@ public class Dist implements Feature {
 
     @Override
     public ExecutionReport execute(Project project, Object... param) {
-        /*if (param.length > 0)
-            return new Dist.ExecutionReportDist("Too much argument provided");*/
 
         ProjectManager projectManager = new ProjectManager();
         projectManager.execute(project, Mandatory.Features.Any.CLEANUP);
@@ -62,7 +60,7 @@ public class Dist implements Feature {
             return new Dist.ExecutionReportDist();
         }
         catch (Exception e) {
-            return new Dist.ExecutionReportDist("Error Dist Feature : " + e.getMessage());
+            return new Dist.ExecutionReportDist("Couldn't compress the folder. " + e.getMessage());
         }
     }
 

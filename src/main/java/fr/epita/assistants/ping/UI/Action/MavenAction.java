@@ -35,7 +35,6 @@ public class MavenAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Maven Clean");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Maven.CLEAN);
 
             if (f.isEmpty()) {
@@ -66,7 +65,6 @@ public class MavenAction {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Maven Compile");
             Optional<Feature> f = mainFrame.project.getFeature(Mandatory.Features.Maven.COMPILE);
 
             if (f.isEmpty()) {

@@ -17,6 +17,7 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
@@ -52,17 +53,10 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
     public TabManager tabManager;
     public JScrollPane textView;
+    public Process ongoing;
 
     public MainFrame(String title, ProjectService projectService) {
         super(title);
-
-        /*try {
-            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-            MetalLookAndFeel.setCurrentTheme(new OceanTheme());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
         jFrame = this;
         this.projectService = projectService;
 
@@ -148,6 +142,11 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         renderer.setBorderSelectionColor(Color.black);
         renderer.setTextNonSelectionColor(Color.getColor("BLEU_ELECTRIQUE"));
         renderer.setBackgroundNonSelectionColor(Color.getColor("PRUNE"));
+        renderer.setClosedIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.FOLDER, 10)));
+        renderer.setLeafIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.LEAF, 10)));
+        renderer.setOpenIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.OPENED_FOLDER, 10)));
+        jTree.putClientProperty("JTree.lineStyle", "None");
+
         jTree.setCellRenderer(renderer);
         jTree.setBackground(Color.getColor("PRUNE"));
 
@@ -157,10 +156,6 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         JScrollPane consoleView = console.scrollPane;
         Graphics.ScrollPaneDesign(consoleView, Color.getColor("GRIS_MIDDLE"));
 
-        //jMenuBar.setBorder(new BevelBorder(BevelBorder.RAISED));
-        //jToolBar.setBorder(new EtchedBorder());
-
-        //JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, textView);
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, tabManager.tabPane);
         mainSplitPane.setResizeWeight(0.10);
         Graphics.BottomSplitPaneDesign(mainSplitPane);
@@ -271,6 +266,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         mTools.add(new AnyAction.actAnyDist(this));
         mTools.addSeparator();
         mTools.add(new AnyAction.actAnyRun(this));
+        mTools.add(new AnyAction.actAnyStop(this));
         jMenuBar.add(mTools);
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
@@ -310,9 +306,10 @@ public class MainFrame extends JFrame implements SyntaxConstants {
     private JButton createToolBarButton(AbstractAction action)
     {
         JButton b = new JButton(action);
-        b.setBackground(Color.getColor("GRIS_MIDDLE"));
-        b.setForeground(Color.getColor("GRIS_MIDDLE"));
-        b.setBorder(BorderFactory.createLineBorder(Color.getColor("GRIS_MIDDLE"), 7));
+        //b.setBackground(Color.getColor("GRIS_MIDDLE"));
+        //b.setForeground(Color.getColor("GRIS_MIDDLE"));
+        b.setOpaque(false);
+        b.setBorder(BorderFactory.createLineBorder(Color.getColor("GRIS_MIDDLE"), 5));
         b.setHideActionText(true);
         b.setRolloverEnabled(true);
         //b.setIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.OPEN)));
@@ -329,7 +326,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         jToolBar.add(createToolBarButton(new IdeAction.actOpenProject(this)));
 
         jToolBar.add(createToolBarButton(new IdeAction.actSave(this)));
-        jToolBar.addSeparator();
+        //jToolBar.addSeparator();
         jToolBar.add(createToolBarButton(new IdeAction.actUndo(this)));
         jToolBar.add(createToolBarButton(new IdeAction.actRedo(this)));
         jToolBar.add(createToolBarButton(new IdeAction.actCopy(this, tabManager.getCurrentTextArea())));
@@ -341,7 +338,8 @@ public class MainFrame extends JFrame implements SyntaxConstants {
             jToolBar.add(createToolBarButton(new MavenAction.actMvnExec(this)));
         else if (project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.ANY))
             jToolBar.add(createToolBarButton(new AnyAction.actAnyRun(this)));
-        
+        jToolBar.add(createToolBarButton(new AnyAction.actAnyStop(this)));
+
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
         label.setForeground(Color.WHITE);
