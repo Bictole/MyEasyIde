@@ -17,6 +17,7 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
@@ -148,6 +149,10 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         renderer.setBorderSelectionColor(Color.black);
         renderer.setTextNonSelectionColor(Color.getColor("BLEU_ELECTRIQUE"));
         renderer.setBackgroundNonSelectionColor(Color.getColor("PRUNE"));
+        renderer.setClosedIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.FOLDER, 10)));
+        renderer.setLeafIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.LEAF, 10)));
+        renderer.setOpenIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.FOLDER, 10)));
+
         jTree.setCellRenderer(renderer);
         jTree.setBackground(Color.getColor("PRUNE"));
 
