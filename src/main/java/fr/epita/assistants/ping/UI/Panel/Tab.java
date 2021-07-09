@@ -8,6 +8,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -30,7 +31,7 @@ public class Tab {
     private String fileName;
     private File file;
     private UndoManager undoManager;
-    private JScrollPane textView;
+    private RTextScrollPane textView;
 
     public Tab(File file, String theme)
     {
@@ -71,7 +72,7 @@ public class Tab {
         LanguageSupport support = lsf.getSupportFor(SyntaxConstants.SYNTAX_STYLE_JAVA);
         LanguageSupportFactory.get().register(rSyntaxTextArea);
 
-        textView = new JScrollPane(rSyntaxTextArea);
+        textView = new RTextScrollPane(rSyntaxTextArea);
         Graphics.ScrollPaneDesign(textView, Color.getColor("GRIS_MIDDLE"));
     }
 

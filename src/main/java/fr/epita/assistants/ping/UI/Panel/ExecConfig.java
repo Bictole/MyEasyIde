@@ -5,13 +5,16 @@ import fr.epita.assistants.ping.UI.MainFrame;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 public class ExecConfig {
 
@@ -21,7 +24,7 @@ public class ExecConfig {
     private String mainParentPath;
     private String mainPackagePath;
 
-    public Boolean isSuccess;
+    private String args = "";
 
     public String getMainClass() {
         return mainClass;
@@ -39,8 +42,11 @@ public class ExecConfig {
         return mainPackagePath;
     }
 
-    private String PathTreatment(Path p)
-    {
+    public String getArgs() {
+        return args;
+    }
+
+    private String PathTreatment(Path p) {
         String path = p.toString();
         String toRemove = "src" + File.separator + "main" + File.separator + "java" + File.separator;
         if (!path.contains(toRemove))
@@ -54,66 +60,116 @@ public class ExecConfig {
         return elt;
     }
 
-    private void MavenMainClass(MainFrame mainFrame, List<Path> filesMatch){
+    private void MavenMainClass(MainFrame mainFrame, List<Path> filesMatch) {
 
-        if (filesMatch.size() == 1)
-        {
+        /*if (filesMatch.size() == 1) {
             String elt = PathTreatment(filesMatch.get(0));
             if (elt == null)
-                JOptionPane.showMessageDialog(mainFrame.jFrame, "No main class found in src/main/java", "Error main class", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainFrame.jFrame,
+                        "No main class found in src" + File.separator + "main" + File.separator + "java",
+                        "Error main class", JOptionPane.ERROR_MESSAGE);
             this.mainClass = elt;
             this.isSuccess = true;
             return;
-        }
+        }*/
+
+        JPanel p = new JPanel();
+
+        p.setBackground(Color.getColor("GRIS_MIDDLE"));
+
+        Map<String, Path> map = new HashMap<>();
 
         Set<Path> to_Exec = new HashSet<Path>();
         to_Exec.addAll(filesMatch);
 
-        final String[] mainClass = {new String()};
+        final Path[] selectList = {null};
 
-        Box pbox = Box.createVerticalBox();
-        JLabel label = new JLabel("Choose main class");
-        ButtonGroup buttonGroup = new ButtonGroup();
-        pbox.add(label);
-        Boolean selectDefault = false;
-        for (var p : to_Exec) {
-            String elt = PathTreatment(p);
-            if (elt == null)
-                continue;
+        JLabel mainClassLabel = new JLabel("Main class:");
+        mainClassLabel.setForeground(Color.getColor("ROSE"));
+        JTextField mainClassField = new JTextField();
+        mainClassField.setBackground(Color.getColor("GRIS_SOMBRE"));
+        mainClassField.setForeground(Color.getColor("BLEU_ELECTRIQUE"));
+        mainClassField.setColumns(50);
+        JLabel argsLabel = new JLabel("Arguments:");
+        argsLabel.setForeground(Color.getColor("ROSE"));
+        JTextField argsField = new JTextField();
+        argsField.setBackground(Color.getColor("GRIS_SOMBRE"));
+        argsField.setForeground(Color.getColor("BLEU_ELECTRIQUE"));
+        argsField.setColumns(50);
 
-            JRadioButton radioButton = new JRadioButton(elt);
-            if (!selectDefault)
-            {
-                radioButton.setSelected(true);
-                selectDefault = true;
-                this.mainClass = elt;
-            }
-            radioButton.addItemListener(new ItemListener() {
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    if (radioButton.isSelected())
-                        mainClass[0] = radioButton.getText();
-
-                }
-            });
-            buttonGroup.add(radioButton);
-            pbox.add(radioButton);
+        List<String> to_ExecName = new ArrayList<>();
+        for (var e : to_Exec) {
+            String name = FilenameUtils.removeExtension(e.toFile().getName());
+            to_ExecName.add(name);
+            map.put(name, e);
         }
-        int output = JOptionPane.showConfirmDialog(mainFrame.jFrame, pbox, "Select the main class you want to exec", JOptionPane.OK_CANCEL_OPTION);
-        this.isSuccess = output == 0;
-        if(!mainClass[0].isEmpty())
-            this.mainClass = mainClass[0];
+
+        JList jList = new JList(to_ExecName.toArray());
+        jList.setBackground(Color.getColor("GRIS_SOMBRE"));
+        jList.setForeground(Color.getColor("ROSE"));
+        jList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                Path p = map.get(jList.getSelectedValue());
+                selectList[0] = p;
+                mainClassField.setText(PathTreatment(p));
+            }
+        });
+        jList.setSelectedIndex(0);
+
+        GroupLayout layout = new GroupLayout(p);
+        p.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(jList))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(mainClassLabel)
+                        .addComponent(argsLabel))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(mainClassField)
+                        .addComponent(argsField))
+        );
+
+        layout.linkSize(SwingConstants.VERTICAL, argsField, mainClassField);
+
+        layout.setVerticalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(jList))
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(0, to_ExecName.size() * 8 / 2, to_ExecName.size() * 8 / 2)
+                                .addComponent(mainClassLabel)
+                                .addComponent(argsLabel))
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(0, to_ExecName.size() * 8 / 2, to_ExecName.size() * 8 / 2)
+                                .addComponent(mainClassField)
+                                .addComponent(argsField)))
+        );
+        int output = JOptionPane.showConfirmDialog(mainFrame.jFrame, p, "Select the main class you want to exec", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (output == 0){
+            if (mainClassField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(mainFrame.jFrame, "No main class given", "Error main class", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            mainClass = PathTreatment(selectList[0]);
+            args = argsField.getText();
+        }
     }
 
-    private void AnyExecMainClass(MainFrame mainFrame, List<Path> filesMatch){
+    private void AnyExecMainClass(MainFrame mainFrame, List<Path> filesMatch) {
+        String toRemove = "src" + File.separator + "main" + File.separator + "java" + File.separator;
 
-        if (filesMatch.size() == 1)
-        {
+        /*if (filesMatch.size() == 1) {
             Path p = filesMatch.get(0);
             String elt = PathTreatment(p);
-            String toRemove = "src" + File.separator + "main" + File.separator + "java" + File.separator;
             if (elt == null)
-                JOptionPane.showMessageDialog(mainFrame.jFrame, "No main class found in src/main/java", "Error main class", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainFrame.jFrame,
+                        "No main class found in src" + File.separator + "main" + File.separator + "java",
+                        "Error main class", JOptionPane.ERROR_MESSAGE);
 
             mainClass = elt;
             mainFile = p.toFile().getName();
@@ -122,69 +178,123 @@ public class ExecConfig {
             this.isSuccess = true;
 
             return;
-        }
+        }*/
+
+        JPanel p = new JPanel();
+
+        p.setBackground(Color.getColor("GRIS_MIDDLE"));
+
+        Map<String, Path> map = new HashMap<>();
 
         Set<Path> to_Exec = new HashSet<Path>();
         to_Exec.addAll(filesMatch);
 
+        final Path[] selectList = {null};
 
-        Box pbox = Box.createVerticalBox();
-        JLabel label = new JLabel("Choose main class");
-        ButtonGroup buttonGroup = new ButtonGroup();
-        pbox.add(label);
-        boolean selectDefault = false;
-        for (var p : to_Exec) {
+        JLabel mainClassLabel = new JLabel("Main class:");
+        mainClassLabel.setForeground(Color.getColor("ROSE"));
+        JTextField mainClassField = new JTextField();
+        mainClassField.setBackground(Color.getColor("GRIS_SOMBRE"));
+        mainClassField.setForeground(Color.getColor("BLEU_ELECTRIQUE"));
+        mainClassField.setColumns(50);
+        JLabel argsLabel = new JLabel("Arguments:");
+        argsLabel.setForeground(Color.getColor("ROSE"));
+        JTextField argsField = new JTextField();
+        argsField.setBackground(Color.getColor("GRIS_SOMBRE"));
+        argsField.setForeground(Color.getColor("BLEU_ELECTRIQUE"));
+        argsField.setColumns(50);
 
-            String elt = PathTreatment(p);
-            String toRemove = "src" + File.separator + "main" + File.separator + "java" + File.separator;
-            if (elt == null)
-                continue;
-
-            JRadioButton radioButton = new JRadioButton(elt);
-            //Default RadioButton Selected
-            if (!selectDefault)
-            {
-                radioButton.setSelected(true);
-                selectDefault = true;
-                mainClass = elt;
-                mainFile = p.toFile().getName();
-                mainParentPath = p.toFile().getParent();
-                mainPackagePath = p.toFile().getPath().substring(0, p.toFile().getPath().indexOf(toRemove) + toRemove.length());
-            }
-            radioButton.addItemListener(new ItemListener() {
-                private Path path = p;
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    if (radioButton.isSelected()) {
-                        mainClass = radioButton.getText();
-                        mainFile = path.toFile().getName();
-                        mainParentPath = path.toFile().getParent();
-                        mainPackagePath = path.toFile().getPath().substring(0, path.toFile().getPath().indexOf(toRemove) + toRemove.length());
-                    }
-
-                }
-            });
-            buttonGroup.add(radioButton);
-            pbox.add(radioButton);
+        List<String> to_ExecName = new ArrayList<>();
+        for (var e : to_Exec) {
+            String name = FilenameUtils.removeExtension(e.toFile().getName());
+            to_ExecName.add(name);
+            map.put(name, e);
         }
-        int output = JOptionPane.showConfirmDialog(mainFrame.jFrame, pbox, "Select the main class you want to exec", JOptionPane.OK_CANCEL_OPTION);
-        this.isSuccess = output == 0;
+
+        JList jList = new JList(to_ExecName.toArray());
+        jList.setBackground(Color.getColor("GRIS_SOMBRE"));
+        jList.setForeground(Color.getColor("ROSE"));
+        jList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                Path p = map.get(jList.getSelectedValue());
+                selectList[0] = p;
+                mainClassField.setText(PathTreatment(p));
+            }
+        });
+        jList.setSelectedIndex(0);
+
+        GroupLayout layout = new GroupLayout(p);
+        p.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(jList))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(mainClassLabel)
+                        .addComponent(argsLabel))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(mainClassField)
+                        .addComponent(argsField))
+        );
+
+        layout.linkSize(SwingConstants.VERTICAL, argsField, mainClassField);
+
+        layout.setVerticalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(jList))
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(0, to_ExecName.size() * 8 / 2, to_ExecName.size() * 8 / 2)
+                                .addComponent(mainClassLabel)
+                                .addComponent(argsLabel))
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(0, to_ExecName.size() * 8 / 2, to_ExecName.size() * 8 / 2)
+                                .addComponent(mainClassField)
+                                .addComponent(argsField)))
+        );
+        int output = JOptionPane.showConfirmDialog(mainFrame.jFrame, p, "Select the main class you want to exec", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (output == 0){
+            if (mainClassField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(mainFrame.jFrame, "No main class given", "Error main class", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            Path path = selectList[0];
+            mainClass = mainClassField.getText();
+            mainFile = path.toFile().getName();
+            mainParentPath = path.toFile().getParent();
+            mainPackagePath = path.toFile().getPath().substring(0, path.toFile().getPath().indexOf(toRemove) + toRemove.length());
+            args = argsField.getText();
+        }
     }
 
     public ExecConfig(MainFrame mainFrame, List<Path> filesMatch) {
 
         if (!filesMatch.isEmpty()) {
+            UIManager ui = new UIManager();
+            Color OpBack = (Color) UIManager.get("OptionPane.background");
+            Color PBack = (Color) UIManager.get("Panel.background");
+            Color PFront = (Color) UIManager.get("OptionPane.messageForeground");
+            ui.put("OptionPane.background", Color.getColor("GRIS_MIDDLE"));
+            ui.put("OptionPane.messageForeground", Color.getColor("ROSE"));
+            ui.put("Panel.background", Color.getColor("GRIS_MIDDLE"));
             try {
-                if (mainFrame.project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.MAVEN))
-                        MavenMainClass(mainFrame, filesMatch);
-                else if (mainFrame.project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.ANY))
+                if (mainFrame.project.getAspects().stream().anyMatch(aspect -> aspect.getType() == Mandatory.Aspects.MAVEN))
+                    MavenMainClass(mainFrame, filesMatch);
+                else if (mainFrame.project.getAspects().stream().anyMatch(aspect -> aspect.getType() == Mandatory.Aspects.ANY))
                     AnyExecMainClass(mainFrame, filesMatch);
             }
             catch (Exception e) {
                 //e.printStackTrace();
             }
-        }
-        else
+            ui.put("OptionPane.background", OpBack);
+            ui.put("Panel.background", PBack);
+            ui.put("OptionPane.messageForeground", PFront);
+
+        } else
             JOptionPane.showMessageDialog(mainFrame.jFrame, "No main class found", "Error main class", JOptionPane.ERROR_MESSAGE);
 
     }
