@@ -151,7 +151,8 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         renderer.setBackgroundNonSelectionColor(Color.getColor("PRUNE"));
         renderer.setClosedIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.FOLDER, 10)));
         renderer.setLeafIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.LEAF, 10)));
-        renderer.setOpenIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.FOLDER, 10)));
+        renderer.setOpenIcon(new ImageIcon(UITools.ImageResize.ImageTest(Icons.OPENED_FOLDER, 10)));
+        jTree.putClientProperty("JTree.lineStyle", "None");
 
         jTree.setCellRenderer(renderer);
         jTree.setBackground(Color.getColor("PRUNE"));

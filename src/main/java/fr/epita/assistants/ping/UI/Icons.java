@@ -6,6 +6,7 @@ public enum Icons {
     NEW_FOLDER("folder.png"),
     FOLDER("folder.png"),
     LEAF("jar.png"),
+    OPENED_FOLDER("openedFolder.png"),
     NEW_FILE("file.png"),
     OPEN("open.png"),
     SAVE("save.png"),
