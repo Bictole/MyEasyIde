@@ -53,17 +53,10 @@ public class MainFrame extends JFrame implements SyntaxConstants {
 
     public TabManager tabManager;
     public JScrollPane textView;
+    public Process ongoing;
 
     public MainFrame(String title, ProjectService projectService) {
         super(title);
-
-        /*try {
-            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-            MetalLookAndFeel.setCurrentTheme(new OceanTheme());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
         jFrame = this;
         this.projectService = projectService;
 
@@ -273,6 +266,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         mTools.add(new AnyAction.actAnyDist(this));
         mTools.addSeparator();
         mTools.add(new AnyAction.actAnyRun(this));
+        mTools.add(new AnyAction.actAnyStop(this));
         jMenuBar.add(mTools);
 
         if (project.getAspects().stream().anyMatch(a -> a.getType() == Mandatory.Aspects.GIT)) {
@@ -332,7 +326,7 @@ public class MainFrame extends JFrame implements SyntaxConstants {
         jToolBar.add(createToolBarButton(new IdeAction.actOpenProject(this)));
 
         jToolBar.add(createToolBarButton(new IdeAction.actSave(this)));
-        jToolBar.addSeparator();
+        //jToolBar.addSeparator();
         jToolBar.add(createToolBarButton(new IdeAction.actUndo(this)));
         jToolBar.add(createToolBarButton(new IdeAction.actRedo(this)));
         jToolBar.add(createToolBarButton(new IdeAction.actCopy(this, tabManager.getCurrentTextArea())));
@@ -344,7 +338,8 @@ public class MainFrame extends JFrame implements SyntaxConstants {
             jToolBar.add(createToolBarButton(new MavenAction.actMvnExec(this)));
         else if (project.getAspects().stream().anyMatch(aspect -> aspect.getType()== Mandatory.Aspects.ANY))
             jToolBar.add(createToolBarButton(new AnyAction.actAnyRun(this)));
-        
+        jToolBar.add(createToolBarButton(new AnyAction.actAnyStop(this)));
+
         jToolBar.add(Box.createHorizontalGlue());
         JLabel label = new JLabel("Git:");
         label.setForeground(Color.WHITE);

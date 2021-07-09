@@ -8,6 +8,7 @@ import fr.epita.assistants.ping.UI.Panel.ExecConfig;
 import fr.epita.assistants.ping.feature.any.CleanUp;
 import fr.epita.assistants.ping.feature.any.Run;
 import fr.epita.assistants.ping.feature.any.Search;
+import fr.epita.assistants.ping.feature.any.Stop;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -160,6 +161,39 @@ public class AnyAction {
                 System.out.println("[ " + execConfig.getMainClass() + ".java ] [OUTPUT] : \n\n" + report.getOutput());
             else
                 System.out.println("[ " + execConfig.getMainClass() + ".java ] [ERROR] : \n\n" + report.getOutput());
+        }
+    };
+
+    public static class actAnyStop extends ActionTemplate {
+
+        MainFrame frame;
+
+        public actAnyStop(MainFrame frame) {
+            super(
+                    "Stop",
+                    getResizedIcon(frame,Icons.STOP),
+                    KeyEvent.VK_S,
+                    "Stop",
+                    null);
+            this.frame = frame;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Optional<Feature> f = frame.project.getFeature(Mandatory.Features.Any.STOP);
+
+            if (f.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Error when finding the Feature.", "Stop status", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            var AnyStop = f.get();
+            Stop.ExecutionReportStop report = (Stop.ExecutionReportStop) AnyStop.execute(frame.project, frame.ongoing);
+
+            if (!report.isSuccess())
+                JOptionPane.showMessageDialog(frame, report.getOutput(), "Stop status", JOptionPane.ERROR_MESSAGE);
+            else
+                System.out.println("[ CLEANUP ] [OUTPUT] : \n\n" + report.getOutput());
         }
     };
 }

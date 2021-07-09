@@ -155,6 +155,7 @@ public class Tab {
             // Set the text
             rSyntaxTextArea.setText(text);
             rSyntaxTextArea.setEditable(true);
+
         }
         catch (Exception e)
         {}
@@ -229,8 +230,8 @@ public class Tab {
                 int i = pane.indexOfTabComponent(ButtonTabComponent.this);
                 if (i != -1)
                 {
-                    tabManager.CloseFile(i);
                     pane.remove(i);
+                    tabManager.CloseFile(i);
                 }
             }
 
